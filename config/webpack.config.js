@@ -12,28 +12,72 @@ const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
 const resolve = require('resolve');
+const paths = require('./paths');
+const modules = require('./modules');
+const getClientEnvironment = require('./env');
+/**
+ * 
+ */
 const PnpWebpackPlugin = require('pnp-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+// 清理打包获得文件
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
-const InlineChunkHtmlPlugin = require('react-dev-utils/InlineChunkHtmlPlugin');
-const TerserPlugin = require('terser-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-const safePostCssParser = require('postcss-safe-parser');
-const ManifestPlugin = require('webpack-manifest-plugin');
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+
+// const ForkTsCheckerWebpackPlugin = require('react-dev-utils/ForkTsCheckerWebpackPlugin');
+
+/**
+ * 
+ */
+const ESLintPlugin = require('eslint-webpack-plugin');
+/**
+ * 
+ */
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
+const InlineChunkHtmlPlugin = require('react-dev-utils/InlineChunkHtmlPlugin');
+/**
+ * 
+ */
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+/**
+ * JS
+ */
+const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
+// webpack转译Typescript现有方案
+// 单进程方案(类型检查和转译在同一个进程) ts-loader(transpileOnly为false)  awesome-typescript-loader
+// 多进程方案 ts-loader(transpileOnly为true) + fork-ts-checker-webpack-plugin  [awesome-typescript-loader + 自带的CheckerPlugin]  [babel + fork-ts-checker-webpack-plugin]
+// 综合考虑性能和扩展性，目前比较推荐的是babel+fork-ts-checker-webpack-plugin方案
+// https://www.npmjs.com/package/fork-ts-checker-webpack-plugin
+// {
+//   test: /\.tsx?$/,
+//   use:{
+//     loader: 'ts-loader',
+//     options: {
+//       transpileOnly: true  // ? 关闭类型检查，即只进行转译
+//     }
+//   }
+// }
+// plugins: [
+//   new ForkTsCheckerWebpackPlugin({ // ? fork一个进程进行检查，并设置async为false，将错误信息反馈给webpack
+//     async: false,
+//     eslint: false
+//   })
+// ]
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+
+// const TerserPlugin = require('terser-webpack-plugin');
+// const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+// const safePostCssParser = require('postcss-safe-parser');
+// const ManifestPlugin = require('webpack-manifest-plugin');
+
 const WorkboxWebpackPlugin = require('workbox-webpack-plugin');
 const WatchMissingNodeModulesPlugin = require('react-dev-utils/WatchMissingNodeModulesPlugin');
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 const getCSSModuleLocalIdent = require('react-dev-utils/getCSSModuleLocalIdent');
-const ESLintPlugin = require('eslint-webpack-plugin');
-const paths = require('./paths');
-const modules = require('./modules');
-const getClientEnvironment = require('./env');
 const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
-const ForkTsCheckerWebpackPlugin = require('react-dev-utils/ForkTsCheckerWebpackPlugin');
 const typescriptFormatter = require('react-dev-utils/typescriptFormatter');
-const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+
 // @remove-on-eject-begin
 const getCacheIdentifier = require('react-dev-utils/getCacheIdentifier');
 // @remove-on-eject-end
@@ -171,6 +215,8 @@ module.exports = function (webpackEnv) {
   return {
     mode: isEnvProduction ? 'production' : isEnvDevelopment && 'development',
     // Stop compilation early in production
+    // 在第一个错误出现时抛出失败结果，而不是容忍它。默认情况下，当使用 HMR 时，
+    // webpack 会将在终端以及浏览器控制台中，以红色文字记录这些错误，但仍然继续进行打包。
     bail: isEnvProduction,
     devtool: isEnvProduction
       ? shouldUseSourceMap
@@ -401,6 +447,11 @@ module.exports = function (webpackEnv) {
             },
             // Process application JS with Babel.
             // The preset includes JSX, Flow, TypeScript, and some ESnext features.
+            // https://github.com/pmmmwh/react-refresh-webpack-plugin/blob/main/examples/typescript-without-babel/webpack.config.js
+            // {
+            //   loader: 'ts-loader',
+            //   options: { transpileOnly: true },
+            // },
             {
               test: /\.(js|mjs|jsx|ts|tsx)$/,
               include: paths.appSrc,
@@ -598,6 +649,7 @@ module.exports = function (webpackEnv) {
       ],
     },
     plugins: [
+      new CleanWebpackPlugin(),
       // Generates an `index.html` file with the <script> injected.
       new HtmlWebpackPlugin(
         Object.assign(
@@ -685,7 +737,7 @@ module.exports = function (webpackEnv) {
       //   `index.html`
       // - "entrypoints" key: Array of files which are included in `index.html`,
       //   can be used to reconstruct the HTML if necessary
-      new ManifestPlugin({
+      new WebpackManifestPlugin({
         fileName: 'asset-manifest.json',
         publicPath: paths.publicUrlOrPath,
         generate: (seed, files, entrypoints) => {
