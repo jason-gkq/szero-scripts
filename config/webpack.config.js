@@ -24,8 +24,6 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 
-// const ForkTsCheckerWebpackPlugin = require('react-dev-utils/ForkTsCheckerWebpackPlugin');
-
 /**
  * 
  */
@@ -40,6 +38,7 @@ const InlineChunkHtmlPlugin = require('react-dev-utils/InlineChunkHtmlPlugin');
  * 
  */
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 /**
  * JS
  */
@@ -64,8 +63,8 @@ const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
 //     eslint: false
 //   })
 // ]
-const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
-
+// const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+const ForkTsCheckerWebpackPlugin = require('react-dev-utils/ForkTsCheckerWebpackPlugin');
 // const TerserPlugin = require('terser-webpack-plugin');
 // const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 // const safePostCssParser = require('postcss-safe-parser');
@@ -251,17 +250,18 @@ module.exports = function (webpackEnv) {
           ]
         : paths.appIndexJs,
     output: {
-      // The build folder.
+      // output 目录对应一个__绝对路径__。
       path: isEnvProduction ? paths.appBuild : undefined,
-      // Add /* filename */ comments to generated require()s in the output.
+
+      // 告知 webpack 在 bundle 中引入「所包含模块信息」的相关注释。
+      // 此选项在 development 模式时的默认值为 true，而在 production 模式时的默认值为 false。
+      // 当值为 'verbose' 时，会显示更多信息，如 export，运行时依赖以及 bailouts。
       pathinfo: isEnvDevelopment,
       // There will be one main bundle, and one file per asynchronous chunk.
       // In development, it does not produce real files.
       filename: isEnvProduction
         ? 'static/js/[name].[contenthash:8].js'
-        : isEnvDevelopment && 'static/js/bundle.js',
-      // TODO: remove this when upgrading to webpack 5
-      futureEmitAssets: true,
+        : isEnvDevelopment && 'static/js/[name].js',
       // There are also additional JS chunk files if you use code splitting.
       chunkFilename: isEnvProduction
         ? 'static/js/[name].[contenthash:8].chunk.js'
@@ -269,84 +269,34 @@ module.exports = function (webpackEnv) {
       // webpack uses `publicPath` to determine where the app is being served from.
       // It requires a trailing slash, or the file assets will get an incorrect path.
       // We inferred the "public path" (such as / or /my-project) from homepage.
+      // 该选项的值是以 runtime(运行时) 或 loader(载入时) 所创建的每个 URL 为前缀。因此，在多数情况下，此选项的值都会以 / 结束。
       publicPath: paths.publicUrlOrPath,
       // Point sourcemap entries to original disk location (format as URL on Windows)
-      devtoolModuleFilenameTemplate: isEnvProduction
-        ? info =>
-            path
-              .relative(paths.appSrc, info.absoluteResourcePath)
-              .replace(/\\/g, '/')
-        : isEnvDevelopment &&
-          (info => path.resolve(info.absoluteResourcePath).replace(/\\/g, '/')),
-      // Prevents conflicts when multiple webpack runtimes (from different apps)
-      // are used on the same page.
-      jsonpFunction: `webpackJsonp${appPackageJson.name}`,
+
+      // devtoolModuleFilenameTemplate: isEnvProduction
+      //   ? info =>
+      //       path
+      //         .relative(paths.appSrc, info.absoluteResourcePath)
+      //         .replace(/\\/g, '/')
+      //   : isEnvDevelopment &&
+      //     (info => path.resolve(info.absoluteResourcePath).replace(/\\/g, '/')),
+
       // this defaults to 'window', but by setting it to 'this' then
       // module chunks which are built will work in web workers as well.
       globalObject: 'this',
+      // 告诉 webpack 启用 cross-origin 属性 加载 chunk。
+      // 仅在 target 设置为 'web' 时生效，通过使用 JSONP 来添加脚本标签，实现按需加载模块。
+      // boolean = false string: 'anonymous' | 'use-credentials'
+      // 'anonymous' - 不带凭据(credential) 启用跨域加载
+      // 'use-credentials' - 携带凭据(credential) 启用跨域加载
+      // crossOriginLoading: 'use-credentials',
     },
     optimization: {
       minimize: isEnvProduction,
       minimizer: [
-        // This is only used in production mode
-        new TerserPlugin({
-          terserOptions: {
-            parse: {
-              // We want terser to parse ecma 8 code. However, we don't want it
-              // to apply any minification steps that turns valid ecma 5 code
-              // into invalid ecma 5 code. This is why the 'compress' and 'output'
-              // sections only apply transformations that are ecma 5 safe
-              // https://github.com/facebook/create-react-app/pull/4234
-              ecma: 8,
-            },
-            compress: {
-              ecma: 5,
-              warnings: false,
-              // Disabled because of an issue with Uglify breaking seemingly valid code:
-              // https://github.com/facebook/create-react-app/issues/2376
-              // Pending further investigation:
-              // https://github.com/mishoo/UglifyJS2/issues/2011
-              comparisons: false,
-              // Disabled because of an issue with Terser breaking valid code:
-              // https://github.com/facebook/create-react-app/issues/5250
-              // Pending further investigation:
-              // https://github.com/terser-js/terser/issues/120
-              inline: 2,
-            },
-            mangle: {
-              safari10: true,
-            },
-            // Added for profiling in devtools
-            keep_classnames: isEnvProductionProfile,
-            keep_fnames: isEnvProductionProfile,
-            output: {
-              ecma: 5,
-              comments: false,
-              // Turned on because emoji and regex is not minified properly using default
-              // https://github.com/facebook/create-react-app/issues/2488
-              ascii_only: true,
-            },
-          },
-          sourceMap: shouldUseSourceMap,
-        }),
-        // This is only used in production mode
-        new OptimizeCSSAssetsPlugin({
-          cssProcessorOptions: {
-            parser: safePostCssParser,
-            map: shouldUseSourceMap
-              ? {
-                  // `inline: false` forces the sourcemap to be output into a
-                  // separate file
-                  inline: false,
-                  // `annotation: true` appends the sourceMappingURL to the end of
-                  // the css file, helping the browser find the sourcemap
-                  annotation: true,
-                }
-              : false,
-          },
-          cssProcessorPluginOptions: {
-            preset: ['default', { minifyFontValues: { removeQuotes: false } }],
-          },
+        new CssMinimizerPlugin({
+          parallel: true,
+          sourceMap: true,
         }),
       ],
       // Automatically split vendor and commons
@@ -541,7 +491,7 @@ module.exports = function (webpackEnv) {
                     'babel-plugin-named-asset-import',
                     'babel-preset-react-app',
                     'react-dev-utils',
-                    'react-scripts',
+                    'zero-react-scripts',
                   ]
                 ),
                 // @remove-on-eject-end
@@ -834,17 +784,27 @@ module.exports = function (webpackEnv) {
     // Some libraries import Node modules but don't use them in the browser.
     // Tell webpack to provide empty mocks for them so importing them works.
     node: {
-      module: 'empty',
-      dgram: 'empty',
-      dns: 'mock',
-      fs: 'empty',
-      http2: 'empty',
-      net: 'empty',
-      tls: 'empty',
-      child_process: 'empty',
+      global: false,
+      __filename: false,
+      __dirname: false,
     },
     // Turn off performance processing because we utilize
     // our own hints via the FileSizeReporter
-    performance: false,
+    performance: {
+      // string = 'warning': 'error' | 'warning' boolean: false
+      // false 不展示警告或错误提示
+      // warning 将展示一条警告，通知你这是体积大的资源。在开发环境，我们推荐这样
+      // error 将展示一条错误，通知你这是体积大的资源。在生产环境构建时，我们推荐使用 hints: "error"，有助于防止把体积巨大的 bundle 部署到生产环境，从而影响网页的性能。
+      hints: 'warning',
+      // 资源(asset)是从 webpack 生成的任何文件。此选项根据单个资源体积(单位: bytes)，控制 webpack 何时生成性能提示
+      maxAssetSize: 100000,
+      // 入口起点表示针对指定的入口，对于所有资源，要充分利用初始加载时(initial load time)期间。
+      // 此选项根据入口起点的最大体积，控制 webpack 何时生成性能提示
+      maxEntrypointSize: 400000,
+      // 只给出 .js 文件的性能提示
+      assetFilter: function(assetFilename) {
+        return assetFilename.endsWith('.js');
+      }
+    },
   };
 };
