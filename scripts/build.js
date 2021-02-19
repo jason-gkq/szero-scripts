@@ -11,7 +11,7 @@
 const argv = process.argv.slice(2);
 // env 项目自定义环境变量
 // ser 本地开发 dev 开发环境打包 fat 测试环境打包 uat 堡垒环境打包 pro 生产环境打包
-const params = getParams() || { env: 'pro'};
+const params = getParams() || { env: 'pro' };
 // Do this as the first thing so that any code reading it knows the right env.
 process.env.BABEL_ENV = 'production';
 process.env.NODE_ENV = 'production';
@@ -20,7 +20,7 @@ process.env.PROJECT_ENV = ['dev', 'fat', 'uat', 'pro'].includes(params.env) ? pa
 // ignoring them. In the future, promise rejections that are not handled will
 // terminate the Node.js process with a non-zero exit code.
 process.on('unhandledRejection', err => {
-  throw err;
+	throw err;
 });
 
 // Ensure environment variables are read.
@@ -47,8 +47,7 @@ const printHostingInstructions = require('react-dev-utils/printHostingInstructio
 const FileSizeReporter = require('react-dev-utils/FileSizeReporter');
 const printBuildError = require('react-dev-utils/printBuildError');
 
-const measureFileSizesBeforeBuild =
-  FileSizeReporter.measureFileSizesBeforeBuild;
+const measureFileSizesBeforeBuild = FileSizeReporter.measureFileSizesBeforeBuild;
 const printFileSizesAfterBuild = FileSizeReporter.printFileSizesAfterBuild;
 const useYarn = fs.existsSync(paths.yarnLockFile);
 
@@ -60,193 +59,197 @@ const isInteractive = process.stdout.isTTY;
 
 // Warn and crash if required files are missing
 if (!checkRequiredFiles([paths.appHtml, paths.appIndexJs])) {
-  process.exit(1);
+	process.exit(1);
 }
-
 
 const writeStatsJson = argv.indexOf('--stats') !== -1;
 
+const cf = require('../config/webpack.base');
+const config = cf('production');
+
 // Generate configuration
-const config = configFactory('production');
+// const config = configFactory('production');
+
+// webpack(config, (err, stats) => {
+// 	if (err) {
+// 		console.error(err.stack || err);
+// 		if (err.details) {
+// 			console.error(err.details);
+// 		}
+// 		return;
+// 	}
+
+// 	const info = stats.toJson();
+
+// 	if (stats.hasErrors()) {
+// 		console.error(info.errors);
+// 	}
+
+// 	if (stats.hasWarnings()) {
+// 		console.warn(info.warnings);
+// 	}
+
+// 	// Log result...
+// });
 
 // We require that you explicitly set browsers and do not fall back to
 // browserslist defaults.
 const { checkBrowsers } = require('react-dev-utils/browsersHelper');
 checkBrowsers(paths.appPath, isInteractive)
-  .then(() => {
-    // First, read the current file sizes in build directory.
-    // This lets us display how much they changed later.
-    return measureFileSizesBeforeBuild(paths.appBuild);
-  })
-  .then(previousFileSizes => {
-    // Remove all content but keep the directory so that
-    // if you're in it, you don't end up in Trash
-    fs.emptyDirSync(paths.appBuild);
-    // Merge with the public folder
-    copyPublicFolder();
-    // Start the webpack build
-    return build(previousFileSizes);
-  })
-  .then(
-    ({ stats, previousFileSizes, warnings }) => {
-      if (warnings.length) {
-        console.log(chalk.yellow('Compiled with warnings.\n'));
-        console.log(warnings.join('\n\n'));
-        console.log(
-          '\nSearch for the ' +
-            chalk.underline(chalk.yellow('keywords')) +
-            ' to learn more about each warning.'
-        );
-        console.log(
-          'To ignore, add ' +
-            chalk.cyan('// eslint-disable-next-line') +
-            ' to the line before.\n'
-        );
-      } else {
-        console.log(chalk.green('Compiled successfully.\n'));
-      }
+	.then(() => {
+		// First, read the current file sizes in build directory.
+		// This lets us display how much they changed later.
+		return measureFileSizesBeforeBuild(paths.appBuild);
+	})
+	.then(previousFileSizes => {
+		// Remove all content but keep the directory so that
+		// if you're in it, you don't end up in Trash
+		fs.emptyDirSync(paths.appBuild);
+		// Merge with the public folder
+		copyPublicFolder();
+		// Start the webpack build
+		return build(previousFileSizes);
+	})
+	.then(
+		({ stats, previousFileSizes, warnings }) => {
+			if (warnings.length) {
+				console.log(chalk.yellow('Compiled with warnings.\n'));
+				console.log(warnings.join('\n\n'));
+				console.log(
+					'\nSearch for the ' +
+						chalk.underline(chalk.yellow('keywords')) +
+						' to learn more about each warning.'
+				);
+				console.log('To ignore, add ' + chalk.cyan('// eslint-disable-next-line') + ' to the line before.\n');
+			} else {
+				console.log(chalk.green('Compiled successfully.\n'));
+			}
 
-      console.log('File sizes after gzip:\n');
-      printFileSizesAfterBuild(
-        stats,
-        previousFileSizes,
-        paths.appBuild,
-        WARN_AFTER_BUNDLE_GZIP_SIZE,
-        WARN_AFTER_CHUNK_GZIP_SIZE
-      );
-      console.log();
+			console.log('File sizes after gzip:\n');
+			printFileSizesAfterBuild(
+				stats,
+				previousFileSizes,
+				paths.appBuild,
+				WARN_AFTER_BUNDLE_GZIP_SIZE,
+				WARN_AFTER_CHUNK_GZIP_SIZE
+			);
+			console.log();
 
-      const appPackage = require(paths.appPackageJson);
-      const publicUrl = paths.publicUrlOrPath;
-      const publicPath = config.output.publicPath;
-      const buildFolder = path.relative(process.cwd(), paths.appBuild);
-      printHostingInstructions(
-        appPackage,
-        publicUrl,
-        publicPath,
-        buildFolder,
-        useYarn
-      );
-    },
-    err => {
-      const tscCompileOnError = process.env.TSC_COMPILE_ON_ERROR === 'true';
-      if (tscCompileOnError) {
-        console.log(
-          chalk.yellow(
-            'Compiled with the following type errors (you may want to check these before deploying your app):\n'
-          )
-        );
-        printBuildError(err);
-      } else {
-        console.log(chalk.red('Failed to compile.\n'));
-        printBuildError(err);
-        process.exit(1);
-      }
-    }
-  )
-  .catch(err => {
-    if (err && err.message) {
-      console.log(err.message);
-    }
-    process.exit(1);
-  });
+			const appPackage = require(paths.appPackageJson);
+			const publicUrl = paths.publicUrlOrPath;
+			const publicPath = config.output.publicPath;
+			const buildFolder = path.relative(process.cwd(), paths.appBuild);
+			printHostingInstructions(appPackage, publicUrl, publicPath, buildFolder, useYarn);
+		},
+		err => {
+			const tscCompileOnError = process.env.TSC_COMPILE_ON_ERROR === 'true';
+			if (tscCompileOnError) {
+				console.log(
+					chalk.yellow(
+						'Compiled with the following type errors (you may want to check these before deploying your app):\n'
+					)
+				);
+				printBuildError(err);
+			} else {
+				console.log(chalk.red('Failed to compile.\n'));
+				printBuildError(err);
+				process.exit(1);
+			}
+		}
+	)
+	.catch(err => {
+		if (err && err.message) {
+			console.log(err.message);
+		}
+		process.exit(1);
+	});
 
 // Create the production build and print the deployment instructions.
 function build(previousFileSizes) {
-  console.log('Creating an optimized production build...', "\n\n", config);
-  
-  const compiler = webpack(config);
-  return new Promise((resolve, reject) => {
-    compiler.run((err, stats) => {
-      console.log('err:::', err, "\n\n", 'stats:::', stats);
-      process.exit(0);
-      let messages;
-      if (err) {
-        if (!err.message) {
-          return reject(err);
-        }
+	console.log('Creating an optimized production build...');
 
-        let errMessage = err.message;
+	const compiler = webpack(config);
+	return new Promise((resolve, reject) => {
+		compiler.run((err, stats) => {
+			let messages = { errors: [], warnings: [] };
+			if (err) {
+				if (!err.message) {
+					return reject(err);
+				}
 
-        // Add additional information for postcss errors
-        if (Object.prototype.hasOwnProperty.call(err, 'postcssNode')) {
-          errMessage +=
-            '\nCompileError: Begins at CSS selector ' +
-            err['postcssNode'].selector;
-        }
+				let errMessage = err.message;
 
-        messages = formatWebpackMessages({
-          errors: [errMessage],
-          warnings: [],
-        });
-      } else {
-        messages = formatWebpackMessages(
-          stats.toJson({ all: false, warnings: true, errors: true })
-        );
-      }
-      if (messages.errors.length) {
-        // Only keep the first error. Others are often indicative
-        // of the same problem, but confuse the reader with noise.
-        if (messages.errors.length > 1) {
-          messages.errors.length = 1;
-        }
-        return reject(new Error(messages.errors.join('\n\n')));
-      }
-      if (
-        process.env.CI &&
-        (typeof process.env.CI !== 'string' ||
-          process.env.CI.toLowerCase() !== 'false') &&
-        messages.warnings.length
-      ) {
-        console.log(
-          chalk.yellow(
-            '\nTreating warnings as errors because process.env.CI = true.\n' +
-              'Most CI servers set it automatically.\n'
-          )
-        );
-        return reject(new Error(messages.warnings.join('\n\n')));
-      }
+				// Add additional information for postcss errors
+				if (Object.prototype.hasOwnProperty.call(err, 'postcssNode')) {
+					errMessage += '\nCompileError: Begins at CSS selector ' + err['postcssNode'].selector;
+				}
 
-      const resolveArgs = {
-        stats,
-        previousFileSizes,
-        warnings: messages.warnings,
-      };
+				// messages = formatWebpackMessages({ errors: [errMessage], warnings: [] });
+			} else {
+				// messages = formatWebpackMessages(stats.toJson({ all: false, warnings: true, errors: true }));
+			}
+			if (messages.errors.length) {
+				// Only keep the first error. Others are often indicative
+				// of the same problem, but confuse the reader with noise.
+				if (messages.errors.length > 1) {
+					messages.errors.length = 1;
+				}
+				return reject(new Error(messages.errors.join('\n\n')));
+			}
+			if (
+				process.env.CI &&
+				(typeof process.env.CI !== 'string' || process.env.CI.toLowerCase() !== 'false') &&
+				messages.warnings.length
+			) {
+				console.log(
+					chalk.yellow(
+						'\nTreating warnings as errors because process.env.CI = true.\n' +
+							'Most CI servers set it automatically.\n'
+					)
+				);
+				return reject(new Error(messages.warnings.join('\n\n')));
+			}
 
-      if (writeStatsJson) {
-        return bfj
-          .write(paths.appBuild + '/bundle-stats.json', stats.toJson())
-          .then(() => resolve(resolveArgs))
-          .catch(error => reject(new Error(error)));
-      }
+			const resolveArgs = {
+				stats,
+				previousFileSizes,
+				warnings: messages.warnings
+			};
 
-      return resolve(resolveArgs);
-    });
-  });
+			if (writeStatsJson) {
+				return bfj
+					.write(paths.appBuild + '/bundle-stats.json', stats.toJson())
+					.then(() => resolve(resolveArgs))
+					.catch(error => reject(new Error(error)));
+			}
+
+			return resolve(resolveArgs);
+		});
+	});
 }
 
 function copyPublicFolder() {
-  fs.copySync(paths.appPublic, paths.appBuild, {
-    dereference: true,
-    filter: file => file !== paths.appHtml,
-  });
+	fs.copySync(paths.appPublic, paths.appBuild, {
+		dereference: true,
+		filter: file => file !== paths.appHtml
+	});
 }
 
 function getParams() {
-  const args = {};
-  const arguments = process.argv.splice(2);
+	const params = {};
+	const args = process.argv.splice(2);
 
-  if (!arguments.length) {
-      return false;
-  }
+	if (!args.length) {
+		return false;
+	}
 
-  arguments.forEach(arg => {
-      const tmpArg = arg.trim().split('=');
-      if (tmpArg.length) {
-          args[tmpArg[0].replace(/\W+/g, '')] = tmpArg[1];
-      } else {
-          return false;
-      }
-  });
-  return args;
+	args.forEach(arg => {
+		const tmpArg = arg.trim().split('=');
+		if (tmpArg.length) {
+			params[tmpArg[0].replace(/\W+/g, '')] = tmpArg[1];
+		} else {
+			return false;
+		}
+	});
+	return params;
 }
