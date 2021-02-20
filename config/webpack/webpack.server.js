@@ -159,7 +159,7 @@ const getEnvConfig = ({ paths, env, useTypeScript, disableESLintPlugin, hasJsxRu
 		devtool: 'cheap-module-source-map',
 		entry: [webpackDevClientEntry, paths.appIndexJs],
 		output: {
-			path: paths.appBuild,
+			path: undefined,
 			pathinfo: true,
 			filename: 'static/js/[name].js',
 			chunkFilename: 'static/js/[name].chunk.js',
