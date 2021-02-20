@@ -70,28 +70,6 @@ const config = cf('production');
 // Generate configuration
 // const config = configFactory('production');
 
-// webpack(config, (err, stats) => {
-// 	if (err) {
-// 		console.error(err.stack || err);
-// 		if (err.details) {
-// 			console.error(err.details);
-// 		}
-// 		return;
-// 	}
-
-// 	const info = stats.toJson();
-
-// 	if (stats.hasErrors()) {
-// 		console.error(info.errors);
-// 	}
-
-// 	if (stats.hasWarnings()) {
-// 		console.warn(info.warnings);
-// 	}
-
-// 	// Log result...
-// });
-
 // We require that you explicitly set browsers and do not fall back to
 // browserslist defaults.
 const { checkBrowsers } = require('react-dev-utils/browsersHelper');
@@ -184,7 +162,7 @@ function build(previousFileSizes) {
 					errMessage += '\nCompileError: Begins at CSS selector ' + err['postcssNode'].selector;
 				}
 
-				// messages = formatWebpackMessages({ errors: [errMessage], warnings: [] });
+				messages = formatWebpackMessages({ errors: [errMessage], warnings: [] });
 			} else {
 				// messages = formatWebpackMessages(stats.toJson({ all: false, warnings: true, errors: true }));
 			}

@@ -293,7 +293,7 @@ const getEnvConfig = ({ paths, env, shouldInlineRuntimeChunk, useTypeScript, dis
 			new InterpolateHtmlPlugin(HtmlWebpackPlugin, env.raw),
 			new MiniCssExtractPlugin({
 				filename: 'static/css/[name].[contenthash:8].css',
-				chunkFilename: 'static/css/[name].[hash:8].chunk.css'
+				chunkFilename: 'static/css/[name].[chunkhash:8].chunk.css'
 			}),
 			fs.existsSync(paths.swSrc) &&
 				new WorkboxWebpackPlugin.InjectManifest({
