@@ -31,6 +31,26 @@ const paths = require('./paths');
 const modules = require('./modules');
 const getClientEnvironment = require('./env');
 const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
+// webpack转译Typescript现有方案
+// 单进程方案(类型检查和转译在同一个进程) ts-loader(transpileOnly为false)  awesome-typescript-loader
+// 多进程方案 ts-loader(transpileOnly为true) + fork-ts-checker-webpack-plugin  [awesome-typescript-loader + 自带的CheckerPlugin]  [babel + fork-ts-checker-webpack-plugin]
+// 综合考虑性能和扩展性，目前比较推荐的是babel+fork-ts-checker-webpack-plugin方案
+// https://www.npmjs.com/package/fork-ts-checker-webpack-plugin
+// {
+//   test: /\.tsx?$/,
+//   use:{
+//     loader: 'ts-loader',
+//     options: {
+//       transpileOnly: true  // ? 关闭类型检查，即只进行转译
+//     }
+//   }
+// }
+// plugins: [
+//   new ForkTsCheckerWebpackPlugin({ // ? fork一个进程进行检查，并设置async为false，将错误信息反馈给webpack
+//     async: false,
+//     eslint: false
+//   })
+// ]
 const ForkTsCheckerWebpackPlugin = require('react-dev-utils/ForkTsCheckerWebpackPlugin');
 const typescriptFormatter = require('react-dev-utils/typescriptFormatter');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
@@ -165,6 +185,8 @@ module.exports = function(webpackEnv) {
 	return {
 		mode: isEnvProduction ? 'production' : isEnvDevelopment && 'development',
 		// Stop compilation early in production
+		// 在第一个错误出现时抛出失败结果，而不是容忍它。默认情况下，当使用 HMR 时，
+		// webpack 会将在终端以及浏览器控制台中，以红色文字记录这些错误，但仍然继续进行打包。
 		bail: isEnvProduction,
 		devtool: isEnvProduction
 			? shouldUseSourceMap ? 'source-map' : false
@@ -200,6 +222,9 @@ module.exports = function(webpackEnv) {
 			// The build folder.
 			path: isEnvProduction ? paths.appBuild : undefined,
 			// Add /* filename */ comments to generated require()s in the output.
+			// 告知 webpack 在 bundle 中引入「所包含模块信息」的相关注释。
+			// 此选项在 development 模式时的默认值为 true，而在 production 模式时的默认值为 false。
+			// 当值为 'verbose' 时，会显示更多信息，如 export，运行时依赖以及 bailouts。
 			pathinfo: isEnvDevelopment,
 			// There will be one main bundle, and one file per asynchronous chunk.
 			// In development, it does not produce real files.
@@ -216,6 +241,7 @@ module.exports = function(webpackEnv) {
 			// webpack uses `publicPath` to determine where the app is being served from.
 			// It requires a trailing slash, or the file assets will get an incorrect path.
 			// We inferred the "public path" (such as / or /my-project) from homepage.
+			// 该选项的值是以 runtime(运行时) 或 loader(载入时) 所创建的每个 URL 为前缀。因此，在多数情况下，此选项的值都会以 / 结束。
 			publicPath: paths.publicUrlOrPath,
 			// Point sourcemap entries to original disk location (format as URL on Windows)
 			devtoolModuleFilenameTemplate: isEnvProduction
@@ -228,6 +254,12 @@ module.exports = function(webpackEnv) {
 			// this defaults to 'window', but by setting it to 'this' then
 			// module chunks which are built will work in web workers as well.
 			globalObject: 'this'
+			// 告诉 webpack 启用 cross-origin 属性 加载 chunk。
+			// 仅在 target 设置为 'web' 时生效，通过使用 JSONP 来添加脚本标签，实现按需加载模块。
+			// boolean = false string: 'anonymous' | 'use-credentials'
+			// 'anonymous' - 不带凭据(credential) 启用跨域加载
+			// 'use-credentials' - 携带凭据(credential) 启用跨域加载
+			// crossOriginLoading: 'use-credentials',
 		},
 		optimization: {
 			minimize: isEnvProduction,
@@ -354,10 +386,45 @@ module.exports = function(webpackEnv) {
 			]
 		},
 		module: {
+			// 动态依赖的警告：wrappedContextCritical: true。
+			// require(expr) 应该包含整个目录：exprContextRegExp: /^\.\//
+			// require("./templates/" + expr) 不应该包含默认子目录：wrappedContextRecursive: false
+			// strictExportPresence 将缺失的导出提示成错误而不是警告
+			// 为部分动态依赖项设置内部正则表达式：wrappedContextRegExp: /\\.\\*/
+
+			// exprContextCritical: true,
+			// exprContextRecursive: true,
+			// exprContextRegExp: false,
+			// exprContextRequest: '.',
+			// unknownContextCritical: true,
+			// unknownContextRecursive: true,
+			// unknownContextRegExp: false,
+			// unknownContextRequest: '.',
+			// wrappedContextCritical: false,
+			// wrappedContextRecursive: true,
+			// wrappedContextRegExp: /.*/,
+			// strictExportPresence: false // since webpack 2.3.0
 			strictExportPresence: true,
+			// Loaders 可以通过传入多个 loaders 以达到链式调用的效果，它们会从右到左被应用（从最后到最先配置）。
 			rules: [
 				// Disable require.ensure as it's not a standard language feature.
-				{ parser: { requireEnsure: false } },
+				{
+					parser: {
+						// amd: false, // 禁用 AMD
+						// commonjs: false, // 禁用 CommonJS
+						// system: false, // 禁用 SystemJS
+						// harmony: false, // 禁用 ES2015 Harmony import/export
+						// requireInclude: false, // 禁用 require.include
+						// requireEnsure: false, // 禁用 require.ensure
+						// requireContext: false, // 禁用 require.context
+						// browserify: false, // 禁用特殊处理的 browserify bundle
+						// requireJs: false, // 禁用 requirejs.*
+						// node: false, // 禁用 __dirname, __filename, module, require.extensions, require.main, 等。
+						// node: {...}, // 在模块级别(module level)上重新配置 [node](/configuration/node) 层(layer)
+						// worker: ["default from web-worker", "..."] // 自定义 WebWorker 对 JavaScript 的处理，其中 "..." 为默认值。
+						requireEnsure: false
+					}
+				},
 				{
 					// "oneOf" will traverse all following loaders until one will
 					// match the requirements. When no loader matches it will fall
@@ -754,5 +821,21 @@ module.exports = function(webpackEnv) {
 		// Turn off performance processing because we utilize
 		// our own hints via the FileSizeReporter
 		performance: false
+		// performance: {
+		// 	// string = 'warning': 'error' | 'warning' boolean: false
+		// 	// false 不展示警告或错误提示
+		// 	// warning 将展示一条警告，通知你这是体积大的资源。在开发环境，我们推荐这样
+		// 	// error 将展示一条错误，通知你这是体积大的资源。在生产环境构建时，我们推荐使用 hints: "error"，有助于防止把体积巨大的 bundle 部署到生产环境，从而影响网页的性能。
+		// 	hints: 'error',
+		// 	// 资源(asset)是从 webpack 生成的任何文件。此选项根据单个资源体积(单位: bytes)，控制 webpack 何时生成性能提示
+		// 	maxAssetSize: 100000,
+		// 	// 入口起点表示针对指定的入口，对于所有资源，要充分利用初始加载时(initial load time)期间。
+		// 	// 此选项根据入口起点的最大体积，控制 webpack 何时生成性能提示
+		// 	maxEntrypointSize: 400000,
+		// 	// 只给出 .js 文件的性能提示
+		// 	assetFilter: function(assetFilename) {
+		// 		return assetFilename.endsWith('.js');
+		// 	}
+		// }
 	};
 };
