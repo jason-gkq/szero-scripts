@@ -175,8 +175,27 @@ const getEnvConfig = ({ paths, env, shouldInlineRuntimeChunk, useTypeScript, dis
 		mode: 'production',
 		bail: true,
 		devtool: 'source-map',
-		entry: paths.appIndexJs,
+		context: paths.appSrc,
+		entry: {
+			reactvendors: { import: ['react', 'react-dom', 'react-router'], runtime: 'runtime' },
+			reduxvendors: {
+				import: [
+					'react-redux',
+					'react-router-redux',
+					'redux',
+					'redux-actions',
+					'redux-mock-store',
+					'redux-saga',
+					'redux-thunk',
+					'reselect'
+				],
+				runtime: 'runtime'
+			},
+			main: { import: './index.js', dependOn: ['reactvendors', 'reduxvendors'] }
+		},
+		// entry: paths.appIndexJs,
 		output: {
+			hashDigestLength: 8,
 			path: paths.appBuild,
 			pathinfo: false,
 			filename: 'static/js/[name].[contenthash:8].js',
