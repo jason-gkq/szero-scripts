@@ -65,10 +65,10 @@ if (!checkRequiredFiles([paths.appHtml, paths.appIndexJs])) {
 const writeStatsJson = argv.indexOf('--stats') !== -1;
 
 const cf = require('../config/webpack.base');
-const config = cf('production');
+// const config = cf('production');
 
 // Generate configuration
-// const config = configFactory('production');
+const config = configFactory('production');
 
 // We require that you explicitly set browsers and do not fall back to
 // browserslist defaults.
@@ -164,7 +164,7 @@ function build(previousFileSizes) {
 
 				messages = formatWebpackMessages({ errors: [errMessage], warnings: [] });
 			} else {
-				// messages = formatWebpackMessages(stats.toJson({ all: false, warnings: true, errors: true }));
+				 messages = formatWebpackMessages(stats.toJson({ all: false, warnings: true, errors: true }));
 			}
 			if (messages.errors.length) {
 				// Only keep the first error. Others are often indicative

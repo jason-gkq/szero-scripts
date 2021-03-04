@@ -186,6 +186,7 @@ const getEnvConfig = ({ paths, env, shouldInlineRuntimeChunk, useTypeScript, dis
 			}
 		},
 		plugins: [
+			// new CleanWebpackPlugin({ cleanStaleWebpackAssets: false }),
 			new HtmlWebpackPlugin({
 				inject: true,
 				template: paths.appHtml,

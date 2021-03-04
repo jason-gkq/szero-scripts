@@ -210,6 +210,9 @@ const getEnvConfig = ({ paths, env, shouldInlineRuntimeChunk, useTypeScript, dis
 			minimizer: [
 				// This is only used in production mode
 				new TerserPlugin({
+					// 是否将注释剥离到单独的文件中
+					// 启用/禁用剥离注释功能。
+					extractComments: true,
 					terserOptions: {
 						parse: {
 							// We want terser to parse ecma 8 code. However, we don't want it
