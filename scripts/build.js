@@ -10,12 +10,9 @@
 
 const argv = process.argv.slice(2);
 // env 项目自定义环境变量
-// ser 本地开发 dev 开发环境打包 fat 测试环境打包 uat 堡垒环境打包 pro 生产环境打包
-const params = getParams() || { env: 'pro' };
 // Do this as the first thing so that any code reading it knows the right env.
 process.env.BABEL_ENV = 'production';
 process.env.NODE_ENV = 'production';
-process.env.PROJECT_ENV = ['dev', 'fat', 'uat', 'pro'].includes(params.env) ? params.env : 'pro';
 // Makes the script crash on unhandled rejections instead of silently
 // ignoring them. In the future, promise rejections that are not handled will
 // terminate the Node.js process with a non-zero exit code.
@@ -35,7 +32,7 @@ verifyTypeScriptSetup();
 // @remove-on-eject-end
 
 const path = require('path');
-const chalk = require('react-dev-utils/chalk');
+const chalk = require('chalk');
 const fs = require('fs-extra');
 const bfj = require('bfj');
 const webpack = require('webpack');
@@ -164,7 +161,7 @@ function build(previousFileSizes) {
 
 				messages = formatWebpackMessages({ errors: [errMessage], warnings: [] });
 			} else {
-				 messages = formatWebpackMessages(stats.toJson({ all: false, warnings: true, errors: true }));
+				messages = formatWebpackMessages(stats.toJson({ all: false, warnings: true, errors: true }));
 			}
 			if (messages.errors.length) {
 				// Only keep the first error. Others are often indicative
@@ -213,21 +210,21 @@ function copyPublicFolder() {
 	});
 }
 
-function getParams() {
-	const params = {};
-	const args = process.argv.splice(2);
+// function getParams() {
+// 	const params = {};
+// 	const args = process.argv.splice(2);
 
-	if (!args.length) {
-		return false;
-	}
+// 	if (!args.length) {
+// 		return false;
+// 	}
 
-	args.forEach(arg => {
-		const tmpArg = arg.trim().split('=');
-		if (tmpArg.length) {
-			params[tmpArg[0].replace(/\W+/g, '')] = tmpArg[1];
-		} else {
-			return false;
-		}
-	});
-	return params;
-}
+// 	args.forEach(arg => {
+// 		const tmpArg = arg.trim().split('=');
+// 		if (tmpArg.length) {
+// 			params[tmpArg[0].replace(/\W+/g, '')] = tmpArg[1];
+// 		} else {
+// 			return false;
+// 		}
+// 	});
+// 	return params;
+// }
