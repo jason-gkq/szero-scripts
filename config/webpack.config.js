@@ -208,8 +208,6 @@ module.exports = function (webpackEnv) {
       // The build folder.
       path: isEnvProduction ? paths.appBuild : undefined,
       // Add /* filename */ comments to generated require()s in the output.
-      // webpack 会在输出的 bundle 中生成路径信息。然而，在打包数千个模块的项目中，这会导致造成垃圾回收性能压力。
-      // 在 options.output.pathinfo 设置中关闭：
       pathinfo: isEnvDevelopment,
       // There will be one main bundle, and one file per asynchronous chunk.
       // In development, it does not produce real files.
@@ -761,7 +759,7 @@ module.exports = function (webpackEnv) {
           extensions: ['js', 'mjs', 'jsx', 'ts', 'tsx'],
           formatter: require.resolve('react-dev-utils/eslintFormatter'),
           eslintPath: require.resolve('eslint'),
-          emitWarning: isEnvDevelopment && emitErrorsAsWarnings,
+          failOnError: !(isEnvDevelopment && emitErrorsAsWarnings),
           context: paths.appSrc,
           cache: true,
           cacheLocation: path.resolve(

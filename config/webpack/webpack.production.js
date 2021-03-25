@@ -197,6 +197,8 @@ const getEnvConfig = ({ paths, env, shouldInlineRuntimeChunk, useTypeScript, dis
 		output: {
 			hashDigestLength: 8,
 			path: paths.appBuild,
+      // webpack 会在输出的 bundle 中生成路径信息。然而，在打包数千个模块的项目中，这会导致造成垃圾回收性能压力。
+      // 在 options.output.pathinfo 设置中关闭：
 			pathinfo: false,
 			filename: 'static/js/[name].[contenthash:8].js',
 			chunkFilename: 'static/js/[name].[chunkhash:8].chunk.js',
