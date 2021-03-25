@@ -1,6 +1,6 @@
 {
 	"name": "zero-react-scripts",
-	"version": "0.0.2-beta.6",
+	"version": "0.0.2-beta.7",
 	"description": "Configuration and scripts for Create React App.",
 	"repository": {
 		"type": "git",
@@ -30,8 +30,10 @@
 		"@babel/plugin-proposal-nullish-coalescing-operator": "7.13.8",
 		"@babel/plugin-proposal-numeric-separator": "7.12.13",
 		"@babel/plugin-proposal-optional-chaining": "7.13.8",
+		"@babel/plugin-syntax-jsx": "^7.12.13",
 		"@babel/plugin-transform-flow-strip-types": "^7.13.0",
 		"@babel/plugin-transform-runtime": "^7.13.9",
+		"@babel/plugin-transform-typeof-symbol": "^7.12.13",
 		"@babel/polyfill": "^7.10.1",
 		"@babel/preset-env": "^7.13.9",
 		"@babel/preset-react": "^7.12.13",
@@ -47,6 +49,7 @@
 		"babel-plugin-transform-react-remove-prop-types": "0.4.24",
 		"babel-preset-react-app": "^10.0.0",
 		"bfj": "^7.0.2",
+		"case-sensitive-paths-webpack-plugin": "^2.4.0",
 		"chalk": "^4.1.0",
 		"clean-webpack-plugin": "^3.0.0",
 		"cross-spawn": "^7.0.3",

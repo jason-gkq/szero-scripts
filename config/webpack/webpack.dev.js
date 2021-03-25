@@ -1,9 +1,10 @@
 'use strict';
 
-const paths = require('./paths');
-const modules = require('./modules');
-const getClientEnvironment = require('./env');
+const paths = require('../paths');
+const modules = require('../modules');
+const getClientEnvironment = require('../env');
 
+const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -29,7 +30,7 @@ module.exports = {
 	output: {
 		// hashDigestLength: 8,
 		pathinfo: true,
-		path: path.resolve(__dirname, '../dist'),
+		path: paths.appBuild,
 		filename: 'static/pages/[name]/[name].js',
 		chunkFilename: 'static/pages/[name]/[name].chunk.js',
 		publicPath: paths.publicUrlOrPath,
@@ -101,7 +102,7 @@ module.exports = {
 				oneOf: [
 					{
 						test: /\.(js|mjs|jsx|ts|tsx)$/,
-						include: path.resolve(__dirname, '../src'),
+						include: paths.appSrc,
 						exclude: /node_modules/,
 						loader: require.resolve('babel-loader'),
 						options: {

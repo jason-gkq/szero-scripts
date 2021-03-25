@@ -1,9 +1,10 @@
 'use strict';
 
-const paths = require('./paths');
-const modules = require('./modules');
-const getClientEnvironment = require('./env');
+const paths = require('../paths');
+const modules = require('../modules');
+const getClientEnvironment = require('../env');
 
+const fs = require('fs');
 const path = require('path');
 // const resolve = require('resolve');
 const webpack = require('webpack');
@@ -234,7 +235,7 @@ module.exports = {
 				oneOf: [
 					{
 						test: /\.(js|mjs|jsx|ts|tsx)$/,
-						include: path.resolve(__dirname, '../src'),
+						include: paths.appSrc,
 						exclude: /node_modules/,
 						loader: require.resolve('babel-loader'),
 						options: {
