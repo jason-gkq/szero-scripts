@@ -1,7 +1,16 @@
+'use strict';
+
+process.env.BABEL_ENV = 'development';
+process.env.NODE_ENV = 'development';
+
+process.on('unhandledRejection', err => {
+	throw err;
+});
+
 const webpackDevServer = require('webpack-dev-server');
 const webpack = require('webpack');
 
-const config = require('./webpack.dev.js');
+const config = require('../config/webpack/webpack.dev');
 const options = {
 	contentBase: config.output.path,
 	hot: true,

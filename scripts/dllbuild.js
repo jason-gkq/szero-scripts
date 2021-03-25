@@ -10,6 +10,7 @@ process.env.NODE_ENV = 'production';
 process.on('unhandledRejection', err => {
 	throw err;
 });
+const webpack = require('webpack');
 
 const config = require('../config/webpack/webpack.prod');
 
