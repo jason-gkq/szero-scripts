@@ -17,6 +17,7 @@ const postcssNormalize = require('postcss-normalize');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
 const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin');
+const WorkboxPlugin = require('workbox-webpack-plugin');
 
 // const InlineChunkHtmlPlugin = require('react-dev-utils/InlineChunkHtmlPlugin');
 // const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
@@ -121,6 +122,12 @@ module.exports = {
 					entrypoints: entrypointFiles
 				};
 			}
+		}),
+		new WorkboxPlugin.GenerateSW({
+			// 这些选项帮助快速启用 ServiceWorkers
+			// 不允许遗留任何“旧的” ServiceWorkers
+			clientsClaim: true,
+			skipWaiting: true
 		})
 	],
 	optimization: {
