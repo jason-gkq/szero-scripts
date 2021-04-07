@@ -46,3 +46,30 @@ const env = process.env.ENV;
 const cdnUrl = process.env.CDN_URL;
 const authService = process.env.AUTH_SERVICE;
 ```
+
+### 添加`jsconfing.json`
+webpack打包时添加了路径映射alias，但在项目vscode中可能无法识别，添加jsconfig.json主要用于vscode识别短路径
+```json
+{
+  /**
+    处理alias转跳问题
+    https://code.visualstudio.com/docs/languages/jsconfig
+  **/
+  "compilerOptions": {
+    "checkJs": false,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
+    "paths": {
+      "@assets/*": ["assets/*"],
+      "@src/*": ["src/*"],
+      "@components": ["zero-react/components"],
+      "@components/*": ["zero-react/components/*"],
+      "@utils": ["zero-react/utils"],
+      "@utils/*": ["zero-react/utils/*"],
+      "@menus/*": ["zero-react/menus/*"],
+      "@locales/*": ["zero-react/locales/*"],
+    }
+  },
+  "exclude": ["node_modules", "dist", "dest"]
+}
+```
