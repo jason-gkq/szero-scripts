@@ -8,9 +8,10 @@ module.exports = {
 	bail: true,
 	devtool: 'source-map',
 	entry: {
-		reactvendors: ['react', 'react-dom', 'react-router'], // 手动指定打包哪些库
+		reactvendors: ['react', 'react-dom'], // 手动指定打包哪些库
 		reduxvendors: [
 			'react-redux',
+			'react-router-dom',
 			'react-router-redux',
 			'redux',
 			'redux-actions',

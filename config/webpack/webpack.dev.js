@@ -2,7 +2,7 @@
 
 const paths = require('../paths');
 const modules = require('../modules');
-const getClientEnvironment = require('../env');
+const { getClientEnvironment, getAlias } = require('../env');
 
 const fs = require('fs');
 const path = require('path');
@@ -81,8 +81,7 @@ module.exports = {
 			.map(ext => `.${ext}`)
 			.filter(ext => useTypeScript || !ext.includes('ts')),
 		// 创建 import 或 require 的别名，来确保模块引入变得更简单。例如，一些位于 src/ 文件夹下的常用模块：
-		// alias: {},
-		extensions: ['.tsx', '.ts', '.js', '.mjs', '.jsx'],
+		alias: getAlias(),
 		plugins: [PnpWebpackPlugin]
 	},
 	resolveLoader: {

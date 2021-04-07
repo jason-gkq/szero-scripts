@@ -2,11 +2,10 @@
 
 const paths = require('../paths');
 const modules = require('../modules');
-const getClientEnvironment = require('../env');
+const { getClientEnvironment, getAlias } = require('../env');
 
 const fs = require('fs');
 const path = require('path');
-// const resolve = require('resolve');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
@@ -20,9 +19,6 @@ const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
 const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
 
-// const InlineChunkHtmlPlugin = require('react-dev-utils/InlineChunkHtmlPlugin');
-// const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
-// const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
 // const ESLintPlugin = require('eslint-webpack-plugin');
 
 process.env.BABEL_ENV = 'production';
@@ -48,7 +44,6 @@ module.exports = {
 		devtoolModuleFilenameTemplate: info =>
 			path.relative(paths.appSrc, info.absoluteResourcePath).replace(/\\/g, '/')
 		// assetModuleFilename: 'images/[hash][ext][query]',
-		// globalObject: 'this',
 	},
 	plugins: [
 		new CleanWebpackPlugin(),
@@ -214,8 +209,7 @@ module.exports = {
 			.map(ext => `.${ext}`)
 			.filter(ext => useTypeScript || !ext.includes('ts')),
 		// 创建 import 或 require 的别名，来确保模块引入变得更简单。例如，一些位于 src/ 文件夹下的常用模块：
-		// alias: {},
-		extensions: ['.tsx', '.ts', '.js', '.mjs', '.jsx'],
+		alias: getAlias(),
 		plugins: [PnpWebpackPlugin]
 	},
 	resolveLoader: {
