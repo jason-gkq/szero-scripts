@@ -112,7 +112,7 @@ function getCliParams() {
 			return false;
 		}
 	});
-	if (!args || !args.env || !['local', 'dev', 'test', 'pre', 'prod'].includes(args.env)) {
+	if (!args || !args.env || !['local', 'dev', 'uat', 'pre', 'prod'].includes(args.env)) {
 		throw new Error('The ENV environment variable is required but was not specified.');
 	}
 	return args;
