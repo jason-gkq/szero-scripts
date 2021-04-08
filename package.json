@@ -1,6 +1,6 @@
 {
 	"name": "zero-react-scripts",
-	"version": "0.2.2",
+	"version": "0.2.2-beta.1",
 	"description": "Configuration and scripts for Create React App.",
 	"repository": {
 		"type": "git",
@@ -14,15 +14,7 @@
 	"bugs": {
 		"url": "https://github.com/jason-gkq/zero-react-scripts/issues"
 	},
-	"files": [
-		"bin",
-		"config",
-		"webpack",
-		"dll",
-		"scripts",
-		"package.json",
-		"README.md"
-	],
+	"files": ["bin", "config", "webpack", "dll", "scripts", "package.json", "README.md"],
 	"bin": {
 		"zero-react-scripts": "./bin/zero-react-scripts.js"
 	},
@@ -119,15 +111,7 @@
 		}
 	},
 	"browserslist": {
-		"production": [
-			">0.2%",
-			"not dead",
-			"not op_mini all"
-		],
-		"development": [
-			"last 1 chrome version",
-			"last 1 firefox version",
-			"last 1 safari version"
-		]
+		"production": [">0.2%", "not dead", "not op_mini all"],
+		"development": ["last 1 chrome version", "last 1 firefox version", "last 1 safari version"]
 	}
 }
