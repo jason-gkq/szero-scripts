@@ -102,7 +102,7 @@ module.exports = {
 			// context: __dirname, // 与DllPlugin中的那个context保持一致
 			manifest: `${paths.dllsPath}/reduxvendors-manifest.json` // 读取dll打包后的manifest.json，分析哪些代码跳过
 		}),
-		new ForkTsCheckerWebpackPlugin(),
+		useTypeScript && new ForkTsCheckerWebpackPlugin(),
 		new WebpackManifestPlugin({
 			fileName: 'asset-manifest.json',
 			publicPath: paths.publicUrlOrPath,
@@ -125,7 +125,7 @@ module.exports = {
 			clientsClaim: true,
 			skipWaiting: true
 		})
-	],
+	].filter(Boolean),
 	optimization: {
 		minimize: true,
 		minimizer: [

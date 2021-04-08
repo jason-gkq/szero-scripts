@@ -89,11 +89,30 @@ function getClientEnvironment() {
 }
 
 function getAlias() {
-	if (fs.existsSync(paths.appJsConfig)) {
-		const compilerOptions = require(paths.appJsConfig).compilerOptions || {};
-		return compilerOptions.paths || {};
-	}
-	return {};
+	// const alias = {};
+	// if (fs.existsSync(paths.appJsConfig)) {
+	// 	const compilerOptions = require(paths.appJsConfig).compilerOptions || {};
+	// 	Object.keys(compilerOptions.paths || {}).forEach(key => {
+	// 		if (/\/$/.test(compilerOptions.paths[key])) {
+	// 			alias[key] = paths.appPath + '/' + compilerOptions.paths[key][0].trim().slice(0, -1);
+	// 		} else if (/\/\*$/.test(compilerOptions.paths[key])) {
+	// 			alias[key] = paths.appPath + '/' + compilerOptions.paths[key][0].trim().slice(0, -2);
+	// 		} else {
+	// 			alias[key] = paths.appPath + '/' + compilerOptions.paths[key][0].trim();
+	// 		}
+	// 	});
+	// }
+	// return alias;
+	return {
+		'@assets': `${paths.appPath}/assets`,
+		'@src': `${paths.appPath}/src`,
+		'@common': `${paths.appPath}/Common`,
+		'@components': `${paths.appPath}/components`,
+		'@utils': `${paths.appPath}/utils`,
+		'@menus': `${paths.appPath}/menus`,
+		'@locales': `${paths.appPath}/locales`,
+		'@redux': `${paths.appPath}/redux`
+	};
 }
 
 function getCliParams() {

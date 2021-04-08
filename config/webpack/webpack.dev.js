@@ -46,7 +46,7 @@ module.exports = {
 		new webpack.HotModuleReplacementPlugin(),
 		new ReactRefreshWebpackPlugin(),
 		new CaseSensitivePathsPlugin(),
-		new ForkTsCheckerWebpackPlugin(),
+		useTypeScript && new ForkTsCheckerWebpackPlugin(),
 		new WebpackManifestPlugin({
 			fileName: 'asset-manifest.json',
 			publicPath: paths.publicUrlOrPath,
@@ -63,7 +63,7 @@ module.exports = {
 				};
 			}
 		})
-	],
+	].filter(Boolean),
 	optimization: {
 		minimize: false,
 		splitChunks: {
