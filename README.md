@@ -108,3 +108,7 @@ webpack打包时添加了路径映射alias，但在项目vscode中可能无法�
   "webpack-merge": "^5.7.3" // 用于 webpack 打包配置合并
 }
 ```
+
+yarn upgrade --latest
+
+npm publish --tag=beta
