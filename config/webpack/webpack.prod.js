@@ -24,7 +24,7 @@ const WorkboxPlugin = require('workbox-webpack-plugin');
 process.env.BABEL_ENV = 'production';
 process.env.NODE_ENV = 'production';
 
-const env = getClientEnvironment(paths.publicUrlOrPath.slice(0, -1));
+const env = getClientEnvironment();
 const useTypeScript = fs.existsSync(paths.appTsConfig);
 
 module.exports = {
@@ -45,6 +45,7 @@ module.exports = {
 			path.relative(paths.appSrc, info.absoluteResourcePath).replace(/\\/g, '/')
 		// assetModuleFilename: 'images/[hash][ext][query]',
 	},
+	// @ts-ignore
 	plugins: [
 		new CleanWebpackPlugin(),
 		// new CleanWebpackPlugin(['dist'], {
@@ -69,6 +70,11 @@ module.exports = {
 				minifyURLs: true
 			}
 		}),
+		new MiniCssExtractPlugin({
+			filename: 'static/pages/[name]/[name].[contenthash].css',
+			chunkFilename: 'static/pages/[name]/[name].[contenthash].chunk.css',
+			ignoreOrder: false // 忽略有关顺序冲突的警告
+		}),
 		// new webpack.ProvidePlugin({
 		//   _: 'lodash',
 		//   join: ['lodash', 'join'],
@@ -78,10 +84,9 @@ module.exports = {
 		// new ModuleNotFoundPlugin(path.resolve(__dirname, '..')),
 
 		new webpack.DefinePlugin(env.stringified),
-		new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
-		new MiniCssExtractPlugin({
-			filename: 'static/pages/[name]/[name].[contenthash].css',
-			chunkFilename: 'static/pages/[name]/[name].[contenthash].chunk.css'
+		new webpack.IgnorePlugin({
+			resourceRegExp: /^\.\/locale$/,
+			contextRegExp: /moment$/
 		}),
 		new AddAssetHtmlPlugin([
 			{
@@ -102,7 +107,6 @@ module.exports = {
 			// context: __dirname, // 与DllPlugin中的那个context保持一致
 			manifest: `${paths.dllsPath}/reduxvendors-manifest.json` // 读取dll打包后的manifest.json，分析哪些代码跳过
 		}),
-		useTypeScript && new ForkTsCheckerWebpackPlugin(),
 		new WebpackManifestPlugin({
 			fileName: 'asset-manifest.json',
 			publicPath: paths.publicUrlOrPath,
@@ -124,7 +128,8 @@ module.exports = {
 			// 不允许遗留任何“旧的” ServiceWorkers
 			clientsClaim: true,
 			skipWaiting: true
-		})
+		}),
+		useTypeScript && new ForkTsCheckerWebpackPlugin()
 	].filter(Boolean),
 	optimization: {
 		minimize: true,
@@ -132,12 +137,8 @@ module.exports = {
 			new TerserPlugin({
 				extractComments: false,
 				terserOptions: {
-					parse: {
-						ecma: 8
-					},
 					compress: {
 						ecma: 5,
-						warnings: false,
 						comparisons: false,
 						inline: 2
 					},
@@ -210,7 +211,13 @@ module.exports = {
 			.filter(ext => useTypeScript || !ext.includes('ts')),
 		// 创建 import 或 require 的别名，来确保模块引入变得更简单。例如，一些位于 src/ 文件夹下的常用模块：
 		alias: getAlias(),
-		plugins: [PnpWebpackPlugin]
+		plugins: [PnpWebpackPlugin],
+		byDependency: {
+			// 更多的配置项可以在这里找到 https://webpack.js.org/configuration/resolve/
+			less: {
+				mainFiles: ['custom']
+			}
+		}
 	},
 	resolveLoader: {
 		plugins: [PnpWebpackPlugin.moduleLoader(module)]
@@ -224,19 +231,18 @@ module.exports = {
 	module: {
 		strictExportPresence: true,
 		rules: [
-			{ parser: { requireEnsure: false } },
 			{
 				oneOf: [
 					{
 						test: /\.(js|mjs|jsx|ts|tsx)$/,
-						include: paths.appSrc,
+						include: paths.appPath,
 						exclude: /node_modules/,
 						loader: require.resolve('babel-loader'),
 						options: {
 							customize: require.resolve('babel-preset-react-app/webpack-overrides'),
 							presets: [
 								[
-									require('@babel/preset-env').default,
+									require('@babel/preset-env'),
 									{
 										useBuiltIns: 'entry',
 										corejs: 3,
@@ -267,7 +273,7 @@ module.exports = {
 								],
 								require('@babel/plugin-proposal-numeric-separator').default,
 								[
-									require('@babel/plugin-transform-runtime').default,
+									require('@babel/plugin-transform-runtime'),
 									{
 										corejs: false,
 										helpers: true,
@@ -311,7 +317,7 @@ module.exports = {
 							compact: false,
 							presets: [
 								[
-									require('@babel/preset-env').default,
+									require('@babel/preset-env'),
 									{
 										useBuiltIns: 'entry',
 										corejs: 3,
@@ -321,7 +327,7 @@ module.exports = {
 							],
 							plugins: [
 								[
-									require('@babel/plugin-transform-runtime').default,
+									require('@babel/plugin-transform-runtime'),
 									{
 										corejs: false,
 										helpers: true,
@@ -346,8 +352,7 @@ module.exports = {
 						}
 					},
 					{
-						test: /\.css$/,
-						exclude: /\.module\.css$/,
+						test: /\.(less|css)$/,
 						use: [
 							{
 								loader: MiniCssExtractPlugin.loader
@@ -357,6 +362,15 @@ module.exports = {
 								options: {
 									importLoaders: 1,
 									sourceMap: true
+								}
+							},
+							{
+								loader: 'less-loader',
+								options: {
+									lessOptions: {
+										strictMath: false,
+										javascriptEnabled: true
+									}
 								}
 							},
 							{
@@ -379,40 +393,6 @@ module.exports = {
 							}
 						],
 						sideEffects: true
-					},
-					{
-						test: /\.module\.css$/,
-						use: [
-							{
-								loader: MiniCssExtractPlugin.loader
-							},
-							{
-								loader: require.resolve('css-loader'),
-								options: {
-									importLoaders: 1,
-									sourceMap: true,
-									modules: true
-								}
-							},
-							{
-								loader: require.resolve('postcss-loader'),
-								options: {
-									sourceMap: true,
-									postcssOptions: {
-										plugins: () => [
-											require('postcss-flexbugs-fixes'),
-											require('postcss-preset-env')({
-												autoprefixer: {
-													flexbox: 'no-2009'
-												},
-												stage: 3
-											}),
-											postcssNormalize()
-										]
-									}
-								}
-							}
-						]
 					},
 					{
 						test: /\.(png|jpg|jpeg|gif)$/,

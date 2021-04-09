@@ -64,10 +64,10 @@ delete require.cache[require.resolve('./paths')];
 
 // Grab NODE_ENV and REACT_APP_* environment variables and prepare them to be
 // injected into the application via DefinePlugin in webpack configuration.
-const REACT_APP = /^REACT_APP_/i;
+// const REACT_APP = /^REACT_APP_/i; .filter(key => REACT_APP.test(key))
 
 function getClientEnvironment() {
-	const raw = Object.keys(process.env).filter(key => REACT_APP.test(key)).reduce((env, key) => {
+	const raw = Object.keys(process.env).reduce((env, key) => {
 		env[key] = process.env[key];
 		return env;
 	}, {});
@@ -107,16 +107,16 @@ function getAlias() {
 		'@assets': `${paths.appPath}/assets`,
 		'@src': `${paths.appPath}/src`,
 		'@common': `${paths.appPath}/Common`,
-		'@components': `${paths.appPath}/components`,
-		'@utils': `${paths.appPath}/utils`,
-		'@menus': `${paths.appPath}/menus`,
-		'@locales': `${paths.appPath}/locales`,
-		'@redux': `${paths.appPath}/redux`
+		'@components': `${paths.appPath}/Common/components`,
+		'@utils': `${paths.appPath}/Common/utils`,
+		'@menus': `${paths.appPath}/Common/menus`,
+		'@locales': `${paths.appPath}/Common/locales`,
+		'@redux': `${paths.appPath}/Common/redux`
 	};
 }
 
 function getCliParams() {
-	const args = null;
+	const args = {};
 	const params = process.argv.splice(2);
 
 	if (!params.length) {

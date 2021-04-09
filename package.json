@@ -1,6 +1,6 @@
 {
 	"name": "zero-react-scripts",
-	"version": "0.2.2-beta.1",
+	"version": "0.2.2-beta.4",
 	"description": "Configuration and scripts for Create React App.",
 	"repository": {
 		"type": "git",
@@ -62,8 +62,11 @@
 		"globby": "^11.0.3",
 		"html-webpack-plugin": "^5.3.1",
 		"immer": "^9.0.1",
+		"less": "^4.1.1",
+		"less-loader": "^8.0.0",
 		"mini-css-extract-plugin": "^1.4.1",
 		"pnp-webpack-plugin": "^1.6.4",
+		"postcss": "^8.2.9",
 		"postcss-flexbugs-fixes": "^5.0.2",
 		"postcss-loader": "^5.2.0",
 		"postcss-normalize": "^9.0.0",
