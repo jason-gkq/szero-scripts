@@ -6,14 +6,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 // @remove-on-eject-end
-'use strict';
+"use strict";
 
-const fs = require('fs');
+const fs = require("fs");
 // const path = require('path');
-const paths = require('./paths');
+const paths = require("./paths");
 
 // Make sure that including paths.js after env.js will read .env variables.
-delete require.cache[require.resolve('./paths')];
+delete require.cache[require.resolve("./paths")];
 
 // const NODE_ENV = process.env.NODE_ENV;
 // if (!NODE_ENV) {
@@ -67,76 +67,88 @@ delete require.cache[require.resolve('./paths')];
 // const REACT_APP = /^REACT_APP_/i; .filter(key => REACT_APP.test(key))
 
 function getClientEnvironment() {
-	const raw = Object.keys(process.env).reduce((env, key) => {
-		env[key] = process.env[key];
-		return env;
-	}, {});
-	const proEnv = getCliParams();
-	if (fs.existsSync(`${paths.env}/env.${proEnv.env}.json`)) {
-		Object.assign(raw, require(`${paths.env}/env.${proEnv.env}.json`), {
-			env: proEnv.env
-		});
-	}
-	// Stringify all values so we can feed into webpack DefinePlugin
-	const stringified = {
-		'process.env': Object.keys(raw).reduce((env, key) => {
-			env[key] = JSON.stringify(raw[key]);
-			return env;
-		}, {})
-	};
+  const raw = Object.keys(process.env).reduce((env, key) => {
+    env[key] = process.env[key];
+    return env;
+  }, {});
+  const proEnv = getCliParams();
+  if (fs.existsSync(`${paths.env}/env.${proEnv.env}.json`)) {
+    Object.assign(raw, require(`${paths.env}/env.${proEnv.env}.json`), {
+      env: proEnv.env,
+    });
+  }
+  // Stringify all values so we can feed into webpack DefinePlugin
+  const stringified = {
+    "process.env": Object.keys(raw).reduce((env, key) => {
+      env[key] = JSON.stringify(raw[key]);
+      return env;
+    }, {}),
+  };
 
-	return { raw, stringified };
+  return { raw, stringified };
 }
 
 function getAlias() {
-	const alias = {};
-	if (fs.existsSync(paths.appJsConfig)) {
-		const compilerOptions = require(paths.appJsConfig).compilerOptions || {};
-		Object.keys(compilerOptions.paths || {}).forEach(key => {
-			if (/\/$/.test(compilerOptions.paths[key])) {
-				alias[key.trim().slice(0, -1)] =
-					paths.appPath + '/' + compilerOptions.paths[key][0].trim().slice(0, -1);
-			} else if (/\/\*$/.test(compilerOptions.paths[key])) {
-				alias[key.trim().slice(0, -2)] =
-					paths.appPath + '/' + compilerOptions.paths[key][0].trim().slice(0, -2);
-			} else {
-				alias[key] = paths.appPath + '/' + compilerOptions.paths[key][0].trim();
-			}
-		});
-	}
-	return alias;
-	// return {
-	// 	'@assets': `${paths.appPath}/assets`,
-	// 	'@src': `${paths.appPath}/src`,
-	// 	'@common': `${paths.appPath}/common`,
-	// 	'@components': `${paths.appPath}/common/components`,
-	// 	'@utils': `${paths.appPath}/common/utils`,
-	// 	'@menus': `${paths.appPath}/common/menus`,
-	// 	'@locales': `${paths.appPath}/common/locales`,
-	// 	'@redux': `${paths.appPath}/common/redux`
-	// };
+  const alias = {};
+  if (fs.existsSync(paths.appJsConfig)) {
+    const compilerOptions = require(paths.appJsConfig).compilerOptions || {};
+    Object.keys(compilerOptions.paths || {}).forEach((key) => {
+      if (/\/$/.test(compilerOptions.paths[key])) {
+        alias[key.trim().slice(0, -1)] =
+          paths.appPath +
+          "/" +
+          compilerOptions.paths[key][0].trim().slice(0, -1);
+      } else if (/\/\*$/.test(compilerOptions.paths[key])) {
+        alias[key.trim().slice(0, -2)] =
+          paths.appPath +
+          "/" +
+          compilerOptions.paths[key][0].trim().slice(0, -2);
+      } else {
+        alias[key] = paths.appPath + "/" + compilerOptions.paths[key][0].trim();
+      }
+    });
+  }
+  return alias;
+  // return {
+  // 	'@assets': `${paths.appPath}/assets`,
+  // 	'@src': `${paths.appPath}/src`,
+  // 	'@common': `${paths.appPath}/common`,
+  // 	'@components': `${paths.appPath}/common/components`,
+  // 	'@utils': `${paths.appPath}/common/utils`,
+  // 	'@menus': `${paths.appPath}/common/menus`,
+  // 	'@locales': `${paths.appPath}/common/locales`,
+  // 	'@redux': `${paths.appPath}/common/redux`
+  // };
 }
 
 function getCliParams() {
-	const args = {};
-	const params = process.argv.splice(2);
+  const args = {};
+  const params = process.argv.splice(2);
 
-	if (!params.length) {
-		throw new Error('The ENV environment variable is required but was not specified.');
-	}
+  if (!params.length) {
+    throw new Error(
+      "The ENV environment variable is required but was not specified."
+    );
+  }
 
-	params.forEach(arg => {
-		const tmpArg = arg.trim().split('=');
-		if (tmpArg.length) {
-			args[tmpArg[0].replace(/\W+/g, '')] = tmpArg[1];
-		} else {
-			return false;
-		}
-	});
-	if (!args || !args.env || !['local', 'dev', 'uat', 'pre', 'prod'].includes(args.env)) {
-		throw new Error('The ENV environment variable is required but was not specified.');
-	}
-	return args;
+  params.forEach((arg) => {
+    const tmpArg = arg.trim().split("=");
+    if (tmpArg.length) {
+      args[tmpArg[0].replace(/\W+/g, "")] = tmpArg[1];
+    } else {
+      return false;
+    }
+  });
+  if (
+    !args ||
+    !args.env ||
+    !["local", "dev", "uat", "pre", "prod"].includes(args.env)
+  ) {
+    throw new Error(
+      "The ENV environment variable is required but was not specified."
+    );
+  }
+  return args;
 }
 
 module.exports.getClientEnvironment = getClientEnvironment;
