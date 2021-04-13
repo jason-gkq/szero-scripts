@@ -14,7 +14,15 @@
 	"bugs": {
 		"url": "https://github.com/jason-gkq/zero-react-scripts/issues"
 	},
-	"files": ["bin", "config", "webpack", "dll", "scripts", "package.json", "README.md"],
+	"files": [
+		"bin",
+		"config",
+		"webpack",
+		"dll",
+		"scripts",
+		"package.json",
+		"README.md"
+	],
 	"bin": {
 		"zero-react-scripts": "./bin/zero-react-scripts.js"
 	},
@@ -28,12 +36,16 @@
 		"@babel/plugin-proposal-class-properties": "^7.13.0",
 		"@babel/plugin-proposal-decorators": "^7.13.5",
 		"@babel/plugin-proposal-nullish-coalescing-operator": "7.13.8",
-		"@babel/plugin-proposal-numeric-separator": "7.12.13",
 		"@babel/plugin-proposal-optional-chaining": "7.13.12",
 		"@babel/plugin-syntax-jsx": "^7.12.13",
 		"@babel/plugin-transform-flow-strip-types": "^7.13.0",
+		"@babel/plugin-transform-react-display-name": "^7.12.13",
+		"@babel/plugin-transform-react-jsx": "^7.13.12",
+		"@babel/plugin-transform-react-jsx-self": "^7.12.13",
+		"@babel/plugin-transform-react-jsx-source": "^7.12.13",
 		"@babel/plugin-transform-runtime": "^7.13.10",
 		"@babel/plugin-transform-typeof-symbol": "^7.12.13",
+		"@babel/plugin-transform-typescript": "^7.13.0",
 		"@babel/polyfill": "^7.10.1",
 		"@babel/preset-env": "^7.13.12",
 		"@babel/preset-react": "^7.13.13",
@@ -44,10 +56,9 @@
 		"@typescript-eslint/parser": "^4.21.0",
 		"add-asset-html-webpack-plugin": "^3.2.0",
 		"babel-loader": "^8.1.0",
+		"babel-plugin-add-module-exports": "^1.0.4",
 		"babel-plugin-macros": "3.0.1",
-		"babel-plugin-named-asset-import": "^0.3.7",
 		"babel-plugin-transform-react-remove-prop-types": "0.4.24",
-		"babel-preset-react-app": "^10.0.0",
 		"bfj": "^7.0.2",
 		"case-sensitive-paths-webpack-plugin": "^2.4.0",
 		"chalk": "^4.1.0",
@@ -55,8 +66,6 @@
 		"cross-spawn": "^7.0.3",
 		"css-loader": "^5.2.0",
 		"css-minimizer-webpack-plugin": "^1.3.0",
-		"dotenv": "^8.2.0",
-		"dotenv-expand": "^5.1.0",
 		"fork-ts-checker-webpack-plugin": "^6.2.0",
 		"fs-extra": "^9.1.0",
 		"globby": "^11.0.3",
@@ -114,7 +123,15 @@
 		}
 	},
 	"browserslist": {
-		"production": [">0.2%", "not dead", "not op_mini all"],
-		"development": ["last 1 chrome version", "last 1 firefox version", "last 1 safari version"]
+		"production": [
+			">0.2%",
+			"not dead",
+			"not op_mini all"
+		],
+		"development": [
+			"last 1 chrome version",
+			"last 1 firefox version",
+			"last 1 safari version"
+		]
 	}
 }
