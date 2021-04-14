@@ -185,7 +185,6 @@ module.exports = {
     },
   },
   resolve: {
-    // symlinks: false,
     modules: ["node_modules", paths.appNodeModules].concat(
       modules.additionalModulePaths || []
     ),

@@ -1,5 +1,7 @@
 ### 开发环境 webpack 打包详解
 
+**注意当调用 ES6 模块的 import() 方法（引入模块）时，必须指向模块的 .default 值，因为它才是 promise 被处理后返回的实际的 module 对象。**
+
 ````js
 // 统一采用严格模式
 "use strict";
@@ -11,23 +13,31 @@ const { getClientEnvironment, getAlias } = require("../env");
 const fs = require("fs");
 const path = require("path");
 const webpack = require("webpack");
+
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const PnpWebpackPlugin = require("pnp-webpack-plugin");
 const postcssNormalize = require("postcss-normalize");
-const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
-const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
-const CaseSensitivePathsPlugin = require("case-sensitive-paths-webpack-plugin");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin"); // production
+const MiniCssExtractPlugin = require("mini-css-extract-plugin"); // production
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin"); // production
+const TerserPlugin = require("terser-webpack-plugin"); // production
+const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin"); // ts check
+const AddAssetHtmlPlugin = require("add-asset-html-webpack-plugin"); // production dll
+const WorkboxPlugin = require("workbox-webpack-plugin"); // production
+
+const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin"); // development
+const CaseSensitivePathsPlugin = require("case-sensitive-paths-webpack-plugin"); // development
 
 // 声明编译环境
-process.env.BABEL_ENV = "development";
+process.env.BABEL_ENV = "development"; // [development | production]
 // 声明node环境
-process.env.NODE_ENV = "development";
+process.env.NODE_ENV = "development"; // [development | production]
 
 const env = getClientEnvironment();
 const useTypeScript = fs.existsSync(paths.appTsConfig);
 module.exports = {
-  mode: "development",
+  mode: "development", // [development | production]
   /**
    * 在第一个错误出现时抛出失败结果，而不是容忍它。默认情况下，当使用 HMR 时，webpack 会将在终端以及浏览器控制台中，以红色文字记录这些错误，但仍然继续进行打包。要启用它：
    */
@@ -35,7 +45,7 @@ module.exports = {
   /**
    * 配置中的sourceMap 均可以不配置，采用依赖 devtool 的方式，比较简单好改
    */
-  devtool: "cheap-module-source-map",
+  devtool: "cheap-module-source-map", // [cheap-module-source-map | source-map]
   entry: {
     main: paths.appIndexJs,
   },
@@ -729,7 +739,12 @@ module.exports = {
                 ["@babel/plugin-transform-react-jsx-self"],
                 ["@babel/plugin-transform-react-jsx-source"],
                 ["@babel/plugin-transform-typescript"],
-                ["babel-plugin-add-module-exports"],
+                [
+                  "add-module-exports",
+                  {
+                    addDefaultProperty: true,
+                  },
+                ],
                 require("@babel/plugin-proposal-nullish-coalescing-operator")
                   .default,
                 require("@babel/plugin-proposal-optional-chaining").default,
@@ -825,12 +840,19 @@ module.exports = {
           {
             /**
              * css和less配置
-             * 1. module和非module 分开配置，暂时不配置 module 的，暂时用不到，不需要支持
-             * 2. 支持less等配置
+             * 1. css的模块主要作用是部分css变量统一化，例如多主题比较实用
+             * 2. 懒加载css则能提高项目加载的速度
+             * 3. 普通css加载，module+lazy的组合有多种，目前场景没有那么复杂，暂时只用简单的即可
              *
              * module配置备份：
              * test: /\.module\.(less|css)$/,
+             * css-loader中添加：
              * modules.compileType: 'module'
+             *
+             * 懒加载 lazy.css 能提高项目加载速度，配置：
+             * test: /\.lazy\.(less|css)$/,
+             * style-loader中添加：
+             * injectType: 'lazyStyleTag'
              *
              * 如果你正在使用 Babel且为了程序正常工作，你需要进行下面的步骤：
              * 1. 添加 babel-plugin-add-module-exports 到你的配置中。
@@ -840,6 +862,7 @@ module.exports = {
              * 1. css中静态资源暂无处理，直接使用资源模块处理
              */
             test: /\.(less|css)$/,
+            exclude: /\.(module|lazy)\.(less|css)$/,
             use: [
               /**
                * style-loader
@@ -1098,6 +1121,110 @@ module.exports = {
             ],
             sideEffects: true,
           },
+          {
+            test: /\.module\.(less|css)$/,
+            use: [
+              {
+                loader: require.resolve("style-loader"),
+                options: {
+                  esModule: true,
+                  modules: {
+                    namedExport: true,
+                  },
+                },
+              },
+              {
+                loader: require.resolve("css-loader"),
+                options: {
+                  importLoaders: 2,
+                  esModule: true,
+                  modules: {
+                    namedExport: true,
+                    compileType: "module",
+                  },
+                },
+              },
+              {
+                loader: require.resolve("postcss-loader"),
+                options: {
+                  postcssOptions: {
+                    plugins: () => [
+                      require("postcss-flexbugs-fixes"),
+                      require("postcss-preset-env")({
+                        autoprefixer: {
+                          flexbox: "no-2009",
+                        },
+                        stage: 3,
+                      }),
+                      postcssNormalize(),
+                    ],
+                  },
+                },
+              },
+              {
+                loader: require.resolve("less-loader"),
+                options: {
+                  lessOptions: {
+                    strictMath: false,
+                    javascriptEnabled: true,
+                  },
+                },
+              },
+            ],
+            sideEffects: true,
+          },
+          {
+            test: /\.lazy\.(less|css)$/,
+            use: [
+              {
+                loader: require.resolve("style-loader"),
+                options: {
+                  injectType: "lazyStyleTag",
+                  esModule: true,
+                  modules: {
+                    namedExport: true,
+                  },
+                },
+              },
+              {
+                loader: require.resolve("css-loader"),
+                options: {
+                  importLoaders: 2,
+                  esModule: true,
+                  modules: {
+                    namedExport: true,
+                  },
+                },
+              },
+              {
+                loader: require.resolve("postcss-loader"),
+                options: {
+                  postcssOptions: {
+                    plugins: () => [
+                      require("postcss-flexbugs-fixes"),
+                      require("postcss-preset-env")({
+                        autoprefixer: {
+                          flexbox: "no-2009",
+                        },
+                        stage: 3,
+                      }),
+                      postcssNormalize(),
+                    ],
+                  },
+                },
+              },
+              {
+                loader: require.resolve("less-loader"),
+                options: {
+                  lessOptions: {
+                    strictMath: false,
+                    javascriptEnabled: true,
+                  },
+                },
+              },
+            ],
+            sideEffects: true,
+          },
           /**
            * 资源模块类型(asset module type)，通过添加 4 种新的模块类型，来替换所有这些 loader：
            * - asset/resource 发送一个单独的文件并导出 URL。之前通过使用 file-loader 实现。
@@ -1189,3 +1316,74 @@ module.exports = {
   },
 };
 ````
+
+### webpack 注解使用
+
+- 使用 /_ webpackIgnore: true _/ 注释禁用 url 解析
+
+有了 /_ webpackIgnore: true _/ 注释，可以禁用对规则和单个声明的源处理
+
+```css
+/* webpackIgnore: true */
+@import url(./basic.css);
+@import /* webpackIgnore: true */ url(./imported.css);
+
+.class {
+  /* 对 'background' 声明中的所有 url 禁用 url 处理 */
+  color: red;
+  /* webpackIgnore: true */
+  background: url("./url/img.png"), url("./url/img.png");
+}
+
+.class {
+  /* 对 'background' 声明中第一个 url 禁用 url 处理 */
+  color: red;
+  background:
+    /* webpackIgnore: true */ url("./url/img.png"), url("./url/img.png");
+}
+
+.class {
+  /* 对 'background' 声明中第二个 url 禁用 url 处理 */
+  color: red;
+  background: url("./url/img.png"),
+    /* webpackIgnore: true */ url("./url/img.png");
+}
+
+/* prettier-ignore */
+.class {
+  /* 对 'background' 声明中第二个 url 禁用 url 处理 */
+  color: red;
+  background: url("./url/img.png"),
+    /* webpackIgnore: true */
+    url("./url/img.png");
+}
+
+/* prettier-ignore */
+.class {
+  /* 对 'background-image' 声明中第三和第六个 url 禁用 url 处理 */
+  background-image: image-set(
+    url(./url/img.png) 2x,
+    url(./url/img.png) 3x,
+    /* webpackIgnore:  true */ url(./url/img.png) 4x,
+    url(./url/img.png) 5x,
+    url(./url/img.png) 6x,
+    /* webpackIgnore:  true */
+    url(./url/img.png) 7x
+  );
+}
+```
+
+### TypeScript [TypeScript 官方文档](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html)
+
+TypeScript 是 JavaScript 的超集，为其增加了类型系统，可以编译为普通 JavaScript 代码
+
+`yarn add --dev typescript ts-loader`
+
+**如果想在`TypeScript`中保留如`import _ from 'lodash';`的语法被让它作为一种默认的导入方式，需要在文件`tsconfig.json`中设置`"allowSyntheticDefaultImports" : true`和`"esModuleInterop" : true`**
+
+还需要在 babel-loader 中添加以下 plugins
+
+@babel/preset-typescript
+@babel/plugin-transform-typescript
+
+[热编译](https://github.com/pmmmwh/react-refresh-webpack-plugin)

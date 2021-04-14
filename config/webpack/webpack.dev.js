@@ -28,7 +28,6 @@ module.exports = {
     main: paths.appIndexJs,
   },
   output: {
-    // hashDigestLength: 8,
     pathinfo: true,
     path: paths.appBuild,
     filename: "[name].js",
@@ -81,7 +80,6 @@ module.exports = {
     },
   },
   resolve: {
-    // symlinks: false,
     modules: ["node_modules", paths.appNodeModules].concat(
       modules.additionalModulePaths || []
     ),
