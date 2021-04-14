@@ -139,7 +139,6 @@ module.exports = {
                 ["@babel/plugin-transform-react-display-name"],
                 ["@babel/plugin-transform-react-jsx-self"],
                 ["@babel/plugin-transform-react-jsx-source"],
-                ["babel-plugin-add-module-exports"],
                 useTypeScript && ["@babel/plugin-transform-typescript"],
                 [
                   require("@babel/plugin-transform-flow-strip-types").default,
@@ -235,7 +234,6 @@ module.exports = {
           },
           {
             test: /\.(less|css)$/,
-            exclude: /\.module\.(less|css)$/,
             use: [
               {
                 loader: require.resolve("style-loader"),

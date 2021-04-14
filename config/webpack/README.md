@@ -219,11 +219,13 @@ module.exports = {
       }),
       new CssMinimizerPlugin({
         parallel: true,
-        sourceMap: true,
         minimizerOptions: {
           preset: [
             "default",
             {
+              /**
+               * 去除注释
+               */
               discardComments: { removeAll: true },
             },
           ],
@@ -244,6 +246,9 @@ module.exports = {
       /**
        * 这表明将选择哪些 chunk 进行优化。当提供一个字符串，有效值为 all，async 和 initial。
        * 设置为 all 可能特别强大，因为这意味着 chunk 可以在异步和非异步 chunk 之间共享
+       *
+       *
+       * ***如果设置为all，会为每一个页面生成一个chunks文件，导致入口加载太多小文件建议不要配置***
        */
       chunks: "async",
       minSize: 20000, // 生成 chunk 的最小体积（以 bytes 为单位）

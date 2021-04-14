@@ -36,8 +36,8 @@ module.exports = {
     hashDigestLength: 8,
     pathinfo: false,
     path: paths.appBuild,
-    filename: "static/pages/[name]/[name].[contenthash].js",
-    chunkFilename: "static/pages/[name]/[name].[contenthash].chunk.js",
+    filename: "static/[name]/[name].[contenthash].js",
+    chunkFilename: "static/[name]/[name].[contenthash].chunk.js",
     publicPath: paths.publicUrlOrPath,
     devtoolModuleFilenameTemplate: (info) =>
       path
@@ -70,8 +70,8 @@ module.exports = {
       },
     }),
     new MiniCssExtractPlugin({
-      filename: "static/pages/[name]/[name].[contenthash].css",
-      chunkFilename: "static/pages/[name]/[name].[contenthash].chunk.css",
+      filename: "static/[name]/[name].[contenthash].css",
+      chunkFilename: "static/[name]/[name].[contenthash].chunk.css",
       ignoreOrder: false, // 忽略有关顺序冲突的警告
     }),
     // new webpack.ProvidePlugin({
@@ -136,8 +136,8 @@ module.exports = {
     minimize: true,
     minimizer: [
       new TerserPlugin({
-        extractComments: false,
         parallel: true,
+        extractComments: false,
         terserOptions: {
           safari10: false,
           compress: {
@@ -156,7 +156,6 @@ module.exports = {
       }),
       new CssMinimizerPlugin({
         parallel: true,
-        sourceMap: true,
         minimizerOptions: {
           preset: [
             "default",
@@ -170,14 +169,14 @@ module.exports = {
     moduleIds: "deterministic",
     chunkIds: "deterministic",
     splitChunks: {
-      chunks: "all",
-      maxSize: 40000,
+      // maxSize: 3348576, // 最大不超过3M
+      minSize: 200000, // 最小不小于 200k
       maxAsyncRequests: 30,
       maxInitialRequests: 30,
       cacheGroups: {
         defaultVendors: {
           test: /[\\/]node_modules[\\/]/,
-          filename: "vendor/[name].[contenthash].chunk.js",
+          filename: "static/vendor/[name].[contenthash].chunk.js",
           chunks: "all",
           priority: -10,
           reuseExistingChunk: true,
@@ -213,8 +212,8 @@ module.exports = {
   },
   performance: {
     hints: "error",
-    maxEntrypointSize: 400000,
-    maxAssetSize: 100000,
+    maxEntrypointSize: 4000000,
+    maxAssetSize: 3348576,
   },
   module: {
     strictExportPresence: true,
