@@ -137,14 +137,13 @@ module.exports = {
     minimizer: [
       new TerserPlugin({
         extractComments: false,
+        parallel: true,
         terserOptions: {
+          safari10: false,
           compress: {
             ecma: 5,
             comparisons: false,
             inline: 2,
-          },
-          mangle: {
-            safari10: true,
           },
           keep_classnames: true,
           keep_fnames: true,
@@ -171,12 +170,22 @@ module.exports = {
     moduleIds: "deterministic",
     chunkIds: "deterministic",
     splitChunks: {
+      chunks: "all",
       maxSize: 40000,
+      maxAsyncRequests: 30,
+      maxInitialRequests: 30,
       cacheGroups: {
         defaultVendors: {
           test: /[\\/]node_modules[\\/]/,
           filename: "vendor/[name].[contenthash].chunk.js",
           chunks: "all",
+          priority: -10,
+          reuseExistingChunk: true,
+        },
+        default: {
+          minChunks: 2,
+          priority: -20,
+          reuseExistingChunk: true,
         },
       },
     },
@@ -198,11 +207,15 @@ module.exports = {
     plugins: [PnpWebpackPlugin.moduleLoader(module)],
   },
   node: {
-    global: false,
-    __filename: false,
-    __dirname: false,
+    global: true,
+    __filename: true,
+    __dirname: true,
   },
-  performance: false,
+  performance: {
+    hints: "error",
+    maxEntrypointSize: 400000,
+    maxAssetSize: 100000,
+  },
   module: {
     strictExportPresence: true,
     rules: [
@@ -337,10 +350,9 @@ module.exports = {
           },
           {
             test: /\.(less|css)$/,
-            exclude: /\.module\.(less|css)$/,
             use: [
               {
-                loader: require.resolve("style-loader"),
+                loader: MiniCssExtractPlugin.loader,
                 options: {
                   esModule: true,
                   modules: {

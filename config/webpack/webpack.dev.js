@@ -93,9 +93,9 @@ module.exports = {
     plugins: [PnpWebpackPlugin.moduleLoader(module)],
   },
   node: {
-    global: false,
-    __filename: false,
-    __dirname: false,
+    global: true,
+    __filename: true,
+    __dirname: true,
   },
   performance: false,
   module: {

@@ -154,7 +154,82 @@ module.exports = {
     }),
   ].filter(Boolean),
   optimization: {
-    minimize: false,
+    minimize: true,
+    minimizer: [
+      /**
+       * terser
+       * https://github.com/terser/terser
+       */
+      new TerserPlugin({
+        // test: /\.js(\?.*)?$/i,
+        /**
+         * parallel 类型： Boolean|Number 默认值： true
+         * 使用多进程并发运行以提高构建速度。 并发运行的默认数量： os.cpus().length - 1
+         * 并发运行可以显著提高构建速度，因此强烈建议添加此配置
+         * 如果你使用 Circle CI 或任何其他不提供 CPU 实际可用数量的环境，则需要显式设置 CPU 数量，以避免 Error: Call retries were exceeded
+         */
+        parallel: true,
+        /**
+         * extractComments
+         *
+         * 是否将注释剥离到单独的文件中（请参阅详细信息）。
+         * 默认情况下，仅剥离 /^\**!|@preserve|@license|@cc_on/i 正则表达式匹配的注释，其余注释会删除。
+         * 如果原始文件名为 foo.js ，则注释将存储到 foo.js.LICENSE.txt 。
+         * terserOptions.format.comments 选项指定是否保留注释，即可以在剥离其他注释时保留一些注释，甚至保留已剥离的注释
+         *
+         * 剥离 all 或 some （使用 /^\**!|@preserve|@license|@cc_on/i 正则表达式进行匹配）注释。
+         * 也可以是function
+         *
+         * extractComments: "all",
+         * extractComments: /@extract/i,
+         */
+        extractComments: false,
+        terserOptions: {
+          ecma: undefined,
+          parse: {},
+          compress: {},
+          mangle: true, // Note `mangle.properties` is `false` by default.
+          module: false,
+          // Deprecated
+          output: null,
+          format: null,
+          toplevel: false,
+          nameCache: null,
+          ie8: false,
+          keep_classnames: undefined,
+          keep_fnames: false,
+          safari10: false,
+          // 以下是create app 采用的配置，暂时无研究
+          compress: {
+            ecma: 5,
+            comparisons: false,
+            inline: 2,
+          },
+          mangle: {
+            safari10: true,
+          },
+          keep_classnames: true,
+          keep_fnames: true,
+          output: {
+            ecma: 5,
+            comments: false,
+            ascii_only: true,
+          },
+        },
+      }),
+      new CssMinimizerPlugin({
+        parallel: true,
+        sourceMap: true,
+        minimizerOptions: {
+          preset: [
+            "default",
+            {
+              discardComments: { removeAll: true },
+            },
+          ],
+        },
+      }),
+    ],
     /**
      * 默认配置
      * 除了vendor路径，其他也【无需配置】
@@ -740,7 +815,7 @@ module.exports = {
                 ["@babel/plugin-transform-react-jsx-source"],
                 ["@babel/plugin-transform-typescript"],
                 [
-                  "add-module-exports",
+                  "add-module-exports", // babel-plugin-add-module-exports 没起作用
                   {
                     addDefaultProperty: true,
                   },
@@ -939,7 +1014,8 @@ module.exports = {
                * 2. 生产环境 使用 dll方式的话，记得进行 base 的配置。
                */
               {
-                loader: "style-loader",
+                loader: "style-loader", // dev
+                loader: MiniCssExtractPlugin.loader, // pro
                 options: {
                   esModule: true,
                   modules: {
