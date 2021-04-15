@@ -940,8 +940,10 @@ module.exports = {
              *
              * 问题：
              * 1. css中静态资源暂无处理，直接使用资源模块处理
+             * 2. 在css编译中添加 include 只处理src内部的 css或less，对于像ant中的less和css不能用 postcss-loader 处理，会导致样式丢失
              */
             test: /\.(less|css)$/,
+            include: /src/,
             exclude: /\.(module|lazy)\.(less|css)$/,
             use: [
               /**
@@ -1204,6 +1206,8 @@ module.exports = {
           },
           {
             test: /\.module\.(less|css)$/,
+            include: /src/,
+            exclude: /\.lazy\.(less|css)$/,
             use: [
               {
                 loader: require.resolve("style-loader"),
@@ -1256,6 +1260,8 @@ module.exports = {
           },
           {
             test: /\.lazy\.(less|css)$/,
+            include: /src/,
+            exclude: /\.module\.(less|css)$/,
             use: [
               {
                 loader: require.resolve("style-loader"),
@@ -1300,6 +1306,32 @@ module.exports = {
                   lessOptions: {
                     strictMath: false,
                     javascriptEnabled: true,
+                  },
+                },
+              },
+            ],
+            sideEffects: true,
+          },
+          {
+            test: /\.(less|css)$/,
+            include: /node_modules/,
+            use: [
+              {
+                loader: "style-loader",
+              },
+              {
+                loader: "css-loader",
+              },
+              {
+                loader: "less-loader",
+                options: {
+                  lessOptions: {
+                    strictMath: false,
+                    javascriptEnabled: true,
+                    modifyVars: {
+                      "primary-color": "#F5222D",
+                      "border-radius-base": "2px",
+                    },
                   },
                 },
               },

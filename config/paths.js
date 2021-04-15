@@ -8,7 +8,11 @@ const resolveApp = (relativePath) => path.resolve(appDirectory, relativePath);
 
 const publicUrlOrPath = require(resolveApp("package.json")).homepage || "/";
 
+process.env.publicUrlOrPath = publicUrlOrPath;
+
 const buildPath = "dest";
+
+process.env.buildPath = buildPath;
 
 const moduleFileExtensions = ["js", "ts", "tsx", "json", "jsx", "css", "less"];
 
@@ -38,7 +42,7 @@ module.exports = {
   appIndexJs: resolveModule(resolveApp, "src/index"),
   appPackageJson: resolveApp("package.json"),
   appSrc: resolveApp("src"),
-  // appTsConfig: resolveApp('tsconfig.json'),
+  appTsConfig: resolveApp("tsconfig.json"),
   appJsConfig: resolveApp("jsconfig.json"),
   yarnLockFile: resolveApp("yarn.lock"),
   // testsSetup: resolveModule(resolveApp, 'src/setupTests'),

@@ -234,6 +234,7 @@ module.exports = {
           },
           {
             test: /\.(less|css)$/,
+            include: /src/,
             use: [
               {
                 loader: require.resolve("style-loader"),
@@ -277,6 +278,32 @@ module.exports = {
                   lessOptions: {
                     strictMath: false,
                     javascriptEnabled: true,
+                  },
+                },
+              },
+            ],
+            sideEffects: true,
+          },
+          {
+            test: /\.(less|css)$/,
+            include: /node_modules/,
+            use: [
+              {
+                loader: "style-loader",
+              },
+              {
+                loader: "css-loader",
+              },
+              {
+                loader: "less-loader",
+                options: {
+                  lessOptions: {
+                    strictMath: false,
+                    javascriptEnabled: true,
+                    modifyVars: {
+                      "primary-color": "#F5222D",
+                      "border-radius-base": "2px",
+                    },
                   },
                 },
               },

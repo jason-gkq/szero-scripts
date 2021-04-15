@@ -24,6 +24,7 @@ process.env.NODE_ENV = "production";
 
 const env = getClientEnvironment();
 const useTypeScript = fs.existsSync(paths.appTsConfig);
+const swSrc = fs.existsSync(paths.swSrc);
 
 module.exports = {
   mode: "production",
@@ -124,12 +125,13 @@ module.exports = {
         };
       },
     }),
-    new WorkboxPlugin.GenerateSW({
-      // 这些选项帮助快速启用 ServiceWorkers
-      // 不允许遗留任何“旧的” ServiceWorkers
-      clientsClaim: true,
-      skipWaiting: true,
-    }),
+    swSrc &&
+      new WorkboxPlugin.GenerateSW({
+        // 这些选项帮助快速启用 ServiceWorkers
+        // 不允许遗留任何“旧的” ServiceWorkers
+        clientsClaim: true,
+        skipWaiting: true,
+      }),
     useTypeScript && new ForkTsCheckerWebpackPlugin(),
   ].filter(Boolean),
   optimization: {
@@ -349,6 +351,7 @@ module.exports = {
           },
           {
             test: /\.(less|css)$/,
+            include: /src/,
             use: [
               {
                 loader: MiniCssExtractPlugin.loader,
@@ -392,6 +395,32 @@ module.exports = {
                   lessOptions: {
                     strictMath: false,
                     javascriptEnabled: true,
+                  },
+                },
+              },
+            ],
+            sideEffects: true,
+          },
+          {
+            test: /\.(less|css)$/,
+            include: /node_modules/,
+            use: [
+              {
+                loader: MiniCssExtractPlugin.loader,
+              },
+              {
+                loader: "css-loader",
+              },
+              {
+                loader: "less-loader",
+                options: {
+                  lessOptions: {
+                    strictMath: false,
+                    javascriptEnabled: true,
+                    modifyVars: {
+                      "primary-color": "#F5222D",
+                      "border-radius-base": "2px",
+                    },
                   },
                 },
               },
