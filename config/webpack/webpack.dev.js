@@ -32,7 +32,7 @@ module.exports = {
     path: paths.appBuild,
     filename: "[name].js",
     chunkFilename: "[name].chunk.js",
-    publicPath: paths.publicUrlOrPath,
+    publicPath: "/", // paths.publicUrlOrPath,
     devtoolModuleFilenameTemplate: (info) =>
       path.resolve(info.absoluteResourcePath).replace(/\\/g, "/"),
   },
@@ -52,7 +52,7 @@ module.exports = {
     useTypeScript && new ForkTsCheckerWebpackPlugin(),
     new WebpackManifestPlugin({
       fileName: "asset-manifest.json",
-      publicPath: paths.publicUrlOrPath,
+      publicPath: "/", // paths.publicUrlOrPath,
       generate: (seed, files, entrypoints) => {
         const manifestFiles = files.reduce((manifest, file) => {
           manifest[file.name] = file.path;
