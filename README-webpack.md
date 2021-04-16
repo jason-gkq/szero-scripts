@@ -1432,6 +1432,20 @@ module.exports = {
 
 ### webpack 注解使用
 
+- 会在浏览器闲置下载文件
+  `/* webpackPrefetch: true */`
+
+- 会在父 chunk 加载时并行下载文件
+  `/* webpackPreload: true */`
+
+- 是为预加载的文件取别名
+  `/* webpackChunkName: true */`
+
+组合使用：
+`const { default: _ } = await import(/* webpackChunkName: "lodash" */ /* webpackPrefetch: true */ 'lodash');`
+
+**建议项目只给页面添加：webpackChunkName 打包后 chunk 识别度比较高**
+
 - 使用 /_ webpackIgnore: true _/ 注释禁用 url 解析
 
 有了 /_ webpackIgnore: true _/ 注释，可以禁用对规则和单个声明的源处理
