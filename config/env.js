@@ -72,11 +72,17 @@ function getClientEnvironment() {
     return env;
   }, {});
   const proEnv = getCliParams();
+  let productConfig = { ENV: proEnv.env };
+  // if (fs.existsSync(`${paths.env}/env.com.json`)) {
+  //   Object.assign(productConfig, require(`${paths.env}/env.com.json`));
+  // }
+
   if (fs.existsSync(`${paths.env}/env.${proEnv.env}.json`)) {
-    Object.assign(raw, require(`${paths.env}/env.${proEnv.env}.json`), {
-      env: proEnv.env,
-    });
+    const CDN_URL = require(`${paths.env}/env.${proEnv.env}.json`).CDN_URL;
+    CDN_URL && (productConfig["CDN_URL"] = CDN_URL);
+    // Object.assign(productConfig, require(`${paths.env}/env.${proEnv.env}.json`));
   }
+  Object.assign(raw, productConfig);
   // Stringify all values so we can feed into webpack DefinePlugin
   const stringified = {
     "process.env": Object.keys(raw).reduce((env, key) => {

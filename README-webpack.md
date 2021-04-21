@@ -130,6 +130,11 @@ module.exports = {
       resourceRegExp: /^\.\/locale$/,
       contextRegExp: /moment$/,
     }),
+    // 自动加载模块，而不必到处 import 或 require
+    new webpack.ProvidePlugin({
+      _: "lodash",
+      join: ["lodash", "join"],
+    }),
     new webpack.HotModuleReplacementPlugin(),
     new ReactRefreshWebpackPlugin(),
     new CaseSensitivePathsPlugin(),
