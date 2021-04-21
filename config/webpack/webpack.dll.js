@@ -1,6 +1,5 @@
 const path = require("path");
 const webpack = require("webpack");
-const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 
 module.exports = {
@@ -28,7 +27,6 @@ module.exports = {
     library: "[name]_[fullhash]",
   },
   plugins: [
-    new CleanWebpackPlugin(),
     new webpack.DllPlugin({
       path: path.join(__dirname, "../../dll/[name]-manifest.json"), // 生成对应的manifest.json，给webpack打包用
       context: __dirname, // 必填，不然在web网页中找不到 '_dll_[name]'，会报错  上下文环境路径（必填，为了与DllReferencePlugin存在与同一上下文中）
