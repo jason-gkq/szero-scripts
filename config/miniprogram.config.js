@@ -1,8 +1,8 @@
 module.exports = {
   origin: "https://m.lechebang.com",
-  entry: "/home",
+  entry: "/view1",
   router: {
-    index: ["/pages/home", "/pages/system"],
+    index: ["/view1", "/view2"],
   },
   redirect: {
     notFound: "index",
