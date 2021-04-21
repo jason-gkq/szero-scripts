@@ -36,7 +36,7 @@ module.exports = {
   output: {
     hashDigestLength: 8,
     pathinfo: false,
-    path: paths.appBuild,
+    path: paths.appBuildWeb,
     filename: "static/[name]/[name].[contenthash].js",
     chunkFilename: "static/[name]/[name].[contenthash].chunk.js",
     publicPath: paths.publicUrlOrPath,
