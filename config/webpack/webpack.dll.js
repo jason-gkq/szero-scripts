@@ -13,6 +13,7 @@ module.exports = {
       "react-router-redux",
       "redux",
       "redux-actions",
+      "redux-batched-actions",
       "redux-persist",
       "redux-saga",
       "redux-thunk",

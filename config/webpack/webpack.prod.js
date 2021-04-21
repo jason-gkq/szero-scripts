@@ -19,9 +19,6 @@ const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
 const AddAssetHtmlPlugin = require("add-asset-html-webpack-plugin");
 const WorkboxPlugin = require("workbox-webpack-plugin");
 
-process.env.BABEL_ENV = "production";
-process.env.NODE_ENV = "production";
-
 const env = getClientEnvironment();
 const useTypeScript = fs.existsSync(paths.appTsConfig);
 const swSrc = fs.existsSync(paths.swSrc);
@@ -168,8 +165,6 @@ module.exports = {
         },
       }),
     ],
-    moduleIds: "deterministic",
-    chunkIds: "deterministic",
     splitChunks: {
       // maxSize: 3348576, // 最大不超过3M
       minSize: 200000, // 最小不小于 200k
@@ -256,7 +251,7 @@ module.exports = {
                 ["@babel/plugin-syntax-jsx"],
                 ["@babel/plugin-transform-react-jsx"],
                 ["@babel/plugin-transform-react-display-name"],
-                ["babel-plugin-add-module-exports"],
+                ["add-module-exports"],
                 useTypeScript && ["@babel/plugin-transform-typescript"],
                 [
                   require("@babel/plugin-transform-flow-strip-types").default,
@@ -417,10 +412,6 @@ module.exports = {
                   lessOptions: {
                     strictMath: false,
                     javascriptEnabled: true,
-                    modifyVars: {
-                      "primary-color": "#F5222D",
-                      "border-radius-base": "2px",
-                    },
                   },
                 },
               },
@@ -428,21 +419,10 @@ module.exports = {
             sideEffects: true,
           },
           {
-            test: /\.(png|jpg|jpeg|gif)$/,
-            type: "asset/resource",
-            generator: {
-              filename: "static/media/[hash][ext][query]",
-            },
-          },
-          {
-            test: /\.svg$/,
-            type: "asset/inline",
-          },
-          {
-            test: /\.(pdf|txt)$/,
-            type: "asset",
-            generator: {
-              filename: "static/media/[hash][ext][query]",
+            test: /\.(png|jpg|gif|svg)$/,
+            loader: "file-loader",
+            options: {
+              name: "[name].[ext]?[hash]",
             },
           },
         ],

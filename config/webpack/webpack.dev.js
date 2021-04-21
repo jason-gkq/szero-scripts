@@ -15,11 +15,9 @@ const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 const CaseSensitivePathsPlugin = require("case-sensitive-paths-webpack-plugin");
 
-process.env.BABEL_ENV = "development";
-process.env.NODE_ENV = "development";
-
 const env = getClientEnvironment();
 const useTypeScript = fs.existsSync(paths.appTsConfig);
+
 module.exports = {
   mode: "development",
   bail: false,
@@ -300,10 +298,6 @@ module.exports = {
                   lessOptions: {
                     strictMath: false,
                     javascriptEnabled: true,
-                    modifyVars: {
-                      "primary-color": "#F5222D",
-                      "border-radius-base": "2px",
-                    },
                   },
                 },
               },
@@ -311,16 +305,11 @@ module.exports = {
             sideEffects: true,
           },
           {
-            test: /\.(png|jpg|jpeg|gif)$/,
-            type: "asset/resource",
-          },
-          {
-            test: /\.svg$/,
-            type: "asset/inline",
-          },
-          {
-            test: /\.(pdf|txt)$/,
-            type: "asset",
+            test: /\.(png|jpg|gif|svg)$/,
+            loader: "file-loader",
+            options: {
+              name: "[name].[ext]?[hash]",
+            },
           },
         ],
       },

@@ -1,5 +1,30 @@
 ### 开发环境 webpack 打包详解
 
+### 本包开发 dll 打包配置：
+
+```json
+"dependencies": {
+  "webpack": "^5.31.0",
+  "webpack-cli": "^4.6.0",
+},
+"devDependencies": {
+  "react": "^17.0.2",
+  "react-dom": "^17.0.2",
+  "react-redux": "~7.2.3",
+  "react-router-dom": "^5.2.0",
+  "react-router-redux": "~4.0.5",
+  "redux": "~4.0.5",
+  "redux-actions": "~2.6.5",
+  "redux-batched-actions": "^0.5.0",
+  "redux-logger": "^3.0.6",
+  "redux-persist": "^6.0.0",
+  "redux-saga": "^1.1.3",
+  "redux-thunk": "~2.3.0",
+  "require": "^2.4.20",
+  "reselect": "^4.0.0"
+},
+```
+
 **注意当调用 ES6 模块的 import() 方法（引入模块）时，必须指向模块的 .default 值，因为它才是 promise 被处理后返回的实际的 module 对象。**
 
 ````js
@@ -304,6 +329,8 @@ module.exports = {
      * deterministic 选项有益于长期缓存，但对比于 hashed 来说，它会导致更小的文件 bundles。
      * 数字值的长度会被选作用于填满最多 80%的 id 空间。 当 optimization.moduleIds 被设置成 deterministic，默认最小 3 位数字会被使用。
      * 要覆盖默认行为，要将 optimization.moduleIds 设置成 false， 并且要使用 webpack.ids.DeterministicModuleIdsPlugin。
+     *
+     * 【webpack4 暂不支持，兼容小程序打包，暂时去掉】
      */
     moduleIds: "deterministic",
     chunkIds: "deterministic",
@@ -1402,6 +1429,8 @@ module.exports = {
            *    publicPath: 'assets/',
            *  },
            * },
+           *
+           * 【webpack4 暂不支持，兼容小程序打包，暂时去掉】
            */
           {
             test: /\.(png|jpg|jpeg|gif)$/,
@@ -1421,6 +1450,13 @@ module.exports = {
             generator: {
               filename: "static/media/[hash][ext][query]",
               // publicPath: '', // cdn 配置，调整为走env读取
+            },
+          },
+          {
+            test: /\.(png|jpg|gif|svg)$/,
+            loader: "file-loader",
+            options: {
+              name: "[name].[ext]?[hash]",
             },
           },
           {
