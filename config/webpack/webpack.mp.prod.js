@@ -10,11 +10,13 @@ const webpack = require("webpack");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const PnpWebpackPlugin = require("pnp-webpack-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+const postcssNormalize = require("postcss-normalize");
 const TerserPlugin = require("terser-webpack-plugin");
 const MpPlugin = require("mp-webpack-plugin");
 
 const env = getClientEnvironment();
-// const useTypeScript = fs.existsSync(paths.appTsConfig);
+const useTypeScript = fs.existsSync(paths.appTsConfig);
+const swSrc = fs.existsSync(paths.swSrc);
 
 module.exports = {
   mode: "production",
@@ -37,19 +39,19 @@ module.exports = {
   optimization: {
     runtimeChunk: false, // 必需字段，不能修改
     splitChunks: {
-      // 代码分隔配置，不建议修改
       chunks: "all",
-      minSize: 1000,
-      maxSize: 0,
+      minSize: 200000, // 最小不小于 200k
+      maxAsyncRequests: 30,
+      maxInitialRequests: 30,
       minChunks: 1,
-      maxAsyncRequests: 100,
-      maxInitialRequests: 100,
-      automaticNameDelimiter: "~",
-      // name: true,
+      name: true,
       cacheGroups: {
         vendors: {
           test: /[\\/]node_modules[\\/]/,
+          name: "vendor",
+          chunks: "all",
           priority: -10,
+          reuseExistingChunk: true,
         },
         default: {
           minChunks: 2,
@@ -63,6 +65,7 @@ module.exports = {
       new TerserPlugin({
         parallel: true,
         extractComments: false,
+        sourceMap: true,
         terserOptions: {
           safari10: false,
           compress: {
@@ -96,105 +99,218 @@ module.exports = {
     strictExportPresence: true,
     rules: [
       {
-        test: /\.css$/,
-        include: /src/,
-        use: [MiniCssExtractPlugin.loader, "css-loader"],
-        sideEffects: true,
-      },
-      {
-        test: /\.(less|css)$/,
-        include: /node_modules/,
-        use: [
+        oneOf: [
           {
-            loader: MiniCssExtractPlugin.loader,
-          },
-          {
-            loader: "css-loader",
-          },
-          {
-            loader: "less-loader",
+            test: /\.(js|mjs|jsx|ts|tsx)$/,
+            include: paths.appPath,
+            exclude: /node_modules/,
+            loader: require.resolve("babel-loader"),
             options: {
-              lessOptions: {
-                strictMath: false,
-                javascriptEnabled: true,
+              sourceMaps: true,
+              babelrc: false,
+              configFile: false,
+              cacheDirectory: true,
+              cacheCompression: false,
+              compact: true,
+              presets: [
+                [
+                  require("@babel/preset-env"),
+                  {
+                    useBuiltIns: "entry",
+                    corejs: 3,
+                    exclude: ["transform-typeof-symbol"],
+                  },
+                ],
+                [
+                  require("@babel/preset-react").default,
+                  {
+                    development: false,
+                    useBuiltIns: true,
+                    runtime: "automatic",
+                  },
+                ],
+                useTypeScript && [require("@babel/preset-typescript").default],
+              ].filter(Boolean),
+              plugins: [
+                ["@babel/plugin-syntax-jsx"],
+                ["@babel/plugin-transform-react-jsx"],
+                ["@babel/plugin-transform-react-display-name"],
+                ["add-module-exports"],
+                useTypeScript && ["@babel/plugin-transform-typescript"],
+                [
+                  require("@babel/plugin-transform-flow-strip-types").default,
+                  false,
+                ],
+                require("babel-plugin-macros"),
+                ["@babel/plugin-proposal-decorators", { legacy: true }],
+                ["@babel/plugin-proposal-class-properties", { loose: true }],
+                [
+                  require("@babel/plugin-transform-runtime"),
+                  {
+                    corejs: false,
+                    helpers: true,
+                    version: require("@babel/runtime/package.json").version,
+                    regenerator: true,
+                    useESModules: true,
+                    absoluteRuntime: path.dirname(
+                      require.resolve("@babel/runtime/package.json")
+                    ),
+                  },
+                ],
+                [
+                  require("babel-plugin-transform-react-remove-prop-types")
+                    .default,
+                  {
+                    removeImport: true,
+                  },
+                ],
+                require("@babel/plugin-proposal-optional-chaining").default,
+                require("@babel/plugin-proposal-nullish-coalescing-operator")
+                  .default,
+              ].filter(Boolean),
+              overrides: [
+                {
+                  exclude: /\.tsx?$/,
+                  plugins: [
+                    require("@babel/plugin-transform-flow-strip-types").default,
+                  ],
+                },
+                {
+                  test: /\.tsx?$/,
+                  plugins: [
+                    [
+                      require("@babel/plugin-proposal-decorators").default,
+                      { legacy: true },
+                    ],
+                  ],
+                },
+              ].filter(Boolean),
+            },
+          },
+          {
+            test: /\.(js|mjs)$/,
+            exclude: /@babel(?:\/|\\{1,2})runtime/,
+            loader: require.resolve("babel-loader"),
+            options: {
+              babelrc: false,
+              configFile: false,
+              compact: false,
+              cacheDirectory: true,
+              cacheCompression: false,
+              sourceMaps: true,
+              inputSourceMap: true,
+              presets: [
+                [
+                  require("@babel/preset-env"),
+                  {
+                    useBuiltIns: "entry",
+                    corejs: 3,
+                    exclude: ["transform-typeof-symbol"],
+                  },
+                ],
+              ],
+              plugins: [
+                [
+                  require("@babel/plugin-transform-runtime"),
+                  {
+                    corejs: false,
+                    helpers: true,
+                    version: require("@babel/runtime/package.json").version,
+                    regenerator: true,
+                    useESModules: true,
+                    absoluteRuntime: path.dirname(
+                      require.resolve("@babel/runtime/package.json")
+                    ),
+                  },
+                ],
+                ["@babel/plugin-proposal-decorators", { legacy: true }],
+                ["@babel/plugin-proposal-class-properties", { loose: true }],
+              ].filter(Boolean),
+            },
+          },
+          {
+            test: /\.(less|css)$/,
+            include: /src/,
+            use: [
+              {
+                loader: MiniCssExtractPlugin.loader,
+                options: {
+                  esModule: true,
+                  modules: {
+                    namedExport: true,
+                  },
+                },
               },
+              {
+                loader: require.resolve("css-loader"),
+                options: {
+                  importLoaders: 2,
+                  esModule: true,
+                  modules: {
+                    namedExport: true,
+                  },
+                },
+              },
+              {
+                loader: require.resolve("postcss-loader"),
+                options: {
+                  postcssOptions: {
+                    plugins: () => [
+                      require("postcss-flexbugs-fixes"),
+                      require("postcss-preset-env")({
+                        autoprefixer: {
+                          flexbox: "no-2009",
+                        },
+                        stage: 3,
+                      }),
+                      postcssNormalize(),
+                    ],
+                  },
+                },
+              },
+              {
+                loader: "less-loader",
+                options: {
+                  javascriptEnabled: true
+                }
+              },
+            ],
+            sideEffects: true,
+          },
+          {
+            test: /\.(less|css)$/,
+            include: /node_modules/,
+            use: [
+              {
+                loader: MiniCssExtractPlugin.loader,
+              },
+              {
+                loader: "css-loader",
+              },
+              {
+                loader: "less-loader",
+                options: {
+                  javascriptEnabled: true
+                }
+              },
+            ],
+            sideEffects: true,
+          },
+          {
+            test: /\.(png|jpg|gif|svg|jpeg)$/,
+            loader: "file-loader",
+            options: {
+              name: "static/media/[name].[hash:8].[ext]",
+            },
+          },
+          {
+            loader: require.resolve("file-loader"),
+            exclude: [/\.(js|mjs|jsx|ts|tsx)$/, /\.html$/, /\.json$/],
+            options: {
+              name: "static/media/[name].[hash:8].[ext]",
             },
           },
         ],
-        sideEffects: true,
-      },
-      {
-        test: /\.(js|mjs|jsx|ts|tsx)$/,
-        loader: "babel-loader",
-        include: paths.appPath,
-        exclude: /node_modules/,
-        options: {
-          babelrc: false,
-          configFile: false,
-          cacheDirectory: true,
-          cacheCompression: false,
-          compact: true,
-          presets: [
-            [
-              require("@babel/preset-env"),
-              {
-                useBuiltIns: "entry",
-                corejs: 3,
-                exclude: ["transform-typeof-symbol"],
-              },
-            ],
-            [
-              require("@babel/preset-react").default,
-              {
-                development: false,
-                useBuiltIns: true,
-                runtime: "automatic",
-              },
-            ],
-          ].filter(Boolean),
-          plugins: [
-            ["@babel/plugin-syntax-jsx"],
-            ["@babel/plugin-transform-react-jsx"],
-            ["@babel/plugin-transform-react-display-name"],
-            ["babel-plugin-add-module-exports"],
-            [
-              require("@babel/plugin-transform-flow-strip-types").default,
-              false,
-            ],
-            require("babel-plugin-macros"),
-            ["@babel/plugin-proposal-decorators", { legacy: true }],
-            ["@babel/plugin-proposal-class-properties", { loose: true }],
-            [
-              require("@babel/plugin-transform-runtime"),
-              {
-                corejs: false,
-                helpers: true,
-                version: require("@babel/runtime/package.json").version,
-                regenerator: true,
-                useESModules: true,
-                absoluteRuntime: path.dirname(
-                  require.resolve("@babel/runtime/package.json")
-                ),
-              },
-            ],
-            [
-              require("babel-plugin-transform-react-remove-prop-types").default,
-              {
-                removeImport: true,
-              },
-            ],
-            require("@babel/plugin-proposal-optional-chaining").default,
-            require("@babel/plugin-proposal-nullish-coalescing-operator")
-              .default,
-          ].filter(Boolean),
-        },
-      },
-      {
-        test: /\.(png|jpg|gif|svg)$/,
-        loader: "file-loader",
-        options: {
-          name: "[name].[ext]?[hash]",
-        },
       },
     ],
   },

@@ -282,6 +282,7 @@ module.exports = {
        */
       chunks: "async",
       minSize: 20000, // 生成 chunk 的最小体积（以 bytes 为单位）
+      maxSize: 3348576, // 最大不超过3M【4 vs 5】4上面不能配置此参数
       /**
        * 在 webpack 5 中引入了 splitChunks.minRemainingSize 选项，通过确保拆分后剩余的最小 chunk 体积超过限制来避免大小为零的模块。
        * 'development' 模式 中默认为 0。对于其他情况，splitChunks.minRemainingSize 默认为 splitChunks.minSize 的值，因此除需要深度控制的极少数情况外，不需要手动指定它。
@@ -313,7 +314,8 @@ module.exports = {
           test: /[\\/]node_modules[\\/]/,
           priority: -10,
           reuseExistingChunk: true,
-          filename: "vendor/[name].[contenthash].chunk.js",
+          filename: "vendor/[name].[contenthash].chunk.js", // 【4 vs 5】5配置 4不能配置
+          // name: "vendor/",【4 vs 5】4配置 5不能配置
         },
         default: {
           minChunks: 2,
@@ -331,6 +333,7 @@ module.exports = {
      * 要覆盖默认行为，要将 optimization.moduleIds 设置成 false， 并且要使用 webpack.ids.DeterministicModuleIdsPlugin。
      *
      * 【webpack4 暂不支持，兼容小程序打包，暂时去掉】
+     * 【4 vs 5】4版本没有此两个节点
      */
     moduleIds: "deterministic",
     chunkIds: "deterministic",
@@ -1223,6 +1226,8 @@ module.exports = {
                * 1. resolve.byDependency 具体作用
                * 2. lessOptions.strictMath 具体作用没搞明白
                * 3. lessOptions.javascriptEnabled 不配置会报错，暂时先配置上去
+               * 【4 vs 5】javascriptEnabled 此节点在4中是直接配置在 options 下，如果在5版本中配置在 lessOptions中
+               *      切记如果引入了ant的less，需要单独给处理：不能用 postcss-loader & 使用 less-loader 一定要配置 javascriptEnabled
                */
               {
                 loader: "less-loader",
@@ -1344,6 +1349,12 @@ module.exports = {
             ],
             sideEffects: true,
           },
+          /**
+           * 此处处理 node_modules 中引入的less文件，切记两点
+           * 1. 不能用 postcss-loader
+           * 2. 使用 less-loader 一定要配置 javascriptEnabled
+           * 切记如果引入了ant的less，需要单独给处理：不能用 postcss-loader & 使用 less-loader 一定要配置 javascriptEnabled
+           */
           {
             test: /\.(less|css)$/,
             include: /node_modules/,

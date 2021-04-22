@@ -135,6 +135,7 @@ module.exports = {
     minimize: true,
     minimizer: [
       new TerserPlugin({
+        sourceMap: true,
         parallel: true,
         extractComments: false,
         terserOptions: {
@@ -166,14 +167,16 @@ module.exports = {
       }),
     ],
     splitChunks: {
-      // maxSize: 3348576, // 最大不超过3M
+      chunks: "all",
       minSize: 200000, // 最小不小于 200k
       maxAsyncRequests: 30,
       maxInitialRequests: 30,
+      minChunks: 1,
+      name: true,
       cacheGroups: {
-        defaultVendors: {
+        vendors: {
           test: /[\\/]node_modules[\\/]/,
-          filename: "static/vendor/[name].[contenthash].chunk.js",
+          name: "vendor",
           chunks: "all",
           priority: -10,
           reuseExistingChunk: true,
@@ -223,6 +226,7 @@ module.exports = {
             exclude: /node_modules/,
             loader: require.resolve("babel-loader"),
             options: {
+              sourceMaps: true,
               babelrc: false,
               configFile: false,
               cacheDirectory: true,
@@ -387,10 +391,7 @@ module.exports = {
               {
                 loader: require.resolve("less-loader"),
                 options: {
-                  lessOptions: {
-                    strictMath: false,
-                    javascriptEnabled: true,
-                  },
+                  javascriptEnabled: true,
                 },
               },
             ],
@@ -409,20 +410,24 @@ module.exports = {
               {
                 loader: "less-loader",
                 options: {
-                  lessOptions: {
-                    strictMath: false,
-                    javascriptEnabled: true,
-                  },
+                  javascriptEnabled: true,
                 },
               },
             ],
             sideEffects: true,
           },
           {
-            test: /\.(png|jpg|gif|svg)$/,
+            test: /\.(png|jpg|gif|svg|jpeg)$/,
             loader: "file-loader",
             options: {
-              name: "[name].[ext]?[hash]",
+              name: "static/media/[name].[hash:8].[ext]",
+            },
+          },
+          {
+            loader: require.resolve("file-loader"),
+            exclude: [/\.(js|mjs|jsx|ts|tsx)$/, /\.html$/, /\.json$/],
+            options: {
+              name: "static/media/[name].[hash:8].[ext]",
             },
           },
         ],

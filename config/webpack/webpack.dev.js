@@ -273,10 +273,7 @@ module.exports = {
               {
                 loader: require.resolve("less-loader"),
                 options: {
-                  lessOptions: {
-                    strictMath: false,
-                    javascriptEnabled: true,
-                  },
+                  javascriptEnabled: true,
                 },
               },
             ],
@@ -295,20 +292,24 @@ module.exports = {
               {
                 loader: "less-loader",
                 options: {
-                  lessOptions: {
-                    strictMath: false,
-                    javascriptEnabled: true,
-                  },
+                  javascriptEnabled: true,
                 },
               },
             ],
             sideEffects: true,
           },
           {
-            test: /\.(png|jpg|gif|svg)$/,
+            test: /\.(png|jpg|gif|svg|jpeg)$/,
             loader: "file-loader",
             options: {
-              name: "[name].[ext]?[hash]",
+              name: "static/media/[name].[hash:8].[ext]",
+            },
+          },
+          {
+            loader: require.resolve("file-loader"),
+            exclude: [/\.(js|mjs|jsx|ts|tsx)$/, /\.html$/, /\.json$/],
+            options: {
+              name: "static/media/[name].[hash:8].[ext]",
             },
           },
         ],
