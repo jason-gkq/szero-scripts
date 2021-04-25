@@ -35,8 +35,11 @@
     "@babel/core": "^7.13.14",
     "@babel/plugin-proposal-class-properties": "^7.13.0",
     "@babel/plugin-proposal-decorators": "^7.13.5",
+    "@babel/plugin-proposal-export-default-from": "^7.12.13",
+    "@babel/plugin-proposal-export-namespace-from": "^7.12.13",
     "@babel/plugin-proposal-nullish-coalescing-operator": "7.13.8",
     "@babel/plugin-proposal-optional-chaining": "7.13.12",
+    "@babel/plugin-proposal-numeric-separator": "^7.12.13",
     "@babel/plugin-syntax-jsx": "^7.12.13",
     "@babel/plugin-transform-flow-strip-types": "^7.13.0",
     "@babel/plugin-transform-react-display-name": "^7.12.13",
@@ -125,11 +128,7 @@
     }
   },
   "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
+    "production": [">0.2%", "not dead", "not op_mini all"],
     "development": [
       "last 1 chrome version",
       "last 1 firefox version",

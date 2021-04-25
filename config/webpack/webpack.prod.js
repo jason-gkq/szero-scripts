@@ -284,6 +284,8 @@ module.exports = {
                     removeImport: true,
                   },
                 ],
+                ["@babel/plugin-proposal-export-namespace-from"],
+                ["@babel/plugin-proposal-export-default-from"],
                 require("@babel/plugin-proposal-optional-chaining").default,
                 require("@babel/plugin-proposal-nullish-coalescing-operator")
                   .default,
