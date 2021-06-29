@@ -4,9 +4,6 @@ process.env.BABEL_ENV = "production";
 process.env.NODE_ENV = "production";
 process.env.application = "web";
 
-process.on("unhandledRejection", (err) => {
-  throw err;
-});
 const webpack = require("webpack");
 
 const config = require("../config/webpack/webpack.prod");

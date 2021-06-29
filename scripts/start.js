@@ -4,10 +4,6 @@ process.env.BABEL_ENV = "development";
 process.env.NODE_ENV = "development";
 process.env.application = "web";
 
-process.on("unhandledRejection", (err) => {
-  throw err;
-});
-
 const webpackDevServer = require("webpack-dev-server");
 // const mock = require('cf-mock-server/express-mw')
 const webpack = require("webpack");
