@@ -1019,6 +1019,9 @@ module.exports = {
                * - 并且不允许在 css 的 class 名中使用 JavaScript 的保留字
                * - 在 css-loader 和 style-loader 中，选项 esModule 和 modules.namedExport 应启用。
                *
+               * localIdentName
+               * 名字混淆规则：[name] 文件名 [local] 本身类名
+               * 
                * 如果需要在head里面插入css
                * rules: [
                *   {
@@ -1062,6 +1065,8 @@ module.exports = {
                   esModule: true,
                   modules: {
                     namedExport: true,
+                    localIdentName: '[local]',
+                    localIdentName: "[path][name]__[local]--[hash:base64:5]",
                   },
                 },
               },
@@ -1263,6 +1268,7 @@ module.exports = {
                   modules: {
                     namedExport: true,
                     compileType: "module",
+                    localIdentName: '[local]',
                   },
                 },
               },
@@ -1317,6 +1323,7 @@ module.exports = {
                   esModule: true,
                   modules: {
                     namedExport: true,
+                    localIdentName: '[local]',
                   },
                 },
               },

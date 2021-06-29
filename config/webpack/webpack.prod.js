@@ -370,6 +370,7 @@ module.exports = {
                   esModule: true,
                   modules: {
                     namedExport: true,
+                    localIdentName: '[local]',
                   },
                 },
               },

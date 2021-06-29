@@ -6,9 +6,17 @@ const fs = require("fs");
 const appDirectory = fs.realpathSync(process.cwd());
 const resolveApp = (relativePath) => path.resolve(appDirectory, relativePath);
 
-const publicUrlOrPath = require(resolveApp("package.json")).homepage || "/";
+let publicUrlOrPath =  "/"; // require(resolveApp("package.json")).homepage ||
 
 process.env.publicUrlOrPath = publicUrlOrPath;
+
+const setPublicUrlOrPath = (cdnPath) => {
+  publicUrlOrPath = cdnPath;
+  process.env.publicUrlOrPath = cdnPath;
+}
+const getPublicUrlOrPath = () => {
+  return publicUrlOrPath;
+}
 
 const buildPath = "dest";
 
@@ -50,7 +58,7 @@ module.exports = {
   // proxySetup: resolveApp('src/setupProxy.js'),
   appNodeModules: resolveApp("node_modules"),
   swSrc: resolveModule(resolveApp, "src/serviceWorker"),
-  publicUrlOrPath,
+  publicUrlOrPath: getPublicUrlOrPath(),
   // These properties only exist before ejecting:
   ownPath: resolveOwn("."),
   ownNodeModules: resolveOwn("node_modules"), // This is empty on npm 3
@@ -61,3 +69,4 @@ module.exports = {
 };
 
 module.exports.moduleFileExtensions = moduleFileExtensions;
+module.exports.setPublicUrlOrPath = setPublicUrlOrPath;

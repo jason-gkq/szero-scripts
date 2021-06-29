@@ -30,7 +30,7 @@ module.exports = {
     path: paths.appBuild,
     filename: "[name].js",
     chunkFilename: "[name].chunk.js",
-    publicPath: "/", // paths.publicUrlOrPath,
+    publicPath: paths.publicUrlOrPath, // "/",
     devtoolModuleFilenameTemplate: (info) =>
       path.resolve(info.absoluteResourcePath).replace(/\\/g, "/"),
   },
@@ -252,6 +252,7 @@ module.exports = {
                   esModule: true,
                   modules: {
                     namedExport: true,
+                    localIdentName: '[local]',
                   },
                 },
               },

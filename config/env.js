@@ -65,24 +65,33 @@ delete require.cache[require.resolve("./paths")];
 // Grab NODE_ENV and REACT_APP_* environment variables and prepare them to be
 // injected into the application via DefinePlugin in webpack configuration.
 // const REACT_APP = /^REACT_APP_/i; .filter(key => REACT_APP.test(key))
+const proEnv = getCliParams();
+
+process.env.publicUrlOrPath = '/';
+
+if (fs.existsSync(`${paths.env}/env.${proEnv.env}.json`)) {
+  const {CDN_URL = '/'} = require(`${paths.env}/env.${proEnv.env}.json`);
+  paths.setPublicUrlOrPath(CDN_URL);
+}
 
 function getClientEnvironment() {
   const raw = Object.keys(process.env).reduce((env, key) => {
     env[key] = process.env[key];
     return env;
   }, {});
-  const proEnv = getCliParams();
-  let productConfig = { ENV: proEnv.env };
-  // if (fs.existsSync(`${paths.env}/env.com.json`)) {
-  //   Object.assign(productConfig, require(`${paths.env}/env.com.json`));
-  // }
-
-  if (fs.existsSync(`${paths.env}/env.${proEnv.env}.json`)) {
-    const CDN_URL = require(`${paths.env}/env.${proEnv.env}.json`).CDN_URL;
-    CDN_URL && (productConfig["CDN_URL"] = CDN_URL);
-    // Object.assign(productConfig, require(`${paths.env}/env.${proEnv.env}.json`));
+  
+  let productConfig = { ENV: proEnv.env, VERSION:  proEnv.v && proEnv.version || 'local' };
+  if(fs.existsSync(`${paths.appPackageJson}`)){
+    const {author} = require(`${paths.appPackageJson}`);
+    raw.author = author || 'author';
   }
-  Object.assign(raw, productConfig);
+  if (fs.existsSync(`${paths.env}/env.com.json`)) {
+    Object.assign(productConfig, require(`${paths.env}/env.com.json`));
+  }
+  if (fs.existsSync(`${paths.env}/env.${proEnv.env}.json`)) {
+    Object.assign(productConfig, require(`${paths.env}/env.${proEnv.env}.json`));
+  }
+  Object.assign(raw, {productConfig});
   // Stringify all values so we can feed into webpack DefinePlugin
   const stringified = {
     "process.env": Object.keys(raw).reduce((env, key) => {
