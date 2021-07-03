@@ -1498,7 +1498,7 @@ module.exports = {
   `/* webpackPreload: true */`
 
 - 是为预加载的文件取别名
-  `/* webpackChunkName: true */`
+  `/* webpackChunkName: 'chunkName' */`
 
 组合使用：
 `const { default: _ } = await import(/* webpackChunkName: "lodash" */ /* webpackPrefetch: true */ 'lodash');`
