@@ -31,7 +31,25 @@ function listFile(dir, list = []) {
 }
 
 function getRoutes() {
-  const routes = {};
+  const routes = {'index': [], 'common': []};
+  const commonList = listFile(`${paths.appSrc}/common/pages`);
+  commonList.forEach((fullPath) => {
+    const routePath = fullPath.split("pages")[1].split("/index.js")[0];
+    const routePathArr = routePath.split("/");
+    const modelName = 'common';
+    const chunkName = routePathArr[routePathArr.length - 1];
+    // const modelName = /\/\w*\//.exec(routePath)[0].replace(/\//g, "");
+    const path = `/${appName}/common` + routePath;
+    const component = `$React.lazy(() =>import(/* webpackChunkName: '${chunkName}' */ /* webpackMode: 'lazy' */ '@src/common/pages${routePath}'))$`;
+
+    if (!routes[modelName]) {
+      routes[modelName] = [];
+    }
+    routes[modelName].push({
+      path,
+      component,
+    });
+  });
   const list = listFile(`${paths.appSrc}/pages`);
   list.forEach((fullPath) => {
     const routePath = fullPath.split("pages")[1].split("/index.js")[0];
@@ -58,7 +76,7 @@ const str =
   'import React from "react";export default ' + JSON.stringify(routes);
 
 fs.writeFileSync(
-  `${paths.appSrc}/pages/common/navigate/routeData.js`,
+  `${paths.appSrc}/common/navigate/routeData.js`,
   str.replace(/(\"\$)|(\$\")/g, "")
 );
 
