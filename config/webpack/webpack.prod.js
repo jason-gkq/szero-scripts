@@ -23,6 +23,8 @@ const env = getClientEnvironment();
 const useTypeScript = fs.existsSync(paths.appTsConfig);
 const swSrc = fs.existsSync(paths.swSrc);
 
+const svgToMiniDataURI = require('mini-svg-data-uri');
+
 module.exports = {
   mode: "production",
   bail: true,
@@ -181,6 +183,11 @@ module.exports = {
           priority: -10,
           reuseExistingChunk: true,
         },
+        // commons: {
+        //   name: 'commons',
+        //   chunks: 'initial',
+        //   minChunks: 2
+        // },
         default: {
           minChunks: 2,
           priority: -20,
@@ -420,11 +427,53 @@ module.exports = {
             sideEffects: true,
           },
           {
-            test: /\.(png|jpg|gif|svg|jpeg)$/,
-            loader: "file-loader",
-            options: {
-              name: "static/media/[name].[hash:8].[ext]",
-            },
+            test: /\.(png|jpg|gif|jpeg)$/,
+            use: [
+              {
+                loader: "url-loader",
+                options: {
+                  name: "static/media/[name].[hash:8].[ext]",
+                  limit: 1024,
+                },
+              },
+              {
+                loader: 'image-webpack-loader',
+                options: {
+                  mozjpeg: {
+                    progressive: true,
+                  },
+                  // optipng.enabled: false will disable optipng
+                  optipng: {
+                    enabled: false,
+                  },
+                  pngquant: {
+                    quality: [0.85, 0.90],
+                    speed: 4
+                  },
+                  gifsicle: {
+                    interlaced: false,
+                  },
+                  // the webp option will enable WEBP
+                  webp: {
+                    quality: 90
+                  }
+                }
+              },
+            ],
+          },
+          {
+            test: /\.svg$/i,
+            use: [
+              {
+                loader: 'url-loader',
+                options: {
+                  name: "static/media/[name].[hash:8].[ext]",
+                  generator: (content) => svgToMiniDataURI(content.toString()),
+                  limit: 1024,
+                },
+              },
+              'svgo-loader',
+            ],
           },
           {
             loader: require.resolve("file-loader"),

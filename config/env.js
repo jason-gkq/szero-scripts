@@ -11,6 +11,7 @@
 const fs = require("fs");
 // const path = require('path');
 const paths = require("./paths");
+const proEnv = require("./params");
 
 // Make sure that including paths.js after env.js will read .env variables.
 delete require.cache[require.resolve("./paths")];
@@ -65,14 +66,8 @@ delete require.cache[require.resolve("./paths")];
 // Grab NODE_ENV and REACT_APP_* environment variables and prepare them to be
 // injected into the application via DefinePlugin in webpack configuration.
 // const REACT_APP = /^REACT_APP_/i; .filter(key => REACT_APP.test(key))
-const proEnv = getCliParams();
 
-process.env.publicUrlOrPath = '/';
 
-if (fs.existsSync(`${paths.env}/env.${proEnv.env}.json`)) {
-  const {CDN_URL = '/'} = require(`${paths.env}/env.${proEnv.env}.json`);
-  paths.setPublicUrlOrPath(CDN_URL);
-}
 
 function getClientEnvironment() {
   const raw = Object.keys(process.env).reduce((env, key) => {
@@ -80,7 +75,7 @@ function getClientEnvironment() {
     return env;
   }, {});
   
-  let productConfig = { ENV: proEnv.env, VERSION:  proEnv.v && proEnv.version || 'local' };
+  let productConfig = { ENV: proEnv.env, VERSION:  proEnv.version || 'local' };
   if(fs.existsSync(`${paths.appPackageJson}`)){
     const {author} = require(`${paths.appPackageJson}`);
     raw.author = author || 'author';
@@ -88,8 +83,8 @@ function getClientEnvironment() {
   if (fs.existsSync(`${paths.env}/env.com.json`)) {
     Object.assign(productConfig, require(`${paths.env}/env.com.json`));
   }
-  if (fs.existsSync(`${paths.env}/env.${proEnv.env}.json`)) {
-    Object.assign(productConfig, require(`${paths.env}/env.${proEnv.env}.json`));
+  if (fs.existsSync(`${paths.appEnvConfig}`)) {
+    Object.assign(productConfig, require(`${paths.appEnvConfig}`));
   }
   Object.assign(raw, {productConfig});
   // Stringify all values so we can feed into webpack DefinePlugin
@@ -136,36 +131,5 @@ function getAlias() {
   // };
 }
 
-function getCliParams() {
-  const args = {};
-  const params = process.argv.splice(2);
-
-  if (!params.length) {
-    throw new Error(
-      "The ENV environment variable is required but was not specified."
-    );
-  }
-
-  params.forEach((arg) => {
-    const tmpArg = arg.trim().split("=");
-    if (tmpArg.length) {
-      args[tmpArg[0].replace(/\W+/g, "")] = tmpArg[1];
-    } else {
-      return false;
-    }
-  });
-  if (
-    !args ||
-    !args.env ||
-    !["local", "dev", "uat", "pre", "prod"].includes(args.env)
-  ) {
-    throw new Error(
-      "The ENV environment variable is required but was not specified."
-    );
-  }
-  return args;
-}
-
 module.exports.getClientEnvironment = getClientEnvironment;
 module.exports.getAlias = getAlias;
-module.exports.getCliParams = getCliParams;

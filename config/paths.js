@@ -3,20 +3,32 @@
 const path = require("path");
 const fs = require("fs");
 
+const proEnv = require("./params");
+
 const appDirectory = fs.realpathSync(process.cwd());
 const resolveApp = (relativePath) => path.resolve(appDirectory, relativePath);
 
-let publicUrlOrPath =  "/"; // require(resolveApp("package.json")).homepage ||
+
+let appName = null;
+let publicUrlOrPath = '/';
+
+if(fs.existsSync(`${resolveApp("env")}/env.com.json`)){
+  appName = require(`${resolveApp("env")}/env.com.json`).appName;
+  if(appName){
+    publicUrlOrPath = `/${appName}/`;
+  }
+}
+
+if (fs.existsSync(`${resolveApp("env")}/env.${proEnv.env}.json`)) {
+  const {CDN_URL = '/'} = require(`${resolveApp("env")}/env.${proEnv.env}.json`);
+  if(appName){
+    publicUrlOrPath = `${CDN_URL}${appName}/`;
+  }else{
+    publicUrlOrPath = CDN_URL;
+  }
+}
 
 process.env.publicUrlOrPath = publicUrlOrPath;
-
-const setPublicUrlOrPath = (cdnPath) => {
-  publicUrlOrPath = cdnPath;
-  process.env.publicUrlOrPath = cdnPath;
-}
-const getPublicUrlOrPath = () => {
-  return publicUrlOrPath;
-}
 
 const buildPath = "dest";
 
@@ -53,12 +65,13 @@ module.exports = {
   appSrc: resolveApp("src"),
   appTsConfig: resolveApp("tsconfig.json"),
   appJsConfig: resolveApp("jsconfig.json"),
+  appEnvConfig: resolveApp(`env/env.${proEnv.env}.json`),
   yarnLockFile: resolveApp("yarn.lock"),
   // testsSetup: resolveModule(resolveApp, 'src/setupTests'),
   // proxySetup: resolveApp('src/setupProxy.js'),
   appNodeModules: resolveApp("node_modules"),
   swSrc: resolveModule(resolveApp, "src/serviceWorker"),
-  publicUrlOrPath: getPublicUrlOrPath(),
+  publicUrlOrPath,
   // These properties only exist before ejecting:
   ownPath: resolveOwn("."),
   ownNodeModules: resolveOwn("node_modules"), // This is empty on npm 3
@@ -69,4 +82,3 @@ module.exports = {
 };
 
 module.exports.moduleFileExtensions = moduleFileExtensions;
-module.exports.setPublicUrlOrPath = setPublicUrlOrPath;
