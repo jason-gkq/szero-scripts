@@ -144,6 +144,7 @@ module.exports = {
                 require("babel-plugin-macros"),
                 ["@babel/plugin-proposal-decorators", { legacy: true }],
                 ["@babel/plugin-proposal-class-properties", { loose: true }],
+                ["@babel/plugin-proposal-private-methods", { loose: true }],
                 [
                   require("@babel/plugin-transform-runtime"),
                   {
@@ -256,18 +257,16 @@ module.exports = {
               {
                 loader: require.resolve("postcss-loader"),
                 options: {
-                  postcssOptions: {
-                    plugins: () => [
-                      require("postcss-flexbugs-fixes"),
-                      require("postcss-preset-env")({
-                        autoprefixer: {
-                          flexbox: "no-2009",
-                        },
-                        stage: 3,
-                      }),
-                      postcssNormalize(),
-                    ],
-                  },
+                  plugins: () => [
+                    require("postcss-flexbugs-fixes"),
+                    require("postcss-preset-env")({
+                      autoprefixer: {
+                        flexbox: "no-2009",
+                      },
+                      stage: 3,
+                    }),
+                    postcssNormalize(),
+                  ],
                 },
               },
               {

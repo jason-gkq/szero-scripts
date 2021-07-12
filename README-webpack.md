@@ -1,3 +1,13 @@
+#### 待去掉包
+- bfj
+- postcss-safe-parser
+- chalk
+- fs-extra
+- globby
+- immer
+- semver
+- webpack-nano
+
 ### 开发环境 webpack 打包详解
 
 ### 本包开发 dll 打包配置：
@@ -1199,7 +1209,7 @@ module.exports = {
                * postcss-preset-env 包含 autoprefixer，因此如果你已经使用了 preset 就无需单独添加它了。更多 信息
                *
                */
-              {
+              { // 【webpack 5版本】postcssOptions 是在 5版本中添加，4以及4以前版本直接写在options中
                 loader: require.resolve("postcss-loader"),
                 options: {
                   postcssOptions: {
@@ -1214,6 +1224,21 @@ module.exports = {
                       postcssNormalize(),
                     ],
                   },
+                },
+              },
+              { // 【webpack 4版本】
+                loader: require.resolve("postcss-loader"),
+                options: {
+                  plugins: () => [
+                    require("postcss-flexbugs-fixes"),
+                    require("postcss-preset-env")({
+                      autoprefixer: {
+                        flexbox: "no-2009",
+                      },
+                      stage: 3,
+                    }),
+                    postcssNormalize(),
+                  ],
                 },
               },
               /**
