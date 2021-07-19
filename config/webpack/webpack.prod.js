@@ -23,7 +23,7 @@ const env = getClientEnvironment();
 const useTypeScript = fs.existsSync(paths.appTsConfig);
 const swSrc = fs.existsSync(paths.swSrc);
 
-const svgToMiniDataURI = require('mini-svg-data-uri');
+const svgToMiniDataURI = require("mini-svg-data-uri");
 
 module.exports = {
   mode: "production",
@@ -297,6 +297,20 @@ module.exports = {
                 require("@babel/plugin-proposal-optional-chaining").default,
                 require("@babel/plugin-proposal-nullish-coalescing-operator")
                   .default,
+                [
+                  "import",
+                  { libraryName: "antd", libraryDirectory: "lib", style: true },
+                  "antd",
+                ],
+                [
+                  "import",
+                  {
+                    libraryName: "antd-mobile",
+                    libraryDirectory: "lib",
+                    style: true,
+                  },
+                  "antd-mobile",
+                ],
               ].filter(Boolean),
               overrides: [
                 {
@@ -378,7 +392,7 @@ module.exports = {
                   esModule: true,
                   modules: {
                     namedExport: true,
-                    localIdentName: '[local]',
+                    localIdentName: "[local]",
                   },
                 },
               },
@@ -436,7 +450,7 @@ module.exports = {
                 },
               },
               {
-                loader: 'image-webpack-loader',
+                loader: "image-webpack-loader",
                 options: {
                   mozjpeg: {
                     progressive: true,
@@ -446,17 +460,17 @@ module.exports = {
                     enabled: false,
                   },
                   pngquant: {
-                    quality: [0.85, 0.90],
-                    speed: 4
+                    quality: [0.85, 0.9],
+                    speed: 4,
                   },
                   gifsicle: {
                     interlaced: false,
                   },
                   // the webp option will enable WEBP
                   webp: {
-                    quality: 90
-                  }
-                }
+                    quality: 90,
+                  },
+                },
               },
             ],
           },
@@ -464,14 +478,14 @@ module.exports = {
             test: /\.svg$/i,
             use: [
               {
-                loader: 'url-loader',
+                loader: "url-loader",
                 options: {
                   name: "static/media/[name].[hash:8].[ext]",
                   generator: (content) => svgToMiniDataURI(content.toString()),
                   limit: 1024,
                 },
               },
-              'svgo-loader',
+              "svgo-loader",
             ],
           },
           {

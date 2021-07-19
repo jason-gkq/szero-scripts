@@ -40,7 +40,7 @@ function getRoutes() {
     const chunkName = routePathArr[routePathArr.length - 1];
     // const modelName = /\/\w*\//.exec(routePath)[0].replace(/\//g, "");
     const path = `/${appName}/common` + routePath;
-    const component = `$React.lazy(() =>import(/* webpackChunkName: '${chunkName}' */ /* webpackMode: 'lazy' */ '@src/common/pages${routePath}'))$`;
+    const component = `$React.lazy(() =>import(/* webpackChunkName: '${chunkName}' */ /* webpackMode: 'lazy' */ '@/common/pages${routePath}'))$`;
 
     if (!routes[modelName]) {
       routes[modelName] = [];
@@ -58,7 +58,7 @@ function getRoutes() {
     const chunkName = routePathArr[routePathArr.length - 1];
     // const modelName = /\/\w*\//.exec(routePath)[0].replace(/\//g, "");
     const path = `/${appName}` + routePath;
-    const component = `$React.lazy(() =>import(/* webpackChunkName: '${chunkName}' */ /* webpackMode: 'lazy' */ '@src/pages${routePath}'))$`;
+    const component = `$React.lazy(() =>import(/* webpackChunkName: '${chunkName}' */ /* webpackMode: 'lazy' */ '@/src/pages${routePath}'))$`;
 
     if (!routes[modelName]) {
       routes[modelName] = [];

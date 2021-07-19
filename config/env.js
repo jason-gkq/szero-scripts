@@ -93,6 +93,7 @@ function getClientEnvironment() {
       env[key] = JSON.stringify(raw[key]);
       return env;
     }, {}),
+    __ENV__: JSON.stringify(proEnv.env),
   };
 
   return { raw, stringified };
