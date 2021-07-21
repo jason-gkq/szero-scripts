@@ -31,15 +31,15 @@ function listFile(dir, list = []) {
 }
 
 function getRoutes() {
-  const routes = {'index': [], 'common': []};
+  const routes = { index: [], common: [] };
   const commonList = listFile(`${paths.appSrc}/common/pages`);
   commonList.forEach((fullPath) => {
     const routePath = fullPath.split("pages")[1].split("/index.js")[0];
     const routePathArr = routePath.split("/");
-    const modelName = 'common';
+    const modelName = "common";
     const chunkName = routePathArr[routePathArr.length - 1];
     // const modelName = /\/\w*\//.exec(routePath)[0].replace(/\//g, "");
-    const path = `/${appName}/common` + routePath;
+    const path = `/${appName}/common${routePath}/index`;
     const component = `$React.lazy(() =>import(/* webpackChunkName: '${chunkName}' */ /* webpackMode: 'lazy' */ '@/common/pages${routePath}'))$`;
 
     if (!routes[modelName]) {
@@ -57,7 +57,7 @@ function getRoutes() {
     const modelName = routePathArr[1];
     const chunkName = routePathArr[routePathArr.length - 1];
     // const modelName = /\/\w*\//.exec(routePath)[0].replace(/\//g, "");
-    const path = `/${appName}` + routePath;
+    const path = `/${appName}${routePath}/index`;
     const component = `$React.lazy(() =>import(/* webpackChunkName: '${chunkName}' */ /* webpackMode: 'lazy' */ '@/src/pages${routePath}'))$`;
 
     if (!routes[modelName]) {
@@ -81,7 +81,7 @@ fs.writeFileSync(
 );
 
 spawn.sync(
-  'prettier',
-  [`${paths.appSrc}/common/navigate/routeData.js`, '--write'],
+  "prettier",
+  [`${paths.appSrc}/common/navigate/routeData.js`, "--write"],
   { stdio: "inherit", shell: true }
 );
