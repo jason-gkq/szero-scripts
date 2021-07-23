@@ -18,6 +18,15 @@ const CaseSensitivePathsPlugin = require("case-sensitive-paths-webpack-plugin");
 const env = getClientEnvironment();
 const useTypeScript = fs.existsSync(paths.appTsConfig);
 
+let modifyVars = {};
+const { raw } = env;
+if (
+  raw.productConfig.theme &&
+  fs.existsSync(`${paths.appPublic}/themes/${raw.productConfig.theme}.json`)
+) {
+  modifyVars = require(`${paths.appPublic}/themes/${raw.productConfig.theme}.json`);
+}
+
 module.exports = {
   mode: "development",
   bail: false,
@@ -310,6 +319,7 @@ module.exports = {
                 loader: "less-loader",
                 options: {
                   javascriptEnabled: true,
+                  modifyVars,
                 },
               },
             ],

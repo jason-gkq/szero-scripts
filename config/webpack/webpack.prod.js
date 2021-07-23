@@ -23,6 +23,15 @@ const env = getClientEnvironment();
 const useTypeScript = fs.existsSync(paths.appTsConfig);
 const swSrc = fs.existsSync(paths.swSrc);
 
+let modifyVars = {};
+const { raw } = env;
+if (
+  raw.productConfig.theme &&
+  fs.existsSync(`${paths.appPublic}/themes/${raw.productConfig.theme}.json`)
+) {
+  modifyVars = require(`${paths.appPublic}/themes/${raw.productConfig.theme}.json`);
+}
+
 const svgToMiniDataURI = require("mini-svg-data-uri");
 
 module.exports = {
@@ -434,6 +443,7 @@ module.exports = {
                 loader: "less-loader",
                 options: {
                   javascriptEnabled: true,
+                  modifyVars,
                 },
               },
             ],
