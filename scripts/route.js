@@ -76,12 +76,12 @@ const str =
   'import React from "react";export default ' + JSON.stringify(routes);
 
 fs.writeFileSync(
-  `${paths.appSrc}/common/navigate/routeData.js`,
+  `${paths.appSrc}/zero/navigate/routeData.js`,
   str.replace(/(\"\$)|(\$\")/g, "")
 );
 
 spawn.sync(
   "prettier",
-  [`${paths.appSrc}/common/navigate/routeData.js`, "--write"],
+  [`${paths.appSrc}/zero/navigate/routeData.js`, "--write"],
   { stdio: "inherit", shell: true }
 );
