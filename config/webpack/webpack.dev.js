@@ -47,6 +47,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: paths.appHtml,
       inject: true,
+      favicon: `${paths.appPublic}/favicon.ico`,
     }),
     new webpack.DefinePlugin(env.stringified),
     new webpack.IgnorePlugin({

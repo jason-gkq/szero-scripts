@@ -18,6 +18,7 @@ const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
 const AddAssetHtmlPlugin = require("add-asset-html-webpack-plugin");
 const WorkboxPlugin = require("workbox-webpack-plugin");
+const InterpolateHtmlPlugin = require("../../lib/InterpolateHtmlPlugin");
 
 const env = getClientEnvironment();
 const useTypeScript = fs.existsSync(paths.appTsConfig);
@@ -65,6 +66,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: paths.appHtml,
       inject: true,
+      favicon: `${paths.appPublic}/favicon.ico`,
       minify: {
         removeComments: true,
         collapseWhitespace: true,
@@ -88,7 +90,9 @@ module.exports = {
     //   join: ['lodash', 'join'],
     //  }),
     // new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/runtime~.+[.]js/]),
-    // new InterpolateHtmlPlugin(HtmlWebpackPlugin, {}),
+    new InterpolateHtmlPlugin(HtmlWebpackPlugin, {
+      PUBLIC_URL: paths.publicUrlOrPath,
+    }),
     // new ModuleNotFoundPlugin(path.resolve(__dirname, '..')),
 
     new webpack.DefinePlugin(env.stringified),
