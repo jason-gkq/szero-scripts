@@ -1,4 +1,5 @@
 #### 待去掉包
+
 - bfj
 - postcss-safe-parser
 - chalk
@@ -192,6 +193,13 @@ module.exports = {
         };
       },
     }),
+    swSrc &&
+      new WorkboxPlugin.GenerateSW({
+        // 这些选项帮助快速启用 ServiceWorkers
+        // 不允许遗留任何“旧的” ServiceWorkers
+        clientsClaim: true,
+        skipWaiting: true,
+      }),
   ].filter(Boolean),
   optimization: {
     minimize: true,
@@ -739,6 +747,9 @@ module.exports = {
            * exclude 排除不应参与转码的库 // \\ for Windows, \/ for Mac OS and Linux
            * "exclude": [/node_modules[\\\/]core-js/,/node_modules[\\\/]webpack[\\\/]buildin/,],
            *
+           * compact Default: "auto" || code.length > 500_000
+           * 在紧凑模式下生成代码时，将省略所有可选的换行符和空格。
+           *
            */
           {
             test: /\.(js|mjs|jsx|ts|tsx)$/,
@@ -1031,7 +1042,7 @@ module.exports = {
                *
                * localIdentName
                * 名字混淆规则：[name] 文件名 [local] 本身类名
-               * 
+               *
                * 如果需要在head里面插入css
                * rules: [
                *   {
@@ -1075,7 +1086,7 @@ module.exports = {
                   esModule: true,
                   modules: {
                     namedExport: true,
-                    localIdentName: '[local]',
+                    localIdentName: "[local]",
                     localIdentName: "[path][name]__[local]--[hash:base64:5]",
                   },
                 },
@@ -1209,7 +1220,8 @@ module.exports = {
                * postcss-preset-env 包含 autoprefixer，因此如果你已经使用了 preset 就无需单独添加它了。更多 信息
                *
                */
-              { // 【webpack 5版本】postcssOptions 是在 5版本中添加，4以及4以前版本直接写在options中
+              {
+                // 【webpack 5版本】postcssOptions 是在 5版本中添加，4以及4以前版本直接写在options中
                 loader: require.resolve("postcss-loader"),
                 options: {
                   postcssOptions: {
@@ -1226,7 +1238,8 @@ module.exports = {
                   },
                 },
               },
-              { // 【webpack 4版本】
+              {
+                // 【webpack 4版本】
                 loader: require.resolve("postcss-loader"),
                 options: {
                   plugins: () => [
@@ -1293,7 +1306,7 @@ module.exports = {
                   modules: {
                     namedExport: true,
                     compileType: "module",
-                    localIdentName: '[local]',
+                    localIdentName: "[local]",
                   },
                 },
               },
@@ -1348,7 +1361,7 @@ module.exports = {
                   esModule: true,
                   modules: {
                     namedExport: true,
-                    localIdentName: '[local]',
+                    localIdentName: "[local]",
                   },
                 },
               },

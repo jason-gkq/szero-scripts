@@ -8,22 +8,23 @@ const proEnv = require("./params");
 const appDirectory = fs.realpathSync(process.cwd());
 const resolveApp = (relativePath) => path.resolve(appDirectory, relativePath);
 
-
 let appName = null;
-let publicUrlOrPath = '/';
+let publicUrlOrPath = "/";
 
-if(fs.existsSync(`${resolveApp("env")}/env.com.json`)){
+if (fs.existsSync(`${resolveApp("env")}/env.com.json`)) {
   appName = require(`${resolveApp("env")}/env.com.json`).appName;
-  if(appName){
+  if (appName) {
     publicUrlOrPath = `/${appName}/`;
   }
 }
 
 if (fs.existsSync(`${resolveApp("env")}/env.${proEnv.env}.json`)) {
-  const {CDN_URL = '/'} = require(`${resolveApp("env")}/env.${proEnv.env}.json`);
-  if(appName){
+  const { CDN_URL = "/" } = require(`${resolveApp("env")}/env.${
+    proEnv.env
+  }.json`);
+  if (appName) {
     publicUrlOrPath = `${CDN_URL}${appName}/`;
-  }else{
+  } else {
     publicUrlOrPath = CDN_URL;
   }
 }
@@ -32,7 +33,7 @@ process.env.publicUrlOrPath = publicUrlOrPath;
 
 const buildPath = "dest";
 
-const moduleFileExtensions = ["js", "ts", "tsx", "json", "jsx", "css", "less"];
+const moduleFileExtensions = ["js", "json", "jsx", "css", "less"];
 
 // Resolve file paths in the same order as webpack
 const resolveModule = (resolveFn, filePath) => {

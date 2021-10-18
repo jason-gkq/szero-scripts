@@ -14,15 +14,11 @@ const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 const PnpWebpackPlugin = require("pnp-webpack-plugin");
 const postcssNormalize = require("postcss-normalize");
-const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
 const AddAssetHtmlPlugin = require("add-asset-html-webpack-plugin");
-const WorkboxPlugin = require("workbox-webpack-plugin");
 const InterpolateHtmlPlugin = require("../../lib/InterpolateHtmlPlugin");
 
 const env = getClientEnvironment();
-const useTypeScript = fs.existsSync(paths.appTsConfig);
-const swSrc = fs.existsSync(paths.swSrc);
 
 let modifyVars = {};
 const { raw } = env;
@@ -57,12 +53,6 @@ module.exports = {
   // @ts-ignore
   plugins: [
     new CleanWebpackPlugin(),
-    // new CleanWebpackPlugin(['dist'], {
-    //   root:     path.resolve(__dirname, '..'),
-    //   exclude:  ['manifest.json'],
-    //   verbose:  true,
-    //   dry:      false
-    // }),
     new HtmlWebpackPlugin({
       template: paths.appHtml,
       inject: true,
@@ -85,16 +75,9 @@ module.exports = {
       chunkFilename: "static/[name]/[name].[contenthash].chunk.css",
       ignoreOrder: false, // 忽略有关顺序冲突的警告
     }),
-    // new webpack.ProvidePlugin({
-    //   _: 'lodash',
-    //   join: ['lodash', 'join'],
-    //  }),
-    // new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/runtime~.+[.]js/]),
     new InterpolateHtmlPlugin(HtmlWebpackPlugin, {
       PUBLIC_URL: paths.publicUrlOrPath,
     }),
-    // new ModuleNotFoundPlugin(path.resolve(__dirname, '..')),
-
     new webpack.DefinePlugin(env.stringified),
     new webpack.IgnorePlugin({
       resourceRegExp: /^\.\/locale$/,
@@ -137,14 +120,6 @@ module.exports = {
         };
       },
     }),
-    swSrc &&
-      new WorkboxPlugin.GenerateSW({
-        // 这些选项帮助快速启用 ServiceWorkers
-        // 不允许遗留任何“旧的” ServiceWorkers
-        clientsClaim: true,
-        skipWaiting: true,
-      }),
-    useTypeScript && new ForkTsCheckerWebpackPlugin(),
   ].filter(Boolean),
   optimization: {
     minimize: true,
@@ -196,11 +171,6 @@ module.exports = {
           priority: -10,
           reuseExistingChunk: true,
         },
-        // commons: {
-        //   name: 'commons',
-        //   chunks: 'initial',
-        //   minChunks: 2
-        // },
         default: {
           minChunks: 2,
           priority: -20,
@@ -216,9 +186,7 @@ module.exports = {
     modules: ["node_modules", paths.appNodeModules].concat(
       modules.additionalModulePaths || []
     ),
-    extensions: paths.moduleFileExtensions
-      .map((ext) => `.${ext}`)
-      .filter((ext) => useTypeScript || !ext.includes("ts")),
+    extensions: paths.moduleFileExtensions.map((ext) => `.${ext}`),
     alias: getAlias(),
     plugins: [PnpWebpackPlugin],
   },
@@ -241,14 +209,12 @@ module.exports = {
       {
         oneOf: [
           {
-            test: /\.(js|mjs|jsx|ts|tsx)$/,
+            test: /\.(js|jsx)$/,
             include: paths.appPath,
             exclude: /node_modules/,
             loader: require.resolve("babel-loader"),
             options: {
               sourceMaps: true,
-              babelrc: false,
-              configFile: false,
               cacheDirectory: true,
               cacheCompression: false,
               compact: true,
@@ -269,14 +235,8 @@ module.exports = {
                     runtime: "automatic",
                   },
                 ],
-                useTypeScript && [require("@babel/preset-typescript").default],
               ].filter(Boolean),
               plugins: [
-                ["@babel/plugin-syntax-jsx"],
-                ["@babel/plugin-transform-react-jsx"],
-                ["@babel/plugin-transform-react-display-name"],
-                ["add-module-exports"],
-                useTypeScript && ["@babel/plugin-transform-typescript"],
                 [
                   require("@babel/plugin-transform-flow-strip-types").default,
                   false,
@@ -285,6 +245,10 @@ module.exports = {
                 ["@babel/plugin-proposal-decorators", { legacy: true }],
                 ["@babel/plugin-proposal-class-properties", { loose: true }],
                 ["@babel/plugin-proposal-private-methods", { loose: true }],
+                [
+                  "@babel/plugin-proposal-private-property-in-object",
+                  { loose: true },
+                ],
                 [
                   require("@babel/plugin-transform-runtime"),
                   {
@@ -324,64 +288,6 @@ module.exports = {
                   },
                   "antd-mobile",
                 ],
-              ].filter(Boolean),
-              overrides: [
-                {
-                  exclude: /\.tsx?$/,
-                  plugins: [
-                    require("@babel/plugin-transform-flow-strip-types").default,
-                  ],
-                },
-                {
-                  test: /\.tsx?$/,
-                  plugins: [
-                    [
-                      require("@babel/plugin-proposal-decorators").default,
-                      { legacy: true },
-                    ],
-                  ],
-                },
-              ].filter(Boolean),
-            },
-          },
-          {
-            test: /\.(js|mjs)$/,
-            exclude: /@babel(?:\/|\\{1,2})runtime/,
-            loader: require.resolve("babel-loader"),
-            options: {
-              babelrc: false,
-              configFile: false,
-              compact: false,
-              cacheDirectory: true,
-              cacheCompression: false,
-              sourceMaps: true,
-              inputSourceMap: true,
-              presets: [
-                [
-                  require("@babel/preset-env"),
-                  {
-                    useBuiltIns: "entry",
-                    corejs: 3,
-                    exclude: ["transform-typeof-symbol"],
-                  },
-                ],
-              ],
-              plugins: [
-                [
-                  require("@babel/plugin-transform-runtime"),
-                  {
-                    corejs: false,
-                    helpers: true,
-                    version: require("@babel/runtime/package.json").version,
-                    regenerator: true,
-                    useESModules: true,
-                    absoluteRuntime: path.dirname(
-                      require.resolve("@babel/runtime/package.json")
-                    ),
-                  },
-                ],
-                ["@babel/plugin-proposal-decorators", { legacy: true }],
-                ["@babel/plugin-proposal-class-properties", { loose: true }],
               ].filter(Boolean),
             },
           },

@@ -112,16 +112,11 @@ module.exports = {
       {
         oneOf: [
           {
-            test: /\.(js|mjs|jsx|ts|tsx)$/,
+            test: /\.(js|mjs|jsx)$/,
             include: paths.appPath,
             exclude: /node_modules/,
             loader: require.resolve("babel-loader"),
             options: {
-              babelrc: false,
-              configFile: false,
-              cacheDirectory: true,
-              cacheCompression: false,
-              compact: true,
               presets: [
                 [
                   require("@babel/preset-env"),
@@ -139,15 +134,8 @@ module.exports = {
                     runtime: "automatic",
                   },
                 ],
-                useTypeScript && [require("@babel/preset-typescript").default],
               ].filter(Boolean),
               plugins: [
-                ["@babel/plugin-syntax-jsx"],
-                ["@babel/plugin-transform-react-jsx"],
-                ["@babel/plugin-transform-react-display-name"],
-                ["@babel/plugin-transform-react-jsx-self"],
-                ["@babel/plugin-transform-react-jsx-source"],
-                useTypeScript && ["@babel/plugin-transform-typescript"],
                 [
                   require("@babel/plugin-transform-flow-strip-types").default,
                   false,
@@ -156,6 +144,10 @@ module.exports = {
                 ["@babel/plugin-proposal-decorators", { legacy: true }],
                 ["@babel/plugin-proposal-class-properties", { loose: true }],
                 ["@babel/plugin-proposal-private-methods", { loose: true }],
+                [
+                  "@babel/plugin-proposal-private-property-in-object",
+                  { loose: true },
+                ],
                 [
                   require("@babel/plugin-transform-runtime"),
                   {
@@ -196,64 +188,6 @@ module.exports = {
                   "antd-mobile",
                 ],
                 require.resolve("react-refresh/babel"),
-              ].filter(Boolean),
-              overrides: [
-                {
-                  exclude: /\.tsx?$/,
-                  plugins: [
-                    require("@babel/plugin-transform-flow-strip-types").default,
-                  ],
-                },
-                {
-                  test: /\.tsx?$/,
-                  plugins: [
-                    [
-                      require("@babel/plugin-proposal-decorators").default,
-                      { legacy: true },
-                    ],
-                  ],
-                },
-              ].filter(Boolean),
-            },
-          },
-          {
-            test: /\.(js|mjs)$/,
-            exclude: /@babel(?:\/|\\{1,2})runtime/,
-            loader: require.resolve("babel-loader"),
-            options: {
-              babelrc: false,
-              configFile: false,
-              compact: false,
-              cacheDirectory: true,
-              cacheCompression: false,
-              sourceMaps: true,
-              inputSourceMap: true,
-              presets: [
-                [
-                  require("@babel/preset-env"),
-                  {
-                    useBuiltIns: "entry",
-                    corejs: 3,
-                    exclude: ["transform-typeof-symbol"],
-                  },
-                ],
-              ],
-              plugins: [
-                [
-                  require("@babel/plugin-transform-runtime"),
-                  {
-                    corejs: false,
-                    helpers: true,
-                    version: require("@babel/runtime/package.json").version,
-                    regenerator: true,
-                    useESModules: true,
-                    absoluteRuntime: path.dirname(
-                      require.resolve("@babel/runtime/package.json")
-                    ),
-                  },
-                ],
-                ["@babel/plugin-proposal-decorators", { legacy: true }],
-                ["@babel/plugin-proposal-class-properties", { loose: true }],
               ].filter(Boolean),
             },
           },
