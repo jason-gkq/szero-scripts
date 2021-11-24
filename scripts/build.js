@@ -43,7 +43,7 @@ function copyPublicFolder() {
   }
   fs.copyFile(
     `${paths.appPublic}/manifest.json`,
-    `${paths.appBuildWeb}/manifest.json`,
+    `${paths.appBuild}/manifest.json`,
     callback
   );
 }

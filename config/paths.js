@@ -56,7 +56,6 @@ module.exports = {
   env: resolveApp("env"),
   appPath: resolveApp("."),
   appBuild: resolveApp(buildPath),
-  appBuildWeb: resolveApp(`${buildPath}/web`),
   appBuildMp: resolveApp(`${buildPath}/mp/common`),
   appPublic: resolveApp("public"),
   appHtml: resolveApp("public/index.html"),

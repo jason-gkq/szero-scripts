@@ -41,7 +41,7 @@ module.exports = {
   output: {
     hashDigestLength: 8,
     pathinfo: false,
-    path: paths.appBuildWeb,
+    path: paths.appBuild,
     filename: "static/[name]/[name].[contenthash].js",
     chunkFilename: "static/[name]/[name].[contenthash].chunk.js",
     publicPath: paths.publicUrlOrPath,
@@ -146,6 +146,7 @@ module.exports = {
       }),
       new CssMinimizerPlugin({
         parallel: true,
+        cache: "../node_modules/.cache/css-minimizer-webpack-plugin",
         minimizerOptions: {
           preset: [
             "default",
@@ -215,7 +216,8 @@ module.exports = {
             loader: require.resolve("babel-loader"),
             options: {
               sourceMaps: true,
-              cacheDirectory: true,
+              // cacheDirectory: true,
+              cacheDirectory: "../node_modules/.cache/babel-loader",
               cacheCompression: false,
               compact: true,
               presets: [
