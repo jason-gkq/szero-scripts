@@ -33,7 +33,7 @@ process.env.publicUrlOrPath = publicUrlOrPath;
 
 const buildPath = "dest";
 
-const moduleFileExtensions = ["js", "json", "jsx", "css", "less"];
+const moduleFileExtensions = ["js", "jsx", "ts", "tsx", "css", "less", "json"];
 
 // Resolve file paths in the same order as webpack
 const resolveModule = (resolveFn, filePath) => {

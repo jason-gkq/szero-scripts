@@ -112,7 +112,7 @@ module.exports = {
       {
         oneOf: [
           {
-            test: /\.(js|mjs|jsx)$/,
+            test: /\.(js|jsx|ts|tsx)$/,
             include: paths.appPath,
             exclude: /node_modules/,
             loader: require.resolve("babel-loader"),
@@ -134,6 +134,7 @@ module.exports = {
                     runtime: "automatic",
                   },
                 ],
+                useTypeScript && [require("@babel/preset-typescript").default],
               ].filter(Boolean),
               plugins: [
                 [

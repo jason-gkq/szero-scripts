@@ -101,8 +101,8 @@ function getClientEnvironment() {
 
 function getAlias() {
   const alias = {};
-  if (fs.existsSync(paths.appJsConfig)) {
-    const compilerOptions = require(paths.appJsConfig).compilerOptions || {};
+  if (fs.existsSync(paths.appTsConfig)) {
+    const compilerOptions = require(paths.appTsConfig).compilerOptions || {};
     Object.keys(compilerOptions.paths || {}).forEach((key) => {
       if (/\/$/.test(compilerOptions.paths[key])) {
         alias[key.trim().slice(0, -1)] =

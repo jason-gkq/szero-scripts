@@ -14,11 +14,14 @@ const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 const PnpWebpackPlugin = require("pnp-webpack-plugin");
 const postcssNormalize = require("postcss-normalize");
+const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
 const AddAssetHtmlPlugin = require("add-asset-html-webpack-plugin");
 const InterpolateHtmlPlugin = require("../../lib/InterpolateHtmlPlugin");
 
 const env = getClientEnvironment();
+const useTypeScript = fs.existsSync(paths.appTsConfig);
+const swSrc = fs.existsSync(paths.swSrc);
 
 let modifyVars = {};
 const { raw } = env;
@@ -120,6 +123,7 @@ module.exports = {
         };
       },
     }),
+    useTypeScript && new ForkTsCheckerWebpackPlugin(),
   ].filter(Boolean),
   optimization: {
     minimize: true,
@@ -187,7 +191,9 @@ module.exports = {
     modules: ["node_modules", paths.appNodeModules].concat(
       modules.additionalModulePaths || []
     ),
-    extensions: paths.moduleFileExtensions.map((ext) => `.${ext}`),
+    extensions: paths.moduleFileExtensions
+      .map((ext) => `.${ext}`)
+      .filter((ext) => useTypeScript || !ext.includes("ts")),
     alias: getAlias(),
     plugins: [PnpWebpackPlugin],
   },
@@ -210,7 +216,7 @@ module.exports = {
       {
         oneOf: [
           {
-            test: /\.(js|jsx)$/,
+            test: /\.(js|jsx|ts|tsx)$/,
             include: paths.appPath,
             exclude: /node_modules/,
             loader: require.resolve("babel-loader"),
@@ -237,6 +243,7 @@ module.exports = {
                     runtime: "automatic",
                   },
                 ],
+                useTypeScript && [require("@babel/preset-typescript").default],
               ].filter(Boolean),
               plugins: [
                 [
