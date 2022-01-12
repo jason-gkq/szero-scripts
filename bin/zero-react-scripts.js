@@ -19,27 +19,25 @@ const path = require("path");
 const spawn = require("cross-spawn");
 const args = process.argv.slice(2);
 
-const scriptIndex = args.findIndex(
-  (x) => x === "build" || x === "start" || x === "buildmp"
-);
+const scriptIndex = args.findIndex((x) => x === "build" || x === "start");
 const script = scriptIndex === -1 ? args[0] : args[scriptIndex];
 const nodeArgs = scriptIndex > 0 ? args.slice(0, scriptIndex) : [];
 
-if (["build", "start", "buildmp"].includes(script)) {
+if (["build", "start"].includes(script)) {
   const appDirectory = fs.realpathSync(process.cwd());
-  const before = path.resolve(appDirectory, "src/zero/build/before.js");
-  if (fs.existsSync(before)) {
-    const beforeResult = spawn.sync(
-      process.execPath,
-      [].concat(before).concat(args.slice(scriptIndex + 1)),
-      { stdio: "inherit" }
-    );
-    if (beforeResult.status) {
-      console.error("run build/before.js failed");
-      process.exit(1);
-    }
-    console.info("run build/before.js finished");
-  }
+  // const before = path.resolve(appDirectory, "src/zero/build/before.js");
+  // if (fs.existsSync(before)) {
+  //   const beforeResult = spawn.sync(
+  //     process.execPath,
+  //     [].concat(before).concat(args.slice(scriptIndex + 1)),
+  //     { stdio: "inherit" }
+  //   );
+  //   if (beforeResult.status) {
+  //     console.error("run build/before.js failed");
+  //     process.exit(1);
+  //   }
+  //   console.info("run build/before.js finished");
+  // }
 
   const result = spawn.sync(
     process.execPath,
@@ -64,19 +62,19 @@ if (["build", "start", "buildmp"].includes(script)) {
     }
     process.exit(1);
   }
-  const after = path.resolve(appDirectory, "src/zero/build/after.js");
-  if (fs.existsSync(after)) {
-    const afterResult = spawn.sync(
-      process.execPath,
-      [].concat(after).concat(args.slice(scriptIndex + 1)),
-      { stdio: "inherit" }
-    );
-    if (afterResult.status) {
-      console.error("run build/after.js failed");
-      process.exit(1);
-    }
-    console.info("run build/after.js finished");
-  }
+  // const after = path.resolve(appDirectory, "src/zero/build/after.js");
+  // if (fs.existsSync(after)) {
+  //   const afterResult = spawn.sync(
+  //     process.execPath,
+  //     [].concat(after).concat(args.slice(scriptIndex + 1)),
+  //     { stdio: "inherit" }
+  //   );
+  //   if (afterResult.status) {
+  //     console.error("run build/after.js failed");
+  //     process.exit(1);
+  //   }
+  //   console.info("run build/after.js finished");
+  // }
   process.exit(result.status);
 } else {
   console.log('Unknown script "' + script + '".');

@@ -13,7 +13,8 @@ yarn add zero-react-scripts@0.2.25
 更新包
 
 ```shell
-yarn upgrade zero-react-scripts@0.2.25
+yarn upgrade zero-react-scripts@0.2.17
+yarn upgrade zero-react-scripts --latest
 ```
 
 开发
