@@ -12,7 +12,7 @@ const config = require("../config/webpack/webpack.dev");
 const options = {
   compress: true,
   hot: true,
-  host: "localhost",
+  // host: "localhost",
   port: 8080,
   client: false,
   historyApiFallback: true, // 一定要加上，不然浏览器输入指定页面会发起GET请求，而不是加载页面
