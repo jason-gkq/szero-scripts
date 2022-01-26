@@ -47,8 +47,8 @@ module.exports = {
     hashDigestLength: 8,
     pathinfo: false,
     path: paths.appBuild,
-    filename: "static/[name]/[name].[contenthash].js",
-    chunkFilename: "static/[name]/[name].[contenthash].chunk.js",
+    filename: "static/pages/[name]/[name].[contenthash].js",
+    chunkFilename: "static/pages/[name]/[name].[contenthash].chunk.js",
     publicPath: paths.publicUrlOrPath,
     // assetModuleFilename: "static/media/[name].[hash:8].[ext]",
     // assetModuleFilename: "static/media/[name].[hash:8][ext]",
@@ -78,8 +78,8 @@ module.exports = {
       },
     }),
     new MiniCssExtractPlugin({
-      filename: "static/[name]/[name].[contenthash].css",
-      chunkFilename: "static/[name]/[name].[contenthash].chunk.css",
+      filename: "static/pages/[name]/[name].[contenthash].css",
+      chunkFilename: "static/pages/[name]/[name].[contenthash].chunk.css",
       ignoreOrder: false, // 忽略有关顺序冲突的警告
     }),
     new InterpolateHtmlPlugin(HtmlWebpackPlugin, {
@@ -155,7 +155,7 @@ module.exports = {
       cacheGroups: {
         vendors: {
           test: /[\\/]node_modules[\\/]/,
-          filename: "vendor/[name].[contenthash].chunk.js",
+          filename: "static/vendor/[name].[contenthash].chunk.js",
           priority: -10,
           reuseExistingChunk: true,
         },
@@ -348,39 +348,55 @@ module.exports = {
             ],
             sideEffects: true,
           },
-          {
-            test: /\.(png|jpg|jpeg|gif)$/,
-            type: "asset/resource",
-            generator: {
-              filename: "static/media/[name].[contenthash][ext]",
-            },
-          },
-          {
-            test: /\.(svg)$/,
-            type: "asset/inline",
-          },
           // {
           //   test: /\.svg$/i,
-          //   type: "asset", // inline
-          //   parser: {
-          //     dataUrlCondition: {
-          //       maxSize: 8 * 1024, // 默认就是8k
+          //   type: "javascript/auto",
+          //   use: [
+          //     {
+          //       loader: "url-loader",
+          //       options: {
+          //         name: "static/media/[name].[contenthash].svg",
+          //         generator: (content) => svgToMiniDataURI(content.toString()),
+          //         limit: 1024,
+          //       },
           //     },
-          //   },
-          //   generator: {
-          //     filename: "static/media/[contenthash:8].svg",
-          //     // dataUrl: (content) => {
-          //     //   content = content.toString();
-          //     //   return svgToMiniDataURI(content);
-          //     // },
-          //   },
+          //     "svgo-loader",
+          //   ],
           // },
           {
-            exclude: [/\.(js|mjs|jsx|ts|tsx)$/, /\.html$/, /\.json$/],
+            test: /\.svg$/i,
+            type: "asset", // inline
+            parser: {
+              dataUrlCondition: {
+                maxSize: 8 * 1024, // 默认就是8k
+              },
+            },
+            generator: {
+              filename: "static/media/[name].[contenthash].svg",
+              dataUrl: (content) => {
+                // 大于8k的svg独立生成了文件，但是并未压缩 TODO
+                content = content.toString();
+                return svgToMiniDataURI(content);
+              },
+            },
+          },
+          {
+            test: /\.(png|jpg|jpeg)$/,
             type: "asset/resource",
             generator: {
               filename: "static/media/[name].[contenthash][ext]",
             },
+          },
+          {
+            exclude: [
+              /\.(js|mjs|jsx|ts|tsx|svg|png|jpg|jpeg)$/,
+              /\.html$/,
+              /\.json$/,
+            ],
+            type: "asset/resource",
+            // generator: {
+            //   filename: "media/[name].[contenthash][ext]",
+            // },
           },
         ],
       },

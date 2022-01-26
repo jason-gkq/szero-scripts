@@ -32,6 +32,10 @@ module.exports = {
   devtool: "cheap-module-source-map",
   entry: {
     main: paths.appIndexJs,
+    // Runtime code for hot module replacement
+    // hot: "webpack/hot/dev-server.js",
+    // Dev server client for web socket transport, hot and live reload logic
+    // client: "webpack-dev-server/client/index.js?hot=true&live-reload=true",
   },
   output: {
     pathinfo: false,
@@ -232,15 +236,19 @@ module.exports = {
             sideEffects: true,
           },
           {
-            test: /\.(png|jpg|gif|jpeg)$/,
-            type: "asset/resource",
-          },
-          {
             test: /\.svg$/i,
             type: "asset/inline",
           },
           {
-            exclude: [/\.(js|mjs|jsx|ts|tsx)$/, /\.html$/, /\.json$/],
+            test: /\.(png|jpg|gif|jpeg)$/,
+            type: "asset/resource",
+          },
+          {
+            exclude: [
+              /\.(js|mjs|jsx|ts|tsx|png|jpg|gif|jpeg|svg)$/,
+              /\.html$/,
+              /\.json$/,
+            ],
             type: "asset/resource",
           },
         ],
