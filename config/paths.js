@@ -56,11 +56,9 @@ module.exports = {
   env: resolveApp("env"),
   appPath: resolveApp("."),
   appBuild: resolveApp(buildPath),
-  appBuildMp: resolveApp(`${buildPath}/mp/common`),
   appPublic: resolveApp("public"),
   appHtml: resolveApp("public/index.html"),
   appIndexJs: resolveModule(resolveApp, "src/index"),
-  appMpIndexJs: resolveModule(resolveApp, "src/index.mp"),
   appPackageJson: resolveApp("package.json"),
   appSrc: resolveApp("src"),
   appTsConfig: resolveApp("tsconfig.json"),
@@ -75,7 +73,7 @@ module.exports = {
   // These properties only exist before ejecting:
   ownPath: resolveOwn("."),
   ownNodeModules: resolveOwn("node_modules"), // This is empty on npm 3
-  appTypeDeclarations: resolveApp("src/react-app-env.d.ts"),
+  appTypeDeclarations: resolveApp("src/global.d.ts"),
   ownTypeDeclarations: resolveOwn("lib/react-app.d.ts"),
   dllsPath: resolveOwn("dll"),
   dllOutputPath: resolveOwn("dll/*.dll.js"),

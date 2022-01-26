@@ -19,6 +19,7 @@
     "config",
     "webpack",
     "dll",
+    "lib",
     "scripts",
     "package.json",
     "README.md"

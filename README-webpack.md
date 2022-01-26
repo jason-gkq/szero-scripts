@@ -1535,8 +1535,10 @@ module.exports = {
 - 会在父 chunk 加载时并行下载文件
   `/* webpackPreload: true */`
 
-- 是为预加载的文件取别名
+- 是为预加载的文件取别名 [index] and [request] 占位符，分别支持赋予一个递增的数字和实际解析的文件名
   `/* webpackChunkName: 'chunkName' */`
+  `/* webpackChunkName: "chunk-[request][index]" */`
+  https://www.webpackjs.com/api/module-methods/
 
 组合使用：
 `const { default: _ } = await import(/* webpackChunkName: "lodash" */ /* webpackPrefetch: true */ 'lodash');`
