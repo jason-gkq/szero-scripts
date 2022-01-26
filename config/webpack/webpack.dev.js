@@ -1,17 +1,16 @@
 "use strict";
 
 const paths = require("../paths");
-const modules = require("../modules");
+// const modules = require("../modules");
 const { getClientEnvironment, getAlias } = require("../env");
 
 const fs = require("fs");
 const path = require("path");
 const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const PnpWebpackPlugin = require("pnp-webpack-plugin");
+// const PnpWebpackPlugin = require("pnp-webpack-plugin");
 const postcssNormalize = require("postcss-normalize");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
-const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 const CaseSensitivePathsPlugin = require("case-sensitive-paths-webpack-plugin");
 
@@ -35,15 +34,18 @@ module.exports = {
     main: paths.appIndexJs,
   },
   output: {
-    pathinfo: true,
+    pathinfo: false,
     path: paths.appBuild,
     filename: "[name].js",
     chunkFilename: "[name].chunk.js",
     publicPath: "/", // paths.publicUrlOrPath,
+    assetModuleFilename: "[name][ext]",
     devtoolModuleFilenameTemplate: (info) =>
       path.resolve(info.absoluteResourcePath).replace(/\\/g, "/"),
+    // clean: true,
   },
   plugins: [
+    new webpack.HotModuleReplacementPlugin(),
     new HtmlWebpackPlugin({
       template: paths.appHtml,
       inject: true,
@@ -54,57 +56,30 @@ module.exports = {
       resourceRegExp: /^\.\/locale$/,
       contextRegExp: /moment$/,
     }),
-    new webpack.HotModuleReplacementPlugin(),
     new ReactRefreshWebpackPlugin(),
     new CaseSensitivePathsPlugin(),
     useTypeScript && new ForkTsCheckerWebpackPlugin(),
-    new WebpackManifestPlugin({
-      fileName: "asset-manifest.json",
-      publicPath: "/", // paths.publicUrlOrPath,
-      generate: (seed, files, entrypoints) => {
-        const manifestFiles = files.reduce((manifest, file) => {
-          manifest[file.name] = file.path;
-          return manifest;
-        }, seed);
-        const entrypointFiles = entrypoints.main.filter(
-          (fileName) => !fileName.endsWith(".map")
-        );
-
-        return {
-          files: manifestFiles,
-          entrypoints: entrypointFiles,
-        };
-      },
-    }),
   ].filter(Boolean),
   optimization: {
     minimize: false,
-    splitChunks: {
-      chunks: "all",
-      name: false,
-    },
-    runtimeChunk: {
-      name: (entrypoint) => `runtime~${entrypoint.name}`,
-    },
+    removeAvailableModules: false,
+    removeEmptyChunks: false,
+    splitChunks: false,
   },
   resolve: {
-    modules: ["node_modules", paths.appNodeModules].concat(
-      modules.additionalModulePaths || []
-    ),
+    // modules: ["node_modules", paths.appNodeModules].concat(
+    //   modules.additionalModulePaths || []
+    // ),
     extensions: paths.moduleFileExtensions
       .map((ext) => `.${ext}`)
       .filter((ext) => useTypeScript || !ext.includes("ts")),
     alias: getAlias(),
-    plugins: [PnpWebpackPlugin],
   },
-  resolveLoader: {
-    plugins: [PnpWebpackPlugin.moduleLoader(module)],
-  },
-  node: {
-    global: true,
-    __filename: true,
-    __dirname: true,
-  },
+  // node: {
+  //   global: true,
+  //   __filename: true,
+  //   __dirname: true,
+  // },
   performance: false,
   module: {
     strictExportPresence: true,
@@ -113,8 +88,9 @@ module.exports = {
         oneOf: [
           {
             test: /\.(js|jsx|ts|tsx)$/,
-            include: paths.appPath,
-            exclude: /node_modules/,
+            include: paths.appSrc,
+            // include: paths.appPath,
+            // exclude: /node_modules/,
             loader: require.resolve("babel-loader"),
             options: {
               presets: [
@@ -123,7 +99,6 @@ module.exports = {
                   {
                     useBuiltIns: "entry",
                     corejs: 3,
-                    exclude: ["transform-typeof-symbol"],
                   },
                 ],
                 [
@@ -137,18 +112,6 @@ module.exports = {
                 useTypeScript && [require("@babel/preset-typescript").default],
               ].filter(Boolean),
               plugins: [
-                [
-                  require("@babel/plugin-transform-flow-strip-types").default,
-                  false,
-                ],
-                require("babel-plugin-macros"),
-                ["@babel/plugin-proposal-decorators", { legacy: true }],
-                ["@babel/plugin-proposal-class-properties", { loose: true }],
-                ["@babel/plugin-proposal-private-methods", { loose: true }],
-                [
-                  "@babel/plugin-proposal-private-property-in-object",
-                  { loose: true },
-                ],
                 [
                   require("@babel/plugin-transform-runtime"),
                   {
@@ -169,13 +132,15 @@ module.exports = {
                     removeImport: true,
                   },
                 ],
-                ["@babel/plugin-proposal-export-namespace-from"],
-                ["@babel/plugin-proposal-export-default-from"],
-                require("@babel/plugin-proposal-optional-chaining").default,
-                require("@babel/plugin-proposal-nullish-coalescing-operator")
-                  .default,
+                ["@babel/plugin-proposal-decorators", { legacy: true }],
+                ["@babel/plugin-proposal-class-properties", { loose: true }],
+                ["@babel/plugin-proposal-private-methods", { loose: true }],
                 [
-                  "import",
+                  "@babel/plugin-proposal-private-property-in-object",
+                  { loose: true },
+                ],
+                [
+                  "import", // babel-plugin-import 需要安装
                   { libraryName: "antd", libraryDirectory: "lib", style: true },
                   "antd",
                 ],
@@ -200,9 +165,9 @@ module.exports = {
                 loader: require.resolve("style-loader"),
                 options: {
                   esModule: true,
-                  modules: {
-                    namedExport: true,
-                  },
+                  // modules: {
+                  //   namedExport: true,
+                  // },
                 },
               },
               {
@@ -219,22 +184,26 @@ module.exports = {
               {
                 loader: require.resolve("postcss-loader"),
                 options: {
-                  plugins: () => [
-                    require("postcss-flexbugs-fixes"),
-                    require("postcss-preset-env")({
-                      autoprefixer: {
-                        flexbox: "no-2009",
-                      },
-                      stage: 3,
-                    }),
-                    postcssNormalize(),
-                  ],
+                  postcssOptions: {
+                    plugins: () => [
+                      require("postcss-flexbugs-fixes"),
+                      require("postcss-preset-env")({
+                        autoprefixer: {
+                          flexbox: "no-2009",
+                        },
+                        stage: 3,
+                      }),
+                      postcssNormalize(),
+                    ],
+                  },
                 },
               },
               {
                 loader: require.resolve("less-loader"),
                 options: {
-                  javascriptEnabled: true,
+                  lessOptions: {
+                    javascriptEnabled: true,
+                  },
                 },
               },
             ],
@@ -253,26 +222,26 @@ module.exports = {
               {
                 loader: "less-loader",
                 options: {
-                  javascriptEnabled: true,
-                  modifyVars,
+                  lessOptions: {
+                    modifyVars,
+                    javascriptEnabled: true,
+                  },
                 },
               },
             ],
             sideEffects: true,
           },
           {
-            test: /\.(png|jpg|gif|svg|jpeg)$/,
-            loader: "file-loader",
-            options: {
-              name: "static/media/[name].[hash:8].[ext]",
-            },
+            test: /\.(png|jpg|gif|jpeg)$/,
+            type: "asset/resource",
           },
           {
-            loader: require.resolve("file-loader"),
+            test: /\.svg$/i,
+            type: "asset/inline",
+          },
+          {
             exclude: [/\.(js|mjs|jsx|ts|tsx)$/, /\.html$/, /\.json$/],
-            options: {
-              name: "static/media/[name].[hash:8].[ext]",
-            },
+            type: "asset/resource",
           },
         ],
       },

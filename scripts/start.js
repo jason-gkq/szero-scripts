@@ -2,48 +2,38 @@
 
 process.env.BABEL_ENV = "development";
 process.env.NODE_ENV = "development";
-process.env.application = "web";
+// process.env.application = "web";
 
 const webpackDevServer = require("webpack-dev-server");
 // const mock = require('cf-mock-server/express-mw')
 const webpack = require("webpack");
-
 const config = require("../config/webpack/webpack.dev");
+
 const options = {
-  contentBase: config.output.path,
   compress: true,
   hot: true,
   host: "localhost",
-  historyApiFallback: true,
-  publicPath: "/", // config.output.publicPath.slice(0, -1),
-  stats: {
-    assets: false,
-    entrypoints: false,
-    children: false,
-    modules: false,
-    errors: true,
-    errorDetails: true,
-    warnings: true,
-  },
-  // after: (app, server) => {
-  //   app.use(
-  //     mock({
-  //       config: path.join(__dirname, "./mock-server/config.js"),
-  //     })
-  //   );
+  port: 8080,
+  client: false,
+  historyApiFallback: true, // 一定要加上，不然浏览器输入指定页面会发起GET请求，而不是加载页面
+  // historyApiFallback: { // 多入口配置
+  //   rewrites: [
+  //     { from: /^\/$/, to: '/views/landing.html' },
+  //     { from: /^\/subpage/, to: '/views/subpage.html' },
+  //     { from: /./, to: '/views/404.html' },
+  //   ],
   // },
+  client: {
+    logging: "warn",
+    overlay: true,
+    progress: true,
+    reconnect: 3,
+  },
 };
 
-webpackDevServer.addDevServerEntrypoints(config, options);
 const compiler = webpack(config);
-const server = new webpackDevServer(compiler, options);
+const server = new webpackDevServer(options, compiler);
 
-server.listen(8080, "localhost", () => {
-  console.log(
-    `Starting server on http://localhost:8080${config.output.publicPath.slice(
-      0,
-      -1
-    )}`
-  );
-  console.log("dev server listening on port 8080");
+server.startCallback(() => {
+  console.log("Starting server on http://localhost:8080");
 });
