@@ -31,7 +31,7 @@ if (fs.existsSync(`${resolveApp("env")}/env.${proEnv.env}.json`)) {
 
 process.env.publicUrlOrPath = publicUrlOrPath;
 
-const buildPath = "dest";
+const buildPath = "dist";
 
 const moduleFileExtensions = ["js", "jsx", "ts", "tsx", "css", "less", "json"];
 
