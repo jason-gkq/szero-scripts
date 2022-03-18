@@ -1517,8 +1517,7 @@ module.exports = {
           },
           {
             test: require.resolve("../src/common/globals.js"),
-            use:
-              "exports-loader?type=commonjs&exports=file,multiple|helpers.parse|parse",
+            use: "exports-loader?type=commonjs&exports=file,multiple|helpers.parse|parse",
           },
         ],
       },
@@ -1539,6 +1538,7 @@ module.exports = {
   `/* webpackChunkName: 'chunkName' */`
   `/* webpackChunkName: "chunk-[request][index]" */`
   https://www.webpackjs.com/api/module-methods/
+  https://webpack.js.org/api/module-methods/
 
 组合使用：
 `const { default: _ } = await import(/* webpackChunkName: "lodash" */ /* webpackPrefetch: true */ 'lodash');`

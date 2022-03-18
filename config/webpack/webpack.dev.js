@@ -237,8 +237,14 @@ module.exports = {
           },
           {
             test: /\.svg$/i,
-            type: "asset/inline",
+            issuer: /\.[jt]sx?$/,
+            type: "javascript/auto",
+            use: ["@svgr/webpack", "url-loader"],
           },
+          // {
+          //   test: /\.svg$/i,
+          //   type: "asset/inline",
+          // },
           {
             test: /\.(png|jpg|gif|jpeg)$/,
             type: "asset/resource",

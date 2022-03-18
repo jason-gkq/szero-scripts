@@ -365,21 +365,37 @@ module.exports = {
           // },
           {
             test: /\.svg$/i,
-            type: "asset", // inline
-            parser: {
-              dataUrlCondition: {
-                maxSize: 8 * 1024, // 默认就是8k
+            issuer: /\.[jt]sx?$/,
+            type: "javascript/auto",
+            use: [
+              "@svgr/webpack",
+              {
+                loader: "url-loader",
+                options: {
+                  name: "static/media/[name].[contenthash].svg",
+                  generator: (content) => svgToMiniDataURI(content.toString()),
+                  limit: 8 * 1024,
+                },
               },
-            },
-            generator: {
-              filename: "static/media/[name].[contenthash].svg",
-              dataUrl: (content) => {
-                // 大于8k的svg独立生成了文件，但是并未压缩 TODO
-                content = content.toString();
-                return svgToMiniDataURI(content);
-              },
-            },
+            ],
           },
+          // {
+          //   test: /\.svg$/i,
+          //   type: "asset", // inline
+          //   parser: {
+          //     dataUrlCondition: {
+          //       maxSize: 8 * 1024, // 默认就是8k
+          //     },
+          //   },
+          //   generator: {
+          //     filename: "static/media/[name].[contenthash].svg",
+          //     dataUrl: (content) => {
+          //       // 大于8k的svg独立生成了文件，但是并未压缩 TODO
+          //       content = content.toString();
+          //       return svgToMiniDataURI(content);
+          //     },
+          //   },
+          // },
           {
             test: /\.(png|jpg|jpeg)$/,
             type: "asset/resource",
