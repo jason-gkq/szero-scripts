@@ -147,7 +147,7 @@ module.exports = {
     ],
     splitChunks: {
       chunks: "all",
-      minSize: 200000, // 最小不小于 200k
+      minSize: 500000, // 最小不小于 200k
       maxSize: 3348576,
       maxAsyncRequests: 30,
       maxInitialRequests: 30,
@@ -192,7 +192,7 @@ module.exports = {
   // },
   performance: {
     hints: "error",
-    maxEntrypointSize: 4000000,
+    maxEntrypointSize: 40000000,
     maxAssetSize: 3348576,
   },
   module: {
