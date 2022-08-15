@@ -57,7 +57,7 @@ const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin"); // production
 const MiniCssExtractPlugin = require("mini-css-extract-plugin"); // production
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin"); // production
-const TerserPlugin = require("terser-webpack-plugin"); // production
+const TerserPlugin = require("terser-webpack-plugin"); // production webpack5 不需要单独安装
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin"); // ts check
 const AddAssetHtmlPlugin = require("add-asset-html-webpack-plugin"); // production dll
 const WorkboxPlugin = require("workbox-webpack-plugin"); // production
@@ -729,6 +729,7 @@ module.exports = {
            * 可能产生的、高性能消耗的 Babel 重新编译过程(recompilation process)。
            * 如果设置了一个空值 (loader: 'babel-loader?cacheDirectory') 或者 true (loader: 'babel-loader?cacheDirectory=true')，
            * loader 将使用默认的缓存目录 node_modules/.cache/babel-loader，
+           * cacheDirectory: "../node_modules/.cache/babel-loader", 是以当前跟目录为相对路径进行配置
            * 如果在任何根目录下都没有找到 node_modules 目录，将会降级回退到操作系统默认的临时文件目录
            *
            * cacheIdentifier
@@ -779,6 +780,7 @@ module.exports = {
                    * targets  string | Array<string> | { [string]: string }
                    * 设置不同浏览器打包通道
                    * "presets": [["@babel/preset-env", { "targets": "defaults" }]]
+                   * 如果不配置 targets | ignoreBrowserslistConfig 则使用浏览器中的 browserslist
                    */
                   require("@babel/preset-env"),
                   {
@@ -787,8 +789,18 @@ module.exports = {
                     exclude: ["transform-typeof-symbol"],
                     targets: "> 0.25%, not dead",
                     targets: {
-                      chrome: "58",
+                      chrome: "58", // chrome, opera, edge, firefox, safari, ie, ios, android, node, electron
                       ie: "11",
+                    },
+                    targets: {
+                      browserslist: {
+                        production: [">0.2%", "not dead", "not op_mini all"],
+                        development: [
+                          "last 1 chrome version",
+                          "last 1 firefox version",
+                          "last 1 safari version",
+                        ],
+                      },
                     },
                   },
                 ],
@@ -824,7 +836,7 @@ module.exports = {
                    */
                   require("@babel/preset-react").default,
                   {
-                    development: false,
+                    development: false, // 开发环境需要true
                     useBuiltIns: true,
                     runtime: "automatic",
                   },
