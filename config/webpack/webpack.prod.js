@@ -26,8 +26,17 @@ const useTypeScript = fs.existsSync(paths.appTsConfig);
 const swSrc = fs.existsSync(paths.swSrc);
 
 const { raw } = env;
-let modifyVars = raw.productConfig.layout.modifyVars || {};
-
+const modifyVars =
+  (raw.productConfig.layout && raw.productConfig.layout.modifyVars) || {};
+const outputlibrary =
+  raw.productConfig.appName == "main"
+    ? {}
+    : {
+        library: `${raw.productConfig.appName}`,
+        libraryTarget: "umd",
+        globalObject: "window",
+        // jsonpFunction: `webpackJsonp_doms`,
+      };
 const svgToMiniDataURI = require("mini-svg-data-uri");
 
 module.exports = {
@@ -51,10 +60,7 @@ module.exports = {
         .relative(paths.appSrc, info.absoluteResourcePath)
         .replace(/\\/g, "/"),
 
-    library: `${raw.productConfig.appName}`,
-    libraryTarget: "umd",
-    globalObject: "window",
-    // jsonpFunction: `webpackJsonp_doms`,
+    ...outputlibrary,
   },
   // @ts-ignore
   plugins: [

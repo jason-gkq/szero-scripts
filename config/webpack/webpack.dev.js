@@ -18,7 +18,18 @@ const env = getClientEnvironment();
 const useTypeScript = fs.existsSync(paths.appTsConfig);
 
 const { raw } = env;
-let modifyVars = raw.productConfig.layout.modifyVars || {};
+const modifyVars =
+  (raw.productConfig.layout && raw.productConfig.layout.modifyVars) || {};
+
+const outputlibrary =
+  raw.productConfig.appName == "main"
+    ? {}
+    : {
+        library: `${raw.productConfig.appName}`,
+        libraryTarget: "umd",
+        globalObject: "window",
+        // jsonpFunction: `webpackJsonp_doms`,
+      };
 
 module.exports = {
   mode: "development",
@@ -42,10 +53,7 @@ module.exports = {
       path.resolve(info.absoluteResourcePath).replace(/\\/g, "/"),
     // clean: true,
 
-    library: `${raw.productConfig.appName}`,
-    libraryTarget: "umd",
-    globalObject: "window",
-    // jsonpFunction: `webpackJsonp_doms`,
+    ...outputlibrary,
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
