@@ -17,14 +17,8 @@ const CaseSensitivePathsPlugin = require("case-sensitive-paths-webpack-plugin");
 const env = getClientEnvironment();
 const useTypeScript = fs.existsSync(paths.appTsConfig);
 
-let modifyVars = {};
 const { raw } = env;
-if (
-  raw.productConfig.theme &&
-  fs.existsSync(`${paths.appPublic}/themes/${raw.productConfig.theme}.json`)
-) {
-  modifyVars = require(`${paths.appPublic}/themes/${raw.productConfig.theme}.json`);
-}
+let modifyVars = raw.productConfig.layout.modifyVars || {};
 
 module.exports = {
   mode: "development",
@@ -47,6 +41,11 @@ module.exports = {
     devtoolModuleFilenameTemplate: (info) =>
       path.resolve(info.absoluteResourcePath).replace(/\\/g, "/"),
     // clean: true,
+
+    library: `${raw.productConfig.appName}`,
+    libraryTarget: "umd",
+    globalObject: "window",
+    // jsonpFunction: `webpackJsonp_doms`,
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),

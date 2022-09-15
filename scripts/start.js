@@ -30,6 +30,11 @@ const options = {
   //     { from: /./, to: '/views/404.html' },
   //   ],
   // },
+  headers: {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "*",
+    "Access-Control-Allow-Headers": "*",
+  },
   client: {
     logging: "warn",
     overlay: true,
