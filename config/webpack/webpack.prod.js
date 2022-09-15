@@ -25,14 +25,18 @@ const env = getClientEnvironment();
 const useTypeScript = fs.existsSync(paths.appTsConfig);
 const swSrc = fs.existsSync(paths.swSrc);
 
-const { raw } = env;
-const modifyVars =
-  (raw.productConfig.layout && raw.productConfig.layout.modifyVars) || {};
+const {
+  raw: { productConfig = {} },
+} = env;
+const { appName, webpackConfig = {}, layout = {} } = productConfig;
+const modifyVars = layout.modifyVars;
+const { headScripts = [] } = webpackConfig;
+
 const outputlibrary =
-  raw.productConfig.appName == "main"
+  appName == "main"
     ? {}
     : {
-        library: `${raw.productConfig.appName}`,
+        library: `${appName}`,
         libraryTarget: "umd",
         globalObject: "window",
         // jsonpFunction: `webpackJsonp_doms`,
@@ -69,6 +73,7 @@ module.exports = {
       template: paths.appHtml,
       inject: true,
       favicon: `${paths.appPublic}/favicon.ico`,
+      headScripts: headScripts,
       minify: {
         removeComments: true,
         collapseWhitespace: true,
