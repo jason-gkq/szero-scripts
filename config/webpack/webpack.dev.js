@@ -65,6 +65,8 @@ module.exports = {
       inject: true,
       favicon: `${paths.appPublic}/favicon.ico`,
       headScripts: headScripts,
+      appName,
+      defaultTitle: layout.title,
     }),
     new webpack.DefinePlugin(env.stringified),
     new webpack.IgnorePlugin({

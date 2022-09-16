@@ -74,6 +74,8 @@ module.exports = {
       inject: true,
       favicon: `${paths.appPublic}/favicon.ico`,
       headScripts: headScripts,
+      appName,
+      defaultTitle: layout.title,
       minify: {
         removeComments: true,
         collapseWhitespace: true,
