@@ -12,7 +12,7 @@ let publicUrlOrPath = "/";
 
 if (fs.existsSync(`${resolveApp("env")}/env.com.json`)) {
   const { webpackConfig } = require(`${resolveApp("env")}/env.com.json`);
-  const { publicUrlOrPathC } = webpackConfig || {};
+  const { publicUrlOrPath: publicUrlOrPathC } = webpackConfig || {};
   if (publicUrlOrPathC) {
     publicUrlOrPath = publicUrlOrPathC;
   }
@@ -22,7 +22,7 @@ if (fs.existsSync(`${resolveApp("env")}/env.${proEnv.env}.json`)) {
   const { webpackConfig } = require(`${resolveApp("env")}/env.${
     proEnv.env
   }.json`);
-  const { publicUrlOrPathC } = webpackConfig || {};
+  const { publicUrlOrPath: publicUrlOrPathC } = webpackConfig || {};
   if (publicUrlOrPathC) {
     publicUrlOrPath = publicUrlOrPathC;
   }
