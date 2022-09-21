@@ -8,24 +8,23 @@ const proEnv = require("./params");
 const appDirectory = fs.realpathSync(process.cwd());
 const resolveApp = (relativePath) => path.resolve(appDirectory, relativePath);
 
-let appName = null;
 let publicUrlOrPath = "/";
 
 if (fs.existsSync(`${resolveApp("env")}/env.com.json`)) {
-  appName = require(`${resolveApp("env")}/env.com.json`).appName;
-  if (appName) {
-    publicUrlOrPath = `/${appName}/`;
+  const { webpackConfig } = require(`${resolveApp("env")}/env.com.json`);
+  const { publicUrlOrPathC } = webpackConfig || {};
+  if (publicUrlOrPathC) {
+    publicUrlOrPath = publicUrlOrPathC;
   }
 }
 
 if (fs.existsSync(`${resolveApp("env")}/env.${proEnv.env}.json`)) {
-  const { CDN_URL = "/" } = require(`${resolveApp("env")}/env.${
+  const { webpackConfig } = require(`${resolveApp("env")}/env.${
     proEnv.env
   }.json`);
-  if (appName) {
-    publicUrlOrPath = `${CDN_URL}${appName}/`;
-  } else {
-    publicUrlOrPath = CDN_URL;
+  const { publicUrlOrPathC } = webpackConfig || {};
+  if (publicUrlOrPathC) {
+    publicUrlOrPath = publicUrlOrPathC;
   }
 }
 
