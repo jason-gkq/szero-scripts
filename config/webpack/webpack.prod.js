@@ -98,6 +98,10 @@ module.exports = {
       PUBLIC_URL: paths.publicUrlOrPath,
     }),
     new webpack.DefinePlugin(env.stringified),
+    new webpack.ProvidePlugin({
+      // process: "process/browser",
+      Buffer: ["buffer", "Buffer"],
+    }),
     new webpack.IgnorePlugin({
       resourceRegExp: /^\.\/locale$/,
       contextRegExp: /moment$/,
@@ -192,6 +196,10 @@ module.exports = {
       .map((ext) => `.${ext}`)
       .filter((ext) => useTypeScript || !ext.includes("ts")),
     alias: getAlias(),
+    fallback: {
+      // "stream": require.resolve("stream-browserify"),
+      buffer: require.resolve("buffer/"),
+    },
     // plugins: [PnpWebpackPlugin],
   },
   // resolveLoader: {

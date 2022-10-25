@@ -69,6 +69,10 @@ module.exports = {
       defaultTitle: layout.title,
     }),
     new webpack.DefinePlugin(env.stringified),
+    new webpack.ProvidePlugin({
+      // process: "process/browser",
+      Buffer: ["buffer", "Buffer"],
+    }),
     new webpack.IgnorePlugin({
       resourceRegExp: /^\.\/locale$/,
       contextRegExp: /moment$/,
@@ -91,6 +95,10 @@ module.exports = {
       .map((ext) => `.${ext}`)
       .filter((ext) => useTypeScript || !ext.includes("ts")),
     alias: getAlias(),
+    fallback: {
+      // "stream": require.resolve("stream-browserify"),
+      buffer: require.resolve("buffer/"),
+    },
   },
   // node: {
   //   global: true,
@@ -160,15 +168,6 @@ module.exports = {
                   "import", // babel-plugin-import 需要安装
                   { libraryName: "antd", libraryDirectory: "lib", style: true },
                   "antd",
-                ],
-                [
-                  "import",
-                  {
-                    libraryName: "antd-mobile",
-                    libraryDirectory: "lib",
-                    style: true,
-                  },
-                  "antd-mobile",
                 ],
                 require.resolve("react-refresh/babel"),
               ].filter(Boolean),
