@@ -51,13 +51,14 @@ module.exports = {
     filename: "[name].js",
     chunkFilename: "[name].chunk.js",
     publicPath: "/", // paths.publicUrlOrPath,
-    assetModuleFilename: "[name][ext]",
+    // assetModuleFilename: "[name][ext]",
     devtoolModuleFilenameTemplate: (info) =>
       path.resolve(info.absoluteResourcePath).replace(/\\/g, "/"),
     // clean: true,
 
     ...outputlibrary,
   },
+
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
     new HtmlWebpackPlugin({
@@ -86,6 +87,7 @@ module.exports = {
     removeAvailableModules: false,
     removeEmptyChunks: false,
     splitChunks: false,
+    runtimeChunk: "single",
   },
   resolve: {
     // modules: ["node_modules", paths.appNodeModules].concat(

@@ -54,11 +54,11 @@ module.exports = {
     hashDigestLength: 8,
     pathinfo: false,
     path: paths.appBuild,
-    filename: "static/pages/[name]/[name].[contenthash].js",
-    chunkFilename: "static/pages/[name]/[name].[contenthash].chunk.js",
+    filename: "static/pages/[name].[contenthash].js",
+    chunkFilename: "static/pages/[name].[contenthash].chunk.js",
     publicPath: paths.publicUrlOrPath,
     // assetModuleFilename: "static/media/[name].[hash:8].[ext]",
-    // assetModuleFilename: "static/media/[name].[hash:8][ext]",
+    // assetModuleFilename: "static/media/[name].[contenthash][ext]",
     devtoolModuleFilenameTemplate: (info) =>
       path
         .relative(paths.appSrc, info.absoluteResourcePath)
@@ -90,8 +90,8 @@ module.exports = {
       },
     }),
     new MiniCssExtractPlugin({
-      filename: "static/pages/[name]/[name].[contenthash].css",
-      chunkFilename: "static/pages/[name]/[name].[contenthash].chunk.css",
+      filename: "static/pages/[name].[contenthash].css",
+      chunkFilename: "static/pages/[name].[contenthash].chunk.css",
       ignoreOrder: false, // 忽略有关顺序冲突的警告
     }),
     new InterpolateHtmlPlugin(HtmlWebpackPlugin, {
@@ -392,7 +392,7 @@ module.exports = {
               {
                 loader: "url-loader",
                 options: {
-                  name: "static/media/[name].[contenthash].svg",
+                  name: "static/media/[name].[contenthash:8].svg",
                   generator: (content) => svgToMiniDataURI(content.toString()),
                   limit: 8 * 1024,
                 },
@@ -423,17 +423,17 @@ module.exports = {
               filename: "static/media/[name].[contenthash][ext]",
             },
           },
-          {
-            exclude: [
-              /\.(js|mjs|jsx|ts|tsx|svg|png|jpg|jpeg)$/,
-              /\.html$/,
-              /\.json$/,
-            ],
-            type: "asset/resource",
-            // generator: {
-            //   filename: "media/[name].[contenthash][ext]",
-            // },
-          },
+          // {
+          //   exclude: [
+          //     /\.(js|mjs|jsx|ts|tsx|svg|png|jpg|jpeg)$/,
+          //     /\.html$/,
+          //     /\.json$/,
+          //   ],
+          //   type: "asset/resource",
+          //   generator: {
+          //     // filename: "static/media/[name].[contenthash][ext]",
+          //   },
+          // },
         ],
       },
     ],

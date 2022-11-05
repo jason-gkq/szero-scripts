@@ -8,7 +8,7 @@ const webpackDevServer = require("webpack-dev-server");
 // const mock = require('cf-mock-server/express-mw')
 const webpack = require("webpack");
 const config = require("../config/webpack/webpack.dev");
-
+const paths = require("../config/paths");
 const { getClientEnvironment } = require("../config/env");
 const {
   raw: { productConfig },
@@ -17,6 +17,7 @@ const {
 const { port = 8080, host = "localhost" } = productConfig.webpackConfig || {};
 
 const options = {
+  static: paths.appBuild,
   compress: true,
   hot: true,
   host,

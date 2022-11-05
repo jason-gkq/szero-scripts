@@ -10,18 +10,21 @@ const resolveApp = (relativePath) => path.resolve(appDirectory, relativePath);
 
 let publicUrlOrPath = "/";
 
-if (fs.existsSync(`${resolveApp("env")}/env.com.json`)) {
-  const { webpackConfig } = require(`${resolveApp("env")}/env.com.json`);
+const envComFilePath = `${resolveApp("env")}/env.com.js`;
+const envFilePath = `${resolveApp("env")}/env.${proEnv.env}.js`;
+
+if (fs.existsSync(envComFilePath)) {
+  const { defineConfig } = require(envComFilePath);
+  const { webpackConfig } = defineConfig && defineConfig();
   const { publicUrlOrPath: publicUrlOrPathC } = webpackConfig || {};
   if (publicUrlOrPathC) {
     publicUrlOrPath = publicUrlOrPathC;
   }
 }
 
-if (fs.existsSync(`${resolveApp("env")}/env.${proEnv.env}.json`)) {
-  const { webpackConfig } = require(`${resolveApp("env")}/env.${
-    proEnv.env
-  }.json`);
+if (fs.existsSync(envFilePath)) {
+  const { defineConfig } = require(envFilePath);
+  const { webpackConfig } = defineConfig && defineConfig();
   const { publicUrlOrPath: publicUrlOrPathC } = webpackConfig || {};
   if (publicUrlOrPathC) {
     publicUrlOrPath = publicUrlOrPathC;
@@ -62,7 +65,7 @@ module.exports = {
   appSrc: resolveApp("src"),
   appTsConfig: resolveApp("tsconfig.json"),
   appJsConfig: resolveApp("jsconfig.json"),
-  appEnvConfig: resolveApp(`env/env.${proEnv.env}.json`),
+  appEnvConfig: resolveApp(`env/env.${proEnv.env}.js`),
   yarnLockFile: resolveApp("yarn.lock"),
   // testsSetup: resolveModule(resolveApp, 'src/setupTests'),
   // proxySetup: resolveApp('src/setupProxy.js'),
