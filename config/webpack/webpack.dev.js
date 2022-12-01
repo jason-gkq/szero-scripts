@@ -176,6 +176,13 @@ module.exports = {
             },
           },
           {
+            test: /\.m?js/,
+            include: /node_modules/,
+            resolve: {
+              fullySpecified: false,
+            },
+          },
+          {
             test: /\.(less|css)$/,
             include: /src/,
             use: [
