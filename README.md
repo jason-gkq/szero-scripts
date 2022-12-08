@@ -1,19 +1,19 @@
 ### 简介
 
-本包只适用于`zero-react-pc`、`zero-react-m`两个项目使用
+本包只适用于`zero-react-pc`、`zero-main`两个项目使用
 
 如使用`react` + `redux` + `less`可做参考
 
 安装
 
 ```
-yarn add zero-react-scripts@0.2.25
+yarn add zero-react-scripts
 ```
 
 更新包
 
 ```shell
-yarn upgrade zero-react-scripts@0.2.17
+yarn upgrade zero-react-scripts@1.*.*
 yarn upgrade zero-react-scripts --latest
 ```
 
@@ -26,7 +26,6 @@ yarn start
 打包
 
 ```shell
-yarn build:dev
 yarn build:uat
 yarn build:pre
 yarn build:prod
@@ -37,9 +36,8 @@ yarn build:prod
 1. 环境介绍：
 
 - local 本地开发
-- dev 开发环境
 - uat 测试环境
-- pre 预发布，堡垒环境
+- pre 堡垒环境
 - prod 生产环境
 
 2. 在`package.json`中添加 scripts，配置：
@@ -48,7 +46,6 @@ yarn build:prod
 {
   "scripts": {
     "start": "zero-react-scripts start env=local",
-    "build:dev": "zero-react-scripts build env=dev",
     "build:uat": "zero-react-scripts build env=uat",
     "build:pre": "zero-react-scripts build env=pre",
     "build:prod": "zero-react-scripts build env=prod"
@@ -56,42 +53,34 @@ yarn build:prod
 }
 ```
 
-3. 根目录添加文件夹`env`，文件加重添加如下 5 个`json`文件
+3. 根目录添加文件夹`env`，文件加重添加如下 4 个`js`文件
 
-- env/env.com.json
-- env/env.local.json
-- env/env.dev.json
-- env/env.uat.json
-- env/env.pre.json
-- env/env.prod.json
+- env/env.com.js
+- env/env.local.js
+- env/env.uat.js
+- env/env.pre.js
+- env/env.prod.js
 
-**`env.com.json`为公共业务参数配置文件，其余为各个环境差异性配置**
+**`env.com.js`为公共业务参数配置文件，其余为各个环境差异性配置**
 
-文件格式必须为 json，如下：
+文件格式如下：
 
-```json
+```js
 {
-  "ENV": "prod",
-  "CDN_URL": "//xx.xx.com/apps/<%= appName %>/",
-  "SERVICE_URL": "http://xx.xx.com"
+  "ENV": "prod"
 }
 ```
 
 必要参数配置：
 
 - ENV 环境标识
-- CDN_URL cdn 路径，如果无，则配置：`/antd-custom-master`
-- SERVICE_URL 请求接口域名，以`/`结尾
 - appName 为路由前缀
 - appCode 项目唯一标识
-- theme 项目主体
 
 项目中使用方式为：
 
 ```js
 const env = process.env.ENV;
-const cdnUrl = process.env.CDN_URL;
-const authService = process.env.AUTH_SERVICE;
 ```
 
 4. 项目跟目录添加`jsconfing.json`，主要用于`vscode`识别短路径，`webpack`打包会根据`compilerOptions.paths`中的配置转换为`alias`
@@ -106,12 +95,10 @@ const authService = process.env.AUTH_SERVICE;
     "baseUrl": ".",
     "paths": {
       "@/assets/*": ["assets/*"],
-      "@/src/*": ["src/*"],
-      "@/common": ["zero-react/components"],
-      "@/common/*": ["zero-react/components/*"]
+      "@/src/*": ["src/*"]
     }
   },
-  "exclude": ["node_modules", "dist", "dest"]
+  "exclude": ["node_modules", "dist"]
 }
 ```
 
