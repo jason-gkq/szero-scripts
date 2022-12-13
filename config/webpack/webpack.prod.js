@@ -279,17 +279,8 @@ module.exports = {
                 ],
                 [
                   "import", // babel-plugin-import 需要安装
-                  { libraryName: "antd", libraryDirectory: "lib", style: true },
+                  { libraryName: "antd", libraryDirectory: "es", style: true },
                   "antd",
-                ],
-                [
-                  "import",
-                  {
-                    libraryName: "antd-mobile",
-                    libraryDirectory: "lib",
-                    style: true,
-                  },
-                  "antd-mobile",
                 ],
               ].filter(Boolean),
             },
