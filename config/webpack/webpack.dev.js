@@ -25,15 +25,14 @@ const modifyVars = layout.modifyVars;
 const { headScripts = [] } = webpackConfig;
 
 const outputlibrary =
-  appName == "main"
-    ? {}
-    : {
+  appName && appName != "main"
+    ? {
         library: `${appName}`,
         libraryTarget: "umd",
         globalObject: "window",
         // jsonpFunction: `webpackJsonp_doms`,
-      };
-
+      }
+    : {};
 module.exports = {
   mode: "development",
   bail: false,
@@ -66,7 +65,7 @@ module.exports = {
       inject: true,
       favicon: `${paths.appPublic}/favicon.ico`,
       headScripts: headScripts,
-      appName,
+      appName: appName ? appName : "root",
       defaultTitle: layout.title,
     }),
     new webpack.DefinePlugin(env.stringified),
