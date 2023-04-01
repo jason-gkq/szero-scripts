@@ -1,6 +1,6 @@
 {
   "name": "szero-scripts",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "guokeqin",
   "description": "Configuration and scripts for build React App.",
   "repository": {
@@ -25,7 +25,7 @@
     "README.md"
   ],
   "bin": {
-    "zero-react-scripts": "./bin/szero-scripts.js"
+    "szero-scripts": "./bin/szero-scripts.js"
   },
   "scripts": {
     "build:dll": "webpack --config ./config/webpack/webpack.dll.js"
