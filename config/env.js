@@ -22,10 +22,11 @@ function getClientEnvironment() {
     return env;
   }, {});
 
-  let productConfig = { ENV: proEnv.env, VERSION: proEnv.version || "local" };
+  let productConfig = { ENV: proEnv.env, buildTime: new Date().getTime() };
   if (fs.existsSync(`${paths.appPackageJson}`)) {
-    const { author } = require(`${paths.appPackageJson}`);
-    raw.author = author || "author";
+    const { author, version } = require(`${paths.appPackageJson}`);
+    productConfig.author = author;
+    productConfig.version = version;
   }
   if (fs.existsSync(`${paths.env}/env.com.js`)) {
     const { defineConfig } = require(`${paths.env}/env.com.js`);
@@ -35,14 +36,14 @@ function getClientEnvironment() {
     const { defineConfig } = require(paths.appEnvConfig);
     Object.assign(productConfig, defineConfig && defineConfig());
   }
-  Object.assign(raw, { productConfig });
+
+  raw.productConfig = productConfig;
   // Stringify all values so we can feed into webpack DefinePlugin
   const stringified = {
     "process.env": Object.keys(raw).reduce((env, key) => {
       env[key] = JSON.stringify(raw[key]);
       return env;
     }, {}),
-    __ENV__: JSON.stringify(proEnv.env),
   };
 
   return { raw, stringified };

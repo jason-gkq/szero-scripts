@@ -8,20 +8,17 @@ const fs = require("fs");
 const path = require("path");
 const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-// const PnpWebpackPlugin = require("pnp-webpack-plugin");
 const postcssNormalize = require("postcss-normalize");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 const CaseSensitivePathsPlugin = require("case-sensitive-paths-webpack-plugin");
 
 const env = getClientEnvironment();
-const useTypeScript = fs.existsSync(paths.appTsConfig);
 
 const {
   raw: { productConfig = {} },
 } = env;
 const { appName, webpackConfig = {}, layout = {} } = productConfig;
-const modifyVars = layout.modifyVars;
 const { headScripts = [] } = webpackConfig;
 
 const outputlibrary =
@@ -54,7 +51,6 @@ module.exports = {
     devtoolModuleFilenameTemplate: (info) =>
       path.resolve(info.absoluteResourcePath).replace(/\\/g, "/"),
     // clean: true,
-
     ...outputlibrary,
   },
 
@@ -77,9 +73,9 @@ module.exports = {
       resourceRegExp: /^\.\/locale$/,
       contextRegExp: /moment$/,
     }),
-    new ReactRefreshWebpackPlugin(),
     new CaseSensitivePathsPlugin(),
-    useTypeScript && new ForkTsCheckerWebpackPlugin(),
+    new ForkTsCheckerWebpackPlugin(),
+    new ReactRefreshWebpackPlugin(),
   ].filter(Boolean),
   optimization: {
     minimize: false,
@@ -92,20 +88,13 @@ module.exports = {
     // modules: ["node_modules", paths.appNodeModules].concat(
     //   modules.additionalModulePaths || []
     // ),
-    extensions: paths.moduleFileExtensions
-      .map((ext) => `.${ext}`)
-      .filter((ext) => useTypeScript || !ext.includes("ts")),
+    extensions: paths.moduleFileExtensions.map((ext) => `.${ext}`),
     alias: getAlias(),
     fallback: {
       // "stream": require.resolve("stream-browserify"),
       buffer: require.resolve("buffer/"),
     },
   },
-  // node: {
-  //   global: true,
-  //   __filename: true,
-  //   __dirname: true,
-  // },
   performance: false,
   module: {
     strictExportPresence: true,
@@ -135,7 +124,7 @@ module.exports = {
                     runtime: "automatic",
                   },
                 ],
-                useTypeScript && [require("@babel/preset-typescript").default],
+                [require("@babel/preset-typescript").default],
               ].filter(Boolean),
               plugins: [
                 [
@@ -165,11 +154,6 @@ module.exports = {
                   "@babel/plugin-proposal-private-property-in-object",
                   { loose: true },
                 ],
-                [
-                  "import", // babel-plugin-import 需要安装
-                  { libraryName: "antd", libraryDirectory: "es", style: true },
-                  "antd",
-                ],
                 require.resolve("react-refresh/babel"),
               ].filter(Boolean),
             },
@@ -189,9 +173,6 @@ module.exports = {
                 loader: require.resolve("style-loader"),
                 options: {
                   esModule: true,
-                  // modules: {
-                  //   namedExport: true,
-                  // },
                 },
               },
               {
@@ -247,7 +228,6 @@ module.exports = {
                 loader: "less-loader",
                 options: {
                   lessOptions: {
-                    modifyVars,
                     javascriptEnabled: true,
                   },
                 },
@@ -261,20 +241,8 @@ module.exports = {
             type: "javascript/auto",
             use: ["@svgr/webpack", "url-loader"],
           },
-          // {
-          //   test: /\.svg$/i,
-          //   type: "asset/inline",
-          // },
           {
             test: /\.(png|jpg|gif|jpeg)$/,
-            type: "asset/resource",
-          },
-          {
-            exclude: [
-              /\.(js|mjs|jsx|ts|tsx|png|jpg|gif|jpeg|svg)$/,
-              /\.html$/,
-              /\.json$/,
-            ],
             type: "asset/resource",
           },
         ],

@@ -7,14 +7,14 @@
 安装
 
 ```
-yarn add zero-react-scripts
+yarn add szero-scripts
 ```
 
 更新包
 
 ```shell
-yarn upgrade zero-react-scripts@1.*.*
-yarn upgrade zero-react-scripts --latest
+yarn upgrade szero-scripts@1.*.*
+yarn upgrade szero-scripts --latest
 ```
 
 开发
@@ -26,7 +26,7 @@ yarn start
 打包
 
 ```shell
-yarn build:uat
+yarn build:test
 yarn build:pre
 yarn build:prod
 ```
@@ -36,7 +36,7 @@ yarn build:prod
 1. 环境介绍：
 
 - local 本地开发
-- uat 测试环境
+- test 测试环境
 - pre 堡垒环境
 - prod 生产环境
 
@@ -46,7 +46,7 @@ yarn build:prod
 {
   "scripts": {
     "start": "zero-react-scripts start env=local",
-    "build:uat": "zero-react-scripts build env=uat",
+    "build:test": "zero-react-scripts build env=test",
     "build:pre": "zero-react-scripts build env=pre",
     "build:prod": "zero-react-scripts build env=prod"
   }
@@ -57,7 +57,7 @@ yarn build:prod
 
 - env/env.com.js
 - env/env.local.js
-- env/env.uat.js
+- env/env.test.js
 - env/env.pre.js
 - env/env.prod.js
 
@@ -102,7 +102,7 @@ const env = process.env.ENV;
 }
 ```
 
-5. 依赖包，出去打包需要的一些依赖包，此次打包还进行了`dll`的优化，能在进行业务打包时候跳过这些包的编译，提高打包速度，但对应的文件会在项目启动时候优先加载，进行`dll`打包如下：
+5. [废弃]依赖包，出去打包需要的一些依赖包，此次打包还进行了`dll`的优化，能在进行业务打包时候跳过这些包的编译，提高打包速度，但对应的文件会在项目启动时候优先加载，进行`dll`打包如下：
 
 - reactvendors
   - react

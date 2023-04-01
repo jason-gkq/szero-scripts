@@ -13,7 +13,6 @@ const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
-// const PnpWebpackPlugin = require("pnp-webpack-plugin");
 const postcssNormalize = require("postcss-normalize");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
@@ -22,14 +21,12 @@ const InterpolateHtmlPlugin = require("../../lib/InterpolateHtmlPlugin");
 // const WorkboxPlugin = require("workbox-webpack-plugin"); // production
 
 const env = getClientEnvironment();
-const useTypeScript = fs.existsSync(paths.appTsConfig);
 const swSrc = fs.existsSync(paths.swSrc);
 
 const {
   raw: { productConfig = {} },
 } = env;
 const { appName, webpackConfig = {}, layout = {} } = productConfig;
-const modifyVars = layout.modifyVars;
 const { headScripts = [] } = webpackConfig;
 
 const outputlibrary =
@@ -57,8 +54,6 @@ module.exports = {
     filename: "static/pages/[name].[contenthash].js",
     chunkFilename: "static/pages/[name].[contenthash].chunk.js",
     publicPath: paths.publicUrlOrPath,
-    // assetModuleFilename: "static/media/[name].[hash:8].[ext]",
-    // assetModuleFilename: "static/media/[name].[contenthash][ext]",
     devtoolModuleFilenameTemplate: (info) =>
       path
         .relative(paths.appSrc, info.absoluteResourcePath)
@@ -92,7 +87,7 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: "static/pages/[name].[contenthash].css",
       chunkFilename: "static/pages/[name].[contenthash].chunk.css",
-      ignoreOrder: false, // 忽略有关顺序冲突的警告
+      ignoreOrder: true, // 忽略有关顺序冲突的警告
     }),
     new InterpolateHtmlPlugin(HtmlWebpackPlugin, {
       PUBLIC_URL: paths.publicUrlOrPath,
@@ -124,7 +119,7 @@ module.exports = {
         };
       },
     }),
-    useTypeScript && new ForkTsCheckerWebpackPlugin(),
+    new ForkTsCheckerWebpackPlugin(),
   ].filter(Boolean),
   optimization: {
     minimize: true,
@@ -192,24 +187,13 @@ module.exports = {
     // modules: ["node_modules", paths.appNodeModules].concat(
     //   modules.additionalModulePaths || []
     // ),
-    extensions: paths.moduleFileExtensions
-      .map((ext) => `.${ext}`)
-      .filter((ext) => useTypeScript || !ext.includes("ts")),
+    extensions: paths.moduleFileExtensions.map((ext) => `.${ext}`),
     alias: getAlias(),
     fallback: {
       // "stream": require.resolve("stream-browserify"),
       buffer: require.resolve("buffer/"),
     },
-    // plugins: [PnpWebpackPlugin],
   },
-  // resolveLoader: {
-  //   plugins: [PnpWebpackPlugin.moduleLoader(module)],
-  // },
-  // node: {
-  //   global: true,
-  //   __filename: true,
-  //   __dirname: true,
-  // },
   performance: {
     hints: "error",
     maxEntrypointSize: 40000000,
@@ -247,7 +231,7 @@ module.exports = {
                     runtime: "automatic",
                   },
                 ],
-                useTypeScript && [require("@babel/preset-typescript").default],
+                [require("@babel/preset-typescript").default],
               ].filter(Boolean),
               plugins: [
                 [
@@ -277,11 +261,6 @@ module.exports = {
                   "@babel/plugin-proposal-private-property-in-object",
                   { loose: true },
                 ],
-                [
-                  "import", // babel-plugin-import 需要安装
-                  { libraryName: "antd", libraryDirectory: "es", style: true },
-                  "antd",
-                ],
               ].filter(Boolean),
             },
           },
@@ -300,9 +279,6 @@ module.exports = {
                 loader: MiniCssExtractPlugin.loader,
                 options: {
                   esModule: true,
-                  // modules: {
-                  //   namedExport: true,
-                  // },
                 },
               },
               {
@@ -358,7 +334,6 @@ module.exports = {
                 loader: "less-loader",
                 options: {
                   lessOptions: {
-                    modifyVars,
                     javascriptEnabled: true,
                   },
                 },
@@ -366,21 +341,6 @@ module.exports = {
             ],
             sideEffects: true,
           },
-          // {
-          //   test: /\.svg$/i,
-          //   type: "javascript/auto",
-          //   use: [
-          //     {
-          //       loader: "url-loader",
-          //       options: {
-          //         name: "static/media/[name].[contenthash].svg",
-          //         generator: (content) => svgToMiniDataURI(content.toString()),
-          //         limit: 1024,
-          //       },
-          //     },
-          //     "svgo-loader",
-          //   ],
-          // },
           {
             test: /\.svg$/i,
             issuer: /\.[jt]sx?$/,
@@ -421,17 +381,6 @@ module.exports = {
               filename: "static/media/[name].[contenthash][ext]",
             },
           },
-          // {
-          //   exclude: [
-          //     /\.(js|mjs|jsx|ts|tsx|svg|png|jpg|jpeg)$/,
-          //     /\.html$/,
-          //     /\.json$/,
-          //   ],
-          //   type: "asset/resource",
-          //   generator: {
-          //     // filename: "static/media/[name].[contenthash][ext]",
-          //   },
-          // },
         ],
       },
     ],

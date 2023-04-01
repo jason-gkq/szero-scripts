@@ -64,7 +64,6 @@ module.exports = {
   appPackageJson: resolveApp("package.json"),
   appSrc: resolveApp("src"),
   appTsConfig: resolveApp("tsconfig.json"),
-  appJsConfig: resolveApp("jsconfig.json"),
   appEnvConfig: resolveApp(`env/env.${proEnv.env}.js`),
   yarnLockFile: resolveApp("yarn.lock"),
   // testsSetup: resolveModule(resolveApp, 'src/setupTests'),
@@ -76,7 +75,6 @@ module.exports = {
   ownPath: resolveOwn("."),
   ownNodeModules: resolveOwn("node_modules"), // This is empty on npm 3
   appTypeDeclarations: resolveApp("src/global.d.ts"),
-  ownTypeDeclarations: resolveOwn("lib/react-app.d.ts"),
   dllsPath: resolveOwn("dll"),
   dllOutputPath: resolveOwn("dll/*.dll.js"),
 };
