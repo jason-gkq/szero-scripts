@@ -787,6 +787,23 @@ module.exports = {
                    * "presets": [["@babel/preset-env", { "targets": "defaults" }]]
                    * 如果不配置 targets | ignoreBrowserslistConfig 则使用浏览器中的 browserslist
                    */
+                  /**
+                   * targets
+                   *  如果设置了 targets，那么 babel 就不使用 browserslist 配置，而是使用 targets 配置。
+                   *  如果targets不配置，browserslist也没有配置，那么@babel/preset-env就对所有ES6语法转换成ES5的。
+                   * useBuiltIns
+                   *  false：polyfill就会全部引入。设置后，需要手动引入 polyfill
+                   *  entry：会根据配置的目标环境引入需要的polyfill。设置后，需要在项目入口处手动引入 polyfill
+                   *  usage：会根据配置的目标环境，并考虑项目代码里使用到的ES6特性引入需要的polyfill，设置后，不需要手动引入 polyfill
+                   *  注意，使用'entry'的时候，只能import polyfill一次，一般都是在入口文件。如果进行多次import，会发生错误
+                   * corejs
+                   *  这个参数项只有useBuiltIns设置为'usage'或'entry'时，才会生效。
+                   *  3 || 2 默认值
+                   * modules
+                   *  该项用来设置是否把ES6的模块化语法改成其它模块化语法
+                   *  "amd" || "umd" || "systemjs" || "commonjs" || "cjs" || false || "auto"默认值
+                   *  在该参数项值是 'auto' 或不设置的时候，会发现我们转码前的代码里es6 的 import都被转码成 commonjs 的 require了
+                   */
                   require("@babel/preset-env"),
                   {
                     useBuiltIns: "entry",
