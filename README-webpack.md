@@ -680,22 +680,23 @@ module.exports = {
            * 包：
            * @babel/core @babel/cli @babel/preset-env
            * @babel/polyfill  // 缺失特性的修补
-           * @babel/plugin-transform-arrow-functions // 代码中的所有箭头函数（arrow functions）都将被转换为 ES5 兼容的函数表达式
            *
-           * 官方出现过的相关配置
-           * plugins: [
-           *   "@babel/plugin-proposal-nullish-coalescing-operator",
-           *   "@babel/plugin-proposal-optional-chaining",
-           *   "@babel/plugin-transform-flow-strip-types",
-           *   "@babel/plugin-transform-runtime",
-           *   "@babel/plugin-transform-arrow-functions",
-           *   "@babel/plugin-syntax-jsx",
-           *   "@babel/plugin-transform-react-jsx",
-           *   "@babel/plugin-transform-react-display-name",
-           *   "@babel/plugin-transform-react-jsx-self",
-           *   "@babel/plugin-transform-react-jsx-source",
-           *   "@babel/plugin-transform-typescript",
-           * ],
+           * plugins:
+           * @babel/plugin-transform-arrow-functions // 代码中的所有箭头函数（arrow functions）都将被转换为 ES5 兼容的函数表达式
+           * @babel/plugin-proposal-decorators：可以在项目中使用装饰器语法。
+           * @babel/plugin-proposal-class-properties：可以在项目中使用新的 class 属性语法。
+           * @babel/plugin-transform-runtime：使用此插件可以直接使用 babel-runtime 中的代码对 js 文件进行转换，避免代码冗余。
+           * @babel/runtime-corejs2：配合 babel-plugin-transform-runtime 插件成对使用
+           * @babel/plugin-syntax-dynamic-import：可以在项目中使用 import() 这种语法
+           * @babel/plugin-proposal-export-namespace-from：可以使用 export * 这种命名空间的方式导出模块
+           * @babel/plugin-proposal-throw-expressions：可以使用异常抛出表达式
+           * @babel/plugin-proposal-logical-assignment-operators：可以使用逻辑赋值运算符
+           * @babel/plugin-proposal-optional-chaining：可以使用可选链的方式访问深层嵌套的属性或者函数 ?.
+           * @babel/plugin-proposal-pipeline-operator：可以使用管道运算符 |>
+           * @babel/plugin-proposal-nullish-coalescing-operator：可以使用空值合并语法 ??
+           * @babel/plugin-proposal-do-expressions：可以使用 do 表达式（可以认为是三元运算符的复杂版本）
+           * @babel/plugin-proposal-function-bind：可以使用功能绑定语法 obj::func
+           *
            * presets: [
            *   [
            *     "@babel/preset-env",

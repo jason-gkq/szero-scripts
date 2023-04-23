@@ -12,6 +12,7 @@ const postcssNormalize = require("postcss-normalize");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 const CaseSensitivePathsPlugin = require("case-sensitive-paths-webpack-plugin");
+const FriendlyErrorsWebpackPlugin = require("friendly-errors-webpack-plugin");
 
 const env = getClientEnvironment();
 
@@ -55,7 +56,6 @@ module.exports = {
   },
 
   plugins: [
-    new webpack.HotModuleReplacementPlugin(),
     new HtmlWebpackPlugin({
       template: paths.appHtml,
       inject: true,
@@ -75,6 +75,8 @@ module.exports = {
     }),
     new CaseSensitivePathsPlugin(),
     new ForkTsCheckerWebpackPlugin(),
+    new FriendlyErrorsWebpackPlugin(),
+    new webpack.HotModuleReplacementPlugin(),
     new ReactRefreshWebpackPlugin(),
   ].filter(Boolean),
   optimization: {
@@ -127,17 +129,15 @@ module.exports = {
                 [require("@babel/preset-typescript").default],
               ].filter(Boolean),
               plugins: [
+                ["@babel/plugin-proposal-decorators", { legacy: true }],
                 [
                   require("@babel/plugin-transform-runtime"),
                   {
                     corejs: false,
                     helpers: true,
-                    version: require("@babel/runtime/package.json").version,
+                    version: require("@babel/runtime-corejs3/package.json")
+                      .version,
                     regenerator: true,
-                    useESModules: true,
-                    absoluteRuntime: path.dirname(
-                      require.resolve("@babel/runtime/package.json")
-                    ),
                   },
                 ],
                 [
@@ -147,7 +147,6 @@ module.exports = {
                     removeImport: true,
                   },
                 ],
-                ["@babel/plugin-proposal-decorators", { legacy: true }],
                 ["@babel/plugin-proposal-class-properties", { loose: true }],
                 ["@babel/plugin-proposal-private-methods", { loose: true }],
                 [
@@ -242,7 +241,7 @@ module.exports = {
             use: ["@svgr/webpack", "url-loader"],
           },
           {
-            test: /\.(png|jpg|gif|jpeg)$/,
+            test: /\.(png|jpg|jpeg|gif)$/,
             type: "asset/resource",
           },
         ],

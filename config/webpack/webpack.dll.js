@@ -8,17 +8,6 @@ module.exports = {
   devtool: "source-map",
   entry: {
     reactvendors: ["react", "react-dom", "react-router-dom"], // 手动指定打包哪些库
-    reduxvendors: [
-      "react-redux",
-      "react-router-redux",
-      "redux",
-      "redux-actions",
-      "redux-batched-actions",
-      "redux-persist",
-      "redux-saga",
-      "redux-thunk",
-      "reselect",
-    ],
   },
   output: {
     hashDigestLength: 8,

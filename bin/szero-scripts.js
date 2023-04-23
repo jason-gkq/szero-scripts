@@ -24,7 +24,7 @@ const script = scriptIndex === -1 ? args[0] : args[scriptIndex];
 const nodeArgs = scriptIndex > 0 ? args.slice(0, scriptIndex) : [];
 
 if (["build", "start"].includes(script)) {
-  const appDirectory = fs.realpathSync(process.cwd());
+  // const appDirectory = fs.realpathSync(process.cwd());
   // const before = path.resolve(appDirectory, "src/zero/build/before.js");
   // if (fs.existsSync(before)) {
   //   const beforeResult = spawn.sync(

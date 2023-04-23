@@ -19,6 +19,7 @@ const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
 // const AddAssetHtmlPlugin = require("add-asset-html-webpack-plugin"); // dll 解析
 const InterpolateHtmlPlugin = require("../../lib/InterpolateHtmlPlugin");
 // const WorkboxPlugin = require("workbox-webpack-plugin"); // production
+const FriendlyErrorsWebpackPlugin = require("friendly-errors-webpack-plugin");
 
 const env = getClientEnvironment();
 const swSrc = fs.existsSync(paths.swSrc);
@@ -119,6 +120,7 @@ module.exports = {
         };
       },
     }),
+    new FriendlyErrorsWebpackPlugin(),
     new ForkTsCheckerWebpackPlugin(),
   ].filter(Boolean),
   optimization: {
@@ -219,6 +221,7 @@ module.exports = {
                 [
                   require("@babel/preset-env"),
                   {
+                    // useBuiltIns: "usage",
                     useBuiltIns: "entry",
                     corejs: 3,
                   },
@@ -234,17 +237,15 @@ module.exports = {
                 [require("@babel/preset-typescript").default],
               ].filter(Boolean),
               plugins: [
+                ["@babel/plugin-proposal-decorators", { legacy: true }],
                 [
                   require("@babel/plugin-transform-runtime"),
                   {
                     corejs: false,
                     helpers: true,
-                    version: require("@babel/runtime/package.json").version,
+                    version: require("@babel/runtime-corejs3/package.json")
+                      .version,
                     regenerator: true,
-                    useESModules: true,
-                    absoluteRuntime: path.dirname(
-                      require.resolve("@babel/runtime/package.json")
-                    ),
                   },
                 ],
                 [
@@ -254,7 +255,6 @@ module.exports = {
                     removeImport: true,
                   },
                 ],
-                ["@babel/plugin-proposal-decorators", { legacy: true }],
                 ["@babel/plugin-proposal-class-properties", { loose: true }],
                 ["@babel/plugin-proposal-private-methods", { loose: true }],
                 [
@@ -375,7 +375,7 @@ module.exports = {
           //   },
           // },
           {
-            test: /\.(png|jpg|jpeg)$/,
+            test: /\.(png|jpg|jpeg|gif)$/,
             type: "asset/resource",
             generator: {
               filename: "static/media/[name].[contenthash][ext]",
