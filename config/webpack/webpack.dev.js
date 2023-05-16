@@ -13,6 +13,7 @@ const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 const CaseSensitivePathsPlugin = require("case-sensitive-paths-webpack-plugin");
 const FriendlyErrorsWebpackPlugin = require("friendly-errors-webpack-plugin");
+const CopyPlugin = require("copy-webpack-plugin");
 
 const env = getClientEnvironment();
 
@@ -20,7 +21,7 @@ const {
   raw: { productConfig = {} },
 } = env;
 const { appName, webpackConfig = {}, layout = {} } = productConfig;
-const { headScripts = [] } = webpackConfig;
+const { headScripts = [], copyOptions } = webpackConfig;
 
 const outputlibrary =
   appName && appName != "main"
@@ -73,6 +74,7 @@ module.exports = {
       resourceRegExp: /^\.\/locale$/,
       contextRegExp: /moment$/,
     }),
+    copyOptions && new CopyPlugin(copyOptions),
     new CaseSensitivePathsPlugin(),
     new ForkTsCheckerWebpackPlugin(),
     new FriendlyErrorsWebpackPlugin(),

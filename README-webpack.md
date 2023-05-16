@@ -1,19 +1,3 @@
-版本规划
-
-- 0.6.14
-- 1.0.0
-
-#### 待去掉包
-
-- bfj
-- postcss-safe-parser
-- chalk
-- fs-extra
-- globby
-- immer
-- semver
-- webpack-nano
-
 ### 开发环境 webpack 打包详解
 
 ### 本包开发 dll 打包配置：
@@ -26,18 +10,8 @@
 "devDependencies": {
   "react": "^17.0.2",
   "react-dom": "^17.0.2",
-  "react-redux": "~7.2.3",
   "react-router-dom": "^5.2.0",
-  "react-router-redux": "~4.0.5",
-  "redux": "~4.0.5",
-  "redux-actions": "~2.6.5",
-  "redux-batched-actions": "^0.5.0",
-  "redux-logger": "^3.0.6",
-  "redux-persist": "^6.0.0",
-  "redux-saga": "^1.1.3",
-  "redux-thunk": "~2.3.0",
   "require": "^2.4.20",
-  "reselect": "^4.0.0"
 },
 ```
 
@@ -66,6 +40,20 @@ const TerserPlugin = require("terser-webpack-plugin"); // production webpack5 �
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin"); // ts check
 const AddAssetHtmlPlugin = require("add-asset-html-webpack-plugin"); // production dll
 const WorkboxPlugin = require("workbox-webpack-plugin"); // production
+
+/**
+ * const Copy = require('copy-webpack-plugin')
+ *
+ * 分析代码
+ * const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
+ *
+ * plugins: [
+ *  new BundleAnalyzerPlugin({ analyzerMode: 'static' }),
+ * new Copy([
+ *    { from: './app/resource/dll', to: '../dist/resource/dll' },
+ *  ]),
+ * ]
+ */
 
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin"); // development
 const CaseSensitivePathsPlugin = require("case-sensitive-paths-webpack-plugin"); // development
@@ -180,6 +168,25 @@ module.exports = {
     new ReactRefreshWebpackPlugin(),
     new CaseSensitivePathsPlugin(),
     useTypeScript && new ForkTsCheckerWebpackPlugin(),
+    new AddAssetHtmlPlugin([
+      {
+        filepath: `${paths.dllsPath}/*.dll.js`,
+        publicPath: `${paths.publicUrlOrPath}static/dll`,
+        outputPath: "static/dll",
+      },
+    ]), // 把dll.js加进index.html里，并且拷贝文件到dist目录
+    new webpack.DllReferencePlugin({
+      // context: __dirname, // 与DllPlugin中的那个context保持一致
+      /** 
+          下面这个地址对应webpack.dll.config.js中生成的那个json文件的路径
+          这样webpack打包时，会检测此文件中的映射，不会把存在映射的包打包进bundle.js
+      **/
+      manifest: `${paths.dllsPath}/reactvendors-manifest.json`, // 读取dll打包后的manifest.json，分析哪些代码跳过
+    }),
+    new webpack.DllReferencePlugin({
+      // context: __dirname, // 与DllPlugin中的那个context保持一致
+      manifest: `${paths.dllsPath}/reduxvendors-manifest.json`, // 读取dll打包后的manifest.json，分析哪些代码跳过
+    }),
     new WebpackManifestPlugin({
       fileName: "asset-manifest.json",
       publicPath: paths.publicUrlOrPath,
@@ -290,28 +297,30 @@ module.exports = {
      * 除了vendor路径，其他也【无需配置】
      */
     splitChunks: {
+      automaticNameDelimiter: "~", // 命名分隔符
       /**
        * 拆分 chunk 的名称。设为 false 将保持 chunk 的相同名称，因此不会不必要地更改名称。
        * 这是生产环境下构建的建议值。
        * 【无需配置】
+       * 默认由模块名+hash命名，名称相同时多个模块将合并为1个，可以设置为function
        */
       name: false,
       /**
        * 这表明将选择哪些 chunk 进行优化。当提供一个字符串，有效值为 all，async 和 initial。
        * 设置为 all 可能特别强大，因为这意味着 chunk 可以在异步和非异步 chunk 之间共享
        *
-       *
+       * 共有三个值可选：initial(初始模块)、async(按需加载模块)和all(全部模块)
        * ***如果设置为all，会为每一个页面生成一个chunks文件，导致入口加载太多小文件建议不要配置***
        */
       chunks: "async",
-      minSize: 20000, // 生成 chunk 的最小体积（以 bytes 为单位）
+      minSize: 20000, // 生成 chunk 的最小体积（以 bytes 为单位）, 模块超过20k自动被抽离成公共模块
       maxSize: 3348576, // 最大不超过3M【4 vs 5】4上面不能配置此参数
       /**
        * 在 webpack 5 中引入了 splitChunks.minRemainingSize 选项，通过确保拆分后剩余的最小 chunk 体积超过限制来避免大小为零的模块。
        * 'development' 模式 中默认为 0。对于其他情况，splitChunks.minRemainingSize 默认为 splitChunks.minSize 的值，因此除需要深度控制的极少数情况外，不需要手动指定它。
        */
       minRemainingSize: 0,
-      minChunks: 1, // 拆分前必须共享模块的最小 chunks 数
+      minChunks: 1, // 拆分前必须共享模块的最小 chunks 数,模块被引用>=1次，便分割
       maxAsyncRequests: 30, // 按需加载时的最大并行请求数
       maxInitialRequests: 30, // 入口点的最大并行请求数
       enforceSizeThreshold: 50000, // 强制执行拆分的体积阈值和其他限制（minRemainingSize，maxAsyncRequests，maxInitialRequests）将被忽略。
@@ -333,16 +342,50 @@ module.exports = {
        * 也可以在 splitChunks.filename 中全局设置此选项，但是不建议这样做，如果 splitChunks.chunks 未设置为 'initial'，则可能会导致错误。避免全局设置
        */
       cacheGroups: {
-        defaultVendors: {
-          test: /[\\/]node_modules[\\/]/,
-          priority: -10,
-          reuseExistingChunk: true,
-          filename: "vendor/[name].[contenthash].chunk.js", // 【4 vs 5】5配置 4不能配置
-          // name: "vendor/",【4 vs 5】4配置 5不能配置
-        },
         default: {
-          minChunks: 2,
-          priority: -20,
+          // 模块缓存规则，设置为false，默认缓存组将禁用
+          minChunks: 2, // 模块被引用>=2次，拆分至vendors公共模块
+          priority: -20, // 优先级
+          reuseExistingChunk: true, // 默认使用已有的模块
+        },
+        vendor: {
+          // 过滤需要打入的模块
+          // test: module => {
+          //   if (module.resource) {
+          //     const include = [/[\\/]node_modules[\\/]/].every(reg => {
+          //       return reg.test(module.resource);
+          //     });
+          //     const exclude = [/[\\/]node_modules[\\/](react|redux|antd|react-dom|react-router)/].some(reg => {
+          //       return reg.test(module.resource);
+          //     });
+          //     return include && !exclude;
+          //   }
+          //   return false;
+          // },
+          test: /[\\/]node_modules[\\/]/,
+          // name: 'vendor',
+          filename: "vendor/[name].[contenthash].chunk.js", // 【4 vs 5】5配置 4不能配置
+          // minChunks: 1,
+          priority: -10, // 确定模块打入的优先级
+          reuseExistingChunk: true, // 使用复用已经存在的模块
+          enforce: true,
+        },
+        //  antd: {
+        //    test: /[\\/]node_modules[\\/]antd/,
+        //    name: 'antd',
+        //    priority: 15,
+        //    reuseExistingChunk: true,
+        //  },
+        echarts: {
+          test: /[\\/]node_modules[\\/]echarts/,
+          name: "echarts",
+          priority: 16,
+          reuseExistingChunk: true,
+        },
+        "draft-js": {
+          test: /[\\/]node_modules[\\/]draft-js/,
+          name: "draft-js",
+          priority: 18,
           reuseExistingChunk: true,
         },
       },

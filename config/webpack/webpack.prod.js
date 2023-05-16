@@ -20,6 +20,7 @@ const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
 const InterpolateHtmlPlugin = require("../../lib/InterpolateHtmlPlugin");
 // const WorkboxPlugin = require("workbox-webpack-plugin"); // production
 const FriendlyErrorsWebpackPlugin = require("friendly-errors-webpack-plugin");
+const CopyPlugin = require("copy-webpack-plugin");
 
 const env = getClientEnvironment();
 const swSrc = fs.existsSync(paths.swSrc);
@@ -28,7 +29,7 @@ const {
   raw: { productConfig = {} },
 } = env;
 const { appName, webpackConfig = {}, layout = {} } = productConfig;
-const { headScripts = [] } = webpackConfig;
+const { headScripts = [], copyOptions } = webpackConfig;
 
 const outputlibrary =
   appName && appName != "main"
@@ -102,6 +103,7 @@ module.exports = {
       resourceRegExp: /^\.\/locale$/,
       contextRegExp: /moment$/,
     }),
+    copyOptions && new CopyPlugin(copyOptions),
     new WebpackManifestPlugin({
       fileName: "asset-manifest.json",
       publicPath: paths.publicUrlOrPath,
