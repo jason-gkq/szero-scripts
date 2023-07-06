@@ -2,7 +2,6 @@
 
 process.env.BABEL_ENV = "production";
 process.env.NODE_ENV = "production";
-// process.env.application = "web";
 
 const webpack = require("webpack");
 const fs = require("fs");
@@ -13,7 +12,7 @@ let compiler = webpack(config);
 
 new webpack.ProgressPlugin().apply(compiler);
 
-compiler.run(function(err, stats) {
+compiler.run(function (err, stats) {
   if (err) {
     console.error(err.stack || err);
     if (err.details) {

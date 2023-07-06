@@ -7,7 +7,30 @@ module.exports = {
   bail: true,
   devtool: "source-map",
   entry: {
-    reactvendors: ["react", "react-dom", "react-router-dom"], // 手动指定打包哪些库
+    reactVendor: ["react", "react-dom", "react-router-dom"], // 手动指定打包哪些库
+    mobxVendor: ["mobx", "mobx-react-lite", "react-router-dom"],
+    antdVendor: ["antd", "@ant-design/cssinjs"],
+    antdIconsVendor: ["@ant-design/icons"],
+    antdProVendor: ["@ant-design/pro-components"],
+    // antdMobileVendor: ["antd-mobile", "antd-mobile-icons"],
+    // pcVendor: [
+    //   "@szero/cache",
+    //   "@szero/hooks",
+    //   "@szero/navigate",
+    //   "@szero/net",
+    //   "@szero/utils",
+    //   "@szero/pc",
+    //   "axios",
+    // ],
+    // mobileVendor: [
+    //   "@szero/cache",
+    //   "@szero/hooks",
+    //   "@szero/navigate",
+    //   "@szero/net",
+    //   "@szero/utils",
+    //   "@szero/mobile",
+    //   "axios",
+    // ],
   },
   output: {
     hashDigestLength: 8,
