@@ -7,12 +7,11 @@ module.exports = {
   bail: true,
   devtool: "source-map",
   entry: {
-    reactVendor: ["react", "react-dom", "react-router-dom"], // 手动指定打包哪些库
-    mobxVendor: ["mobx", "mobx-react-lite", "react-router-dom"],
-    antdVendor: ["antd", "@ant-design/cssinjs"],
-    antdIconsVendor: ["@ant-design/icons"],
-    antdProVendor: ["@ant-design/pro-components"],
-    // antdMobileVendor: ["antd-mobile", "antd-mobile-icons"],
+    // reactVendor: ["react", "react-dom", "react-router-dom"], // 手动指定打包哪些库
+    // mobxVendor: ["mobx", "mobx-react-lite"],
+    // antdVendor: ["antd", "@ant-design/cssinjs"],
+    // antdProVendor: ["@ant-design/pro-components"],
+    // axiosVendor: ["axios"],
     // pcVendor: [
     //   "@szero/cache",
     //   "@szero/hooks",
@@ -20,16 +19,6 @@ module.exports = {
     //   "@szero/net",
     //   "@szero/utils",
     //   "@szero/pc",
-    //   "axios",
-    // ],
-    // mobileVendor: [
-    //   "@szero/cache",
-    //   "@szero/hooks",
-    //   "@szero/navigate",
-    //   "@szero/net",
-    //   "@szero/utils",
-    //   "@szero/mobile",
-    //   "axios",
     // ],
   },
   output: {
@@ -46,6 +35,13 @@ module.exports = {
       name: "[name]_[fullhash]", // manifest 中引用名字格式，不能采用中横线
     }),
   ],
+  resolve: {
+    // 设置symlinks为false以跳过快捷路径校验
+    // symlinks: false,
+    // alias: {
+    //   "@/src/pages": "@/src/pages",
+    // },
+  },
   optimization: {
     minimize: true,
     minimizer: [
