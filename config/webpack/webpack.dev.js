@@ -1,10 +1,8 @@
 "use strict";
 
 const paths = require("../paths");
-// const modules = require("../modules");
 const { getClientEnvironment, getAlias } = require("../env");
 
-const fs = require("fs");
 const path = require("path");
 const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
@@ -84,9 +82,6 @@ module.exports = merge(
       runtimeChunk: "single",
     },
     resolve: {
-      // modules: ["node_modules", paths.appNodeModules].concat(
-      //   modules.additionalModulePaths || []
-      // ),
       extensions: paths.moduleFileExtensions.map((ext) => `.${ext}`),
       alias: getAlias(),
       fallback: {
@@ -103,26 +98,25 @@ module.exports = merge(
             {
               test: /\.(js|jsx|ts|tsx)$/,
               include: paths.appSrc,
-              // exclude: /node_modules/,
               loader: require.resolve("babel-loader"),
               options: {
                 presets: [
                   [
-                    require("@babel/preset-env"),
+                    "@babel/preset-env",
                     {
                       useBuiltIns: "entry",
                       corejs: 3,
                     },
                   ],
                   [
-                    require("@babel/preset-react").default,
+                    "@babel/preset-react",
                     {
                       development: true,
                       useBuiltIns: true,
                       runtime: "automatic",
                     },
                   ],
-                  [require("@babel/preset-typescript").default],
+                  "@babel/preset-typescript",
                 ].filter(Boolean),
                 plugins: [
                   ["@babel/plugin-proposal-decorators", { legacy: true }],
@@ -142,12 +136,6 @@ module.exports = merge(
                     {
                       removeImport: true,
                     },
-                  ],
-                  ["@babel/plugin-proposal-class-properties", { loose: true }],
-                  ["@babel/plugin-proposal-private-methods", { loose: true }],
-                  [
-                    "@babel/plugin-proposal-private-property-in-object",
-                    { loose: true },
                   ],
                   require.resolve("react-refresh/babel"),
                 ].filter(Boolean),
@@ -200,27 +188,6 @@ module.exports = merge(
                 },
                 {
                   loader: require.resolve("less-loader"),
-                  options: {
-                    lessOptions: {
-                      javascriptEnabled: true,
-                    },
-                  },
-                },
-              ],
-              sideEffects: true,
-            },
-            {
-              test: /\.(less|css)$/,
-              include: /node_modules/,
-              use: [
-                {
-                  loader: "style-loader",
-                },
-                {
-                  loader: "css-loader",
-                },
-                {
-                  loader: "less-loader",
                   options: {
                     lessOptions: {
                       javascriptEnabled: true,

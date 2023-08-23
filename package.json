@@ -1,6 +1,6 @@
 {
   "name": "szero-scripts",
-  "version": "1.2.0-alpha.0",
+  "version": "1.2.0",
   "author": "guokeqin",
   "description": "Configuration and scripts for build React App.",
   "repository": {
@@ -32,22 +32,18 @@
     "build:dll": "webpack --config ./config/webpack/webpack.dll.js"
   },
   "dependencies": {
-    "@babel/cli": "7.21.0",
-    "@babel/core": "7.21.4",
-    "@babel/plugin-proposal-class-properties": "7.18.6",
-    "@babel/plugin-proposal-decorators": "7.21.0",
-    "@babel/plugin-proposal-private-methods": "7.18.6",
-    "@babel/plugin-proposal-private-property-in-object": "7.21.0",
-    "@babel/plugin-transform-runtime": "7.21.4",
+    "@babel/cli": "7.22.10",
+    "@babel/core": "7.22.10",
+    "@babel/plugin-proposal-decorators": "7.22.10",
+    "@babel/plugin-transform-runtime": "7.22.10",
     "@babel/polyfill": "7.12.1",
-    "@babel/preset-env": "7.21.4",
-    "@babel/preset-react": "7.18.6",
-    "@babel/preset-typescript": "7.21.4",
+    "@babel/preset-env": "7.22.10",
+    "@babel/preset-react": "7.22.5",
+    "@babel/preset-typescript": "7.22.5",
     "@babel/runtime-corejs3": "^7.21.0",
     "@pmmmwh/react-refresh-webpack-plugin": "0.5.10",
     "@svgr/webpack": "7.0.0",
     "babel-loader": "9.1.2",
-    "babel-plugin-import": "1.13.5",
     "babel-plugin-transform-react-remove-prop-types": "0.4.24",
     "buffer": "^6.0.3",
     "case-sensitive-paths-webpack-plugin": "2.4.0",
@@ -73,11 +69,11 @@
     "style-loader": "3.3.2",
     "typescript": "5.0.3",
     "url-loader": "4.1.1",
-    "webpack": "5.77.0",
-    "webpack-cli": "5.0.1",
-    "webpack-dev-server": "4.13.2",
+    "webpack": "5.88.2",
+    "webpack-cli": "5.1.4",
+    "webpack-dev-server": "4.15.1",
     "webpack-manifest-plugin": "5.0.0",
-    "webpack-merge": "5.8.0"
+    "webpack-merge": "5.9.0"
   },
   "optionalDependencies": {
     "fsevents": "^2.1.3"
@@ -105,11 +101,8 @@
   },
   "devDependencies": {
     "@ant-design/cssinjs": "^1.11.1",
-    "@ant-design/icons": "^5.1.4",
     "@ant-design/pro-components": "^2.6.4",
     "antd": "^5.6.4",
-    "antd-mobile": "^5.31.1",
-    "antd-mobile-icons": "^0.3.0",
     "axios": "^1.4.0",
     "mobx": "^6.9.0",
     "mobx-react-lite": "^3.4.3",
