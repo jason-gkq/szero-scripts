@@ -28,6 +28,10 @@
   "bin": {
     "szero-scripts": "./bin/szero-scripts.js"
   },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  },
   "scripts": {
     "build:dll": "webpack --config ./config/webpack/webpack.dll.js"
   },
