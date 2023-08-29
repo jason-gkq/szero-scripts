@@ -304,6 +304,27 @@ module.exports = merge(
               sideEffects: true,
             },
             {
+              test: /\.(less|css)$/,
+              include: /node_modules/,
+              use: [
+                {
+                  loader: "style-loader", // MiniCssExtractPlugin.loader,
+                },
+                {
+                  loader: "css-loader",
+                },
+                {
+                  loader: "less-loader",
+                  options: {
+                    lessOptions: {
+                      javascriptEnabled: true,
+                    },
+                  },
+                },
+              ],
+              sideEffects: true,
+            },
+            {
               test: /\.svg$/i,
               issuer: /\.[jt]sx?$/,
               type: "javascript/auto",
