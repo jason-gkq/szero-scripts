@@ -10,7 +10,24 @@ delete require.cache[require.resolve("./paths")];
 
 function getClientEnvironment() {
   const raw = Object.keys(process.env).reduce((env, key) => {
-    env[key] = process.env[key];
+    if (
+      [
+        "author",
+        "BABEL_ENV",
+        "NODE_ENV",
+        "LANG",
+        "npm_package_name",
+        "LaunchInstanceID",
+        "npm_package_version",
+        "npm_lifecycle_event",
+        "npm_lifecycle_script",
+        "npm_package_main",
+        "npm_package_type",
+        "publicUrlOrPath",
+      ].includes(key)
+    ) {
+      env[key] = process.env[key];
+    }
     return env;
   }, {});
 
