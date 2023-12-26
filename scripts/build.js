@@ -4,8 +4,8 @@ process.env.BABEL_ENV = "production";
 process.env.NODE_ENV = "production";
 
 const webpack = require("webpack");
-const fs = require("fs");
-const paths = require("../config/paths");
+// const fs = require("fs");
+// const paths = require("../config/paths");
 const config = require("../config/webpack/webpack.prod");
 
 let compiler = webpack(config);
@@ -30,19 +30,19 @@ compiler.run(function (err, stats) {
   if (stats.hasWarnings()) {
     console.warn(info.warnings);
   }
-  copyPublicFolder();
+  // copyPublicFolder();
 });
 
-function copyPublicFolder() {
-  function callback(err) {
-    if (err) {
-      throw err;
-    }
-    console.log("manifest.json was copied to manifest.json");
-  }
-  fs.copyFile(
-    `${paths.appPublic}/manifest.json`,
-    `${paths.appBuild}/manifest.json`,
-    callback
-  );
-}
+// function copyPublicFolder() {
+//   function callback(err) {
+//     if (err) {
+//       throw err;
+//     }
+//     console.log("manifest.json was copied to manifest.json");
+//   }
+//   fs.copyFile(
+//     `${paths.appPublic}/manifest.json`,
+//     `${paths.appBuild}/manifest.json`,
+//     callback
+//   );
+// }

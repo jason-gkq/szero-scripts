@@ -3,7 +3,7 @@
 const paths = require("../paths");
 const { getClientEnvironment, getAlias } = require("../env");
 
-const fs = require("fs");
+// const fs = require("fs");
 const path = require("path");
 const webpack = require("webpack");
 
@@ -14,7 +14,6 @@ const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 const postcssNormalize = require("postcss-normalize");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
-const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
 // const AddAssetHtmlPlugin = require("add-asset-html-webpack-plugin"); // dll 解析
 const InterpolateHtmlPlugin = require("../../lib/InterpolateHtmlPlugin");
 // const WorkboxPlugin = require("workbox-webpack-plugin"); // production
@@ -23,7 +22,7 @@ const CopyPlugin = require("copy-webpack-plugin");
 const { merge } = require("webpack-merge");
 
 const env = getClientEnvironment();
-const swSrc = fs.existsSync(paths.swSrc);
+// const swSrc = fs.existsSync(paths.swSrc);
 
 const {
   raw: { productConfig = {} },
@@ -96,24 +95,6 @@ module.exports = merge(
         contextRegExp: /moment$/,
       }),
       copyOptions && new CopyPlugin(copyOptions),
-      new WebpackManifestPlugin({
-        fileName: "asset-manifest.json",
-        publicPath: paths.publicUrlOrPath,
-        generate: (seed, files, entrypoints) => {
-          const manifestFiles = files.reduce((manifest, file) => {
-            manifest[file.name] = file.path;
-            return manifest;
-          }, seed);
-          const entrypointFiles = entrypoints.main.filter(
-            (fileName) => !fileName.endsWith(".map")
-          );
-
-          return {
-            files: manifestFiles,
-            entrypoints: entrypointFiles,
-          };
-        },
-      }),
       new FriendlyErrorsWebpackPlugin(),
       new ForkTsCheckerWebpackPlugin(),
     ].filter(Boolean),
@@ -257,6 +238,106 @@ module.exports = merge(
             {
               test: /\.(less|css)$/,
               include: /src/,
+              use: [
+                {
+                  loader: MiniCssExtractPlugin.loader,
+                  options: {
+                    esModule: true,
+                  },
+                },
+                {
+                  loader: require.resolve("css-loader"),
+                  options: {
+                    importLoaders: 2,
+                    esModule: true,
+                    modules: {
+                      namedExport: true,
+                      localIdentName: "[local]",
+                    },
+                  },
+                },
+                {
+                  loader: require.resolve("postcss-loader"),
+                  options: {
+                    postcssOptions: {
+                      plugins: () => [
+                        require("postcss-flexbugs-fixes"),
+                        require("postcss-preset-env")({
+                          autoprefixer: {
+                            flexbox: "no-2009",
+                          },
+                          stage: 3,
+                        }),
+                        postcssNormalize(),
+                      ],
+                    },
+                  },
+                },
+                {
+                  loader: require.resolve("less-loader"),
+                  options: {
+                    lessOptions: {
+                      javascriptEnabled: true,
+                    },
+                  },
+                },
+              ],
+              sideEffects: true,
+            },
+            {
+              test: /\.module\.(less|css)$/,
+              include: /src/,
+              exclude: /\.lazy\.(less|css)$/,
+              use: [
+                {
+                  loader: MiniCssExtractPlugin.loader,
+                  options: {
+                    esModule: true,
+                  },
+                },
+                {
+                  loader: require.resolve("css-loader"),
+                  options: {
+                    importLoaders: 2,
+                    esModule: true,
+                    modules: {
+                      namedExport: true,
+                      localIdentName: "[local]",
+                    },
+                  },
+                },
+                {
+                  loader: require.resolve("postcss-loader"),
+                  options: {
+                    postcssOptions: {
+                      plugins: () => [
+                        require("postcss-flexbugs-fixes"),
+                        require("postcss-preset-env")({
+                          autoprefixer: {
+                            flexbox: "no-2009",
+                          },
+                          stage: 3,
+                        }),
+                        postcssNormalize(),
+                      ],
+                    },
+                  },
+                },
+                {
+                  loader: require.resolve("less-loader"),
+                  options: {
+                    lessOptions: {
+                      javascriptEnabled: true,
+                    },
+                  },
+                },
+              ],
+              sideEffects: true,
+            },
+            {
+              test: /\.lazy\.(less|css)$/,
+              include: /src/,
+              exclude: /\.module\.(less|css)$/,
               use: [
                 {
                   loader: MiniCssExtractPlugin.loader,

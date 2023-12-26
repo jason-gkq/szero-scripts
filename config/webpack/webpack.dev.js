@@ -198,6 +198,106 @@ module.exports = merge(
               sideEffects: true,
             },
             {
+              test: /\.module\.(less|css)$/,
+              include: /src/,
+              exclude: /\.lazy\.(less|css)$/,
+              use: [
+                {
+                  loader: require.resolve("style-loader"),
+                  options: {
+                    esModule: true,
+                  },
+                },
+                {
+                  loader: require.resolve("css-loader"),
+                  options: {
+                    importLoaders: 2,
+                    esModule: true,
+                    modules: {
+                      namedExport: true,
+                      localIdentName: "[local]",
+                    },
+                  },
+                },
+                {
+                  loader: require.resolve("postcss-loader"),
+                  options: {
+                    postcssOptions: {
+                      plugins: () => [
+                        require("postcss-flexbugs-fixes"),
+                        require("postcss-preset-env")({
+                          autoprefixer: {
+                            flexbox: "no-2009",
+                          },
+                          stage: 3,
+                        }),
+                        postcssNormalize(),
+                      ],
+                    },
+                  },
+                },
+                {
+                  loader: require.resolve("less-loader"),
+                  options: {
+                    lessOptions: {
+                      javascriptEnabled: true,
+                    },
+                  },
+                },
+              ],
+              sideEffects: true,
+            },
+            {
+              test: /\.lazy\.(less|css)$/,
+              include: /src/,
+              exclude: /\.module\.(less|css)$/,
+              use: [
+                {
+                  loader: require.resolve("style-loader"),
+                  options: {
+                    esModule: true,
+                  },
+                },
+                {
+                  loader: require.resolve("css-loader"),
+                  options: {
+                    importLoaders: 2,
+                    esModule: true,
+                    modules: {
+                      namedExport: true,
+                      localIdentName: "[local]",
+                    },
+                  },
+                },
+                {
+                  loader: require.resolve("postcss-loader"),
+                  options: {
+                    postcssOptions: {
+                      plugins: () => [
+                        require("postcss-flexbugs-fixes"),
+                        require("postcss-preset-env")({
+                          autoprefixer: {
+                            flexbox: "no-2009",
+                          },
+                          stage: 3,
+                        }),
+                        postcssNormalize(),
+                      ],
+                    },
+                  },
+                },
+                {
+                  loader: require.resolve("less-loader"),
+                  options: {
+                    lessOptions: {
+                      javascriptEnabled: true,
+                    },
+                  },
+                },
+              ],
+              sideEffects: true,
+            },
+            {
               test: /\.(less|css)$/,
               include: /node_modules/,
               use: [
