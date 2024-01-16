@@ -78,6 +78,6 @@ if (["build", "start"].includes(script)) {
   process.exit(result.status);
 } else {
   console.log('Unknown script "' + script + '".');
-  console.log("Perhaps you need to update zero-react-scripts?");
+  console.log("Perhaps you need to update szero-scripts?");
   console.log("See: https://github.com/jason-gkq?tab=projects");
 }
