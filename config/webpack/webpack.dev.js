@@ -17,7 +17,7 @@ import FriendlyErrorsWebpackPlugin from 'friendly-errors-webpack-plugin';
 import CopyPlugin from 'copy-webpack-plugin';
 import { merge } from 'webpack-merge';
 
-import * as corejs3Pkg from '@babel/runtime-corejs3/package.json' assert { type: 'json' };
+import { default as corejs3Pkg } from '@babel/runtime-corejs3/package.json' assert { type: 'json' };
 
 const env = getClientEnvironment();
 

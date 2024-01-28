@@ -21,7 +21,7 @@ import CopyPlugin from 'copy-webpack-plugin';
 import { merge } from 'webpack-merge';
 import svgToMiniDataURI from 'mini-svg-data-uri';
 
-import * as corejs3Pkg from '@babel/runtime-corejs3/package.json' assert { type: 'json' };
+import { default as corejs3Pkg } from '@babel/runtime-corejs3/package.json' assert { type: 'json' };
 
 const env = getClientEnvironment();
 // const swSrc = fs.existsSync(paths.swSrc);
