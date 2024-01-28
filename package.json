@@ -1,8 +1,9 @@
 {
   "name": "szero-scripts",
-  "version": "1.5.1",
+  "version": "2.0.3",
   "author": "guokeqin",
   "description": "Configuration and scripts for build React App.",
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "https://github.com/jason-gkq/szero-scripts.git",

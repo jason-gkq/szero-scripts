@@ -1,18 +1,19 @@
-"use strict";
+'use strict';
 
-process.env.BABEL_ENV = "development";
-process.env.NODE_ENV = "development";
+process.env.BABEL_ENV = 'development';
+process.env.NODE_ENV = 'development';
 
-const webpackDevServer = require("webpack-dev-server");
-const webpack = require("webpack");
-const config = require("../config/webpack/webpack.dev");
-const paths = require("../config/paths");
-const { getClientEnvironment } = require("../config/env");
+import webpackDevServer from 'webpack-dev-server';
+import webpack from 'webpack';
+import config from '../config/webpack/webpack.dev.js';
+import paths from '../config/paths.js';
+import { getClientEnvironment } from '../config/env.js';
+
 const {
   raw: { productConfig },
 } = getClientEnvironment();
 
-const { devServer = { port: 8080, host: "localhost" } } =
+const { devServer = { port: 8080, host: 'localhost' } } =
   productConfig.webpackConfig || {};
 
 const options = {
@@ -29,12 +30,12 @@ const options = {
   //   ],
   // },
   headers: {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "*",
-    "Access-Control-Allow-Headers": "*",
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': '*',
+    'Access-Control-Allow-Headers': '*',
   },
   client: {
-    logging: "warn",
+    logging: 'warn',
     overlay: true,
     progress: true,
     reconnect: 3,

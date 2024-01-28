@@ -1,20 +1,22 @@
-"use strict";
+'use strict';
 
-const path = require("path");
-const fs = require("fs");
+import { fileURLToPath } from 'url';
+import path, { dirname } from 'path';
+import fs from 'fs';
 
-const proEnv = require("./params");
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const appDirectory = fs.realpathSync(process.cwd());
 const resolveApp = (relativePath) => path.resolve(appDirectory, relativePath);
 
-let publicUrlOrPath = "/";
+let publicUrlOrPath = '/';
 
-const envComFilePath = `${resolveApp("env")}/env.com.js`;
-const envFilePath = `${resolveApp("env")}/env.${proEnv.env}.js`;
+const envComFilePath = `${resolveApp('env')}/env.com.js`;
+const envFilePath = `${resolveApp('env')}/env.${process.env.BUILD_ENV}.js`;
 
 if (fs.existsSync(envComFilePath)) {
-  const { defineConfig } = require(envComFilePath);
+  const { defineConfig } = await import(envComFilePath);
   const { webpackConfig } = defineConfig && defineConfig();
   const { publicUrlOrPath: publicUrlOrPathC } = webpackConfig || {};
   if (publicUrlOrPathC) {
@@ -23,7 +25,7 @@ if (fs.existsSync(envComFilePath)) {
 }
 
 if (fs.existsSync(envFilePath)) {
-  const { defineConfig } = require(envFilePath);
+  const { defineConfig } = await import(envFilePath);
   const { webpackConfig } = defineConfig && defineConfig();
   const { publicUrlOrPath: publicUrlOrPathC } = webpackConfig || {};
   if (publicUrlOrPathC) {
@@ -33,9 +35,17 @@ if (fs.existsSync(envFilePath)) {
 
 process.env.publicUrlOrPath = publicUrlOrPath;
 
-const buildPath = "dist";
+const buildPath = 'dist';
 
-const moduleFileExtensions = ["js", "jsx", "ts", "tsx", "css", "less", "json"];
+export const moduleFileExtensions = [
+  'js',
+  'jsx',
+  'ts',
+  'tsx',
+  'css',
+  'less',
+  'json',
+];
 
 // Resolve file paths in the same order as webpack
 const resolveModule = (resolveFn, filePath) => {
@@ -51,32 +61,30 @@ const resolveModule = (resolveFn, filePath) => {
 };
 
 const resolveOwn = (relativePath) =>
-  path.resolve(__dirname, "..", relativePath);
+  path.resolve(__dirname, '..', relativePath);
 
 // config before eject: we're in ./node_modules/react-scripts/config/
-module.exports = {
-  env: resolveApp("env"),
-  appPath: resolveApp("."),
+export default {
+  env: resolveApp('env'),
+  appPath: resolveApp('.'),
   appBuild: resolveApp(buildPath),
-  appPublic: resolveApp("public"),
-  appHtml: resolveApp("public/index.html"),
-  appIndexJs: resolveModule(resolveApp, "src/index"),
-  appPackageJson: resolveApp("package.json"),
-  appSrc: resolveApp("src"),
-  appTsConfig: resolveApp("tsconfig.json"),
-  appEnvConfig: resolveApp(`env/env.${proEnv.env}.js`),
-  yarnLockFile: resolveApp("yarn.lock"),
+  appPublic: resolveApp('public'),
+  appHtml: resolveApp('public/index.html'),
+  appIndexJs: resolveModule(resolveApp, 'src/index'),
+  appPackageJson: resolveApp('package.json'),
+  appSrc: resolveApp('src'),
+  appTsConfig: resolveApp('tsconfig.json'),
+  appEnvConfig: resolveApp(`env/env.${process.env.BUILD_ENV}.js`),
+  yarnLockFile: resolveApp('yarn.lock'),
   // testsSetup: resolveModule(resolveApp, 'src/setupTests'),
   // proxySetup: resolveApp('src/setupProxy.js'),
-  appNodeModules: resolveApp("node_modules"),
-  swSrc: resolveModule(resolveApp, "src/serviceWorker"),
+  appNodeModules: resolveApp('node_modules'),
+  swSrc: resolveModule(resolveApp, 'src/serviceWorker'),
   publicUrlOrPath,
   // These properties only exist before ejecting:
-  ownPath: resolveOwn("."),
-  ownNodeModules: resolveOwn("node_modules"), // This is empty on npm 3
-  appTypeDeclarations: resolveApp("src/global.d.ts"),
-  dllsPath: resolveOwn("dll"),
-  dllOutputPath: resolveOwn("dll/*.dll.js"),
+  ownPath: resolveOwn('.'),
+  ownNodeModules: resolveOwn('node_modules'),
+  appTypeDeclarations: resolveApp('src/global.d.ts'),
+  dllsPath: resolveOwn('dll'),
+  dllOutputPath: resolveOwn('dll/*.dll.js'),
 };
-
-module.exports.moduleFileExtensions = moduleFileExtensions;

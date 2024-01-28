@@ -1,9 +1,5 @@
 ### 简介
 
-本包只适用于`zero-react-pc`、`zero-main`两个项目使用
-
-如使用`react` + `redux` + `less`可做参考
-
 安装
 
 ```
@@ -53,7 +49,7 @@ yarn build:prod
 }
 ```
 
-3. 根目录添加文件夹`env`，文件加重添加如下 4 个`js`文件
+3. 如果有不同环境的配置，则根目录添加文件夹`env`，文件加重添加对应的`js`文件即可，如果没有配置则无需添加
 
 - env/env.com.js
 - env/env.local.js
@@ -66,9 +62,9 @@ yarn build:prod
 文件格式如下：
 
 ```js
-{
-  "ENV": "prod"
-}
+module.exports.defineConfig = () => ({
+  ENV: "local",
+});
 ```
 
 必要参数配置：
@@ -90,34 +86,14 @@ const env = process.env.ENV;
 ```json
 {
   "compilerOptions": {
-    "checkJs": false,
-    "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "paths": {
       "@/assets/*": ["assets/*"],
       "@/src/*": ["src/*"]
     }
-  },
-  "exclude": ["node_modules", "dist"]
+  }
 }
 ```
-
-5. [废弃]依赖包，出去打包需要的一些依赖包，此次打包还进行了`dll`的优化，能在进行业务打包时候跳过这些包的编译，提高打包速度，但对应的文件会在项目启动时候优先加载，进行`dll`打包如下：
-
-- reactvendors
-  - react
-  - react-dom
-  - react-router-dom
-- reduxvendors
-  - react-redux
-  - react-router-redux
-  - redux
-  - redux-actions
-  - redux-batched-actions
-  - redux-persist
-  - redux-saga
-  - redux-thunk
-  - reselect
 
 ### 其他常用命令介绍
 
