@@ -16,8 +16,10 @@ const envComFilePath = `${resolveApp('env')}/env.com.js`;
 const envFilePath = `${resolveApp('env')}/env.${process.env.BUILD_ENV}.js`;
 
 if (fs.existsSync(envComFilePath)) {
-  const { defineConfig } = await import(envComFilePath);
-  const { webpackConfig } = defineConfig && defineConfig();
+  const { defineConfig: comDefineConfig } = await import(
+    `file://${envComFilePath}`
+  );
+  const { webpackConfig } = comDefineConfig && comDefineConfig();
   const { publicUrlOrPath: publicUrlOrPathC } = webpackConfig || {};
   if (publicUrlOrPathC) {
     publicUrlOrPath = publicUrlOrPathC;
@@ -25,7 +27,7 @@ if (fs.existsSync(envComFilePath)) {
 }
 
 if (fs.existsSync(envFilePath)) {
-  const { defineConfig } = await import(envFilePath);
+  const { defineConfig } = await import(`file://${envFilePath}`);
   const { webpackConfig } = defineConfig && defineConfig();
   const { publicUrlOrPath: publicUrlOrPathC } = webpackConfig || {};
   if (publicUrlOrPathC) {

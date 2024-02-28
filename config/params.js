@@ -21,8 +21,6 @@ if (!args || !args.env) {
   );
 }
 
-if (args.env) {
-  process.env.BUILD_ENV = args.env;
-}
+process.env.BUILD_ENV = args.env || 'local';
 
 export default { ...args };

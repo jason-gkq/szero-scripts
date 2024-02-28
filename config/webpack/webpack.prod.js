@@ -2,7 +2,7 @@
 import paths, { moduleFileExtensions } from '../paths.js';
 import { getClientEnvironment, getAlias } from '../env.js';
 
-// import fs from 'fs';
+import fs from 'fs';
 import path from 'path';
 import webpack from 'webpack';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
@@ -11,7 +11,6 @@ import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import TerserPlugin from 'terser-webpack-plugin';
 
-import postcssNormalize from 'postcss-normalize';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import InterpolateHtmlPlugin from '../../lib/InterpolateHtmlPlugin.js';
 import FriendlyErrorsWebpackPlugin from 'friendly-errors-webpack-plugin';
@@ -21,7 +20,11 @@ import CopyPlugin from 'copy-webpack-plugin';
 import { merge } from 'webpack-merge';
 import svgToMiniDataURI from 'mini-svg-data-uri';
 
-import { default as corejs3Pkg } from '@babel/runtime-corejs3/package.json' assert { type: 'json' };
+const corejs3Pkg = fs.readFileSync(
+  `${paths.appNodeModules}/@babel/runtime-corejs3/package.json`,
+  'utf-8'
+);
+const { version } = JSON.parse(corejs3Pkg);
 
 const env = getClientEnvironment();
 // const swSrc = fs.existsSync(paths.swSrc);
@@ -183,7 +186,7 @@ export default merge(
               include: paths.appSrc,
               loader: 'babel-loader',
               options: {
-                sourceMaps: true,
+                // sourceMaps: true,
                 cacheDirectory: true,
                 cacheCompression: false,
                 compact: true,
@@ -213,7 +216,7 @@ export default merge(
                     {
                       corejs: false,
                       helpers: true,
-                      version: corejs3Pkg.version,
+                      version: version,
                       regenerator: true,
                     },
                   ],
@@ -258,7 +261,7 @@ export default merge(
                   loader: 'postcss-loader',
                   options: {
                     postcssOptions: {
-                      plugins: () => [
+                      plugins: [
                         'postcss-flexbugs-fixes',
                         [
                           'postcss-preset-env',
@@ -269,7 +272,6 @@ export default merge(
                             stage: 3,
                           },
                         ],
-                        postcssNormalize(),
                       ],
                     },
                   },
@@ -311,7 +313,7 @@ export default merge(
                   loader: 'postcss-loader',
                   options: {
                     postcssOptions: {
-                      plugins: () => [
+                      plugins: [
                         'postcss-flexbugs-fixes',
                         [
                           'postcss-preset-env',
@@ -322,7 +324,6 @@ export default merge(
                             stage: 3,
                           },
                         ],
-                        postcssNormalize(),
                       ],
                     },
                   },
@@ -364,7 +365,7 @@ export default merge(
                   loader: 'postcss-loader',
                   options: {
                     postcssOptions: {
-                      plugins: () => [
+                      plugins: [
                         'postcss-flexbugs-fixes',
                         [
                           'postcss-preset-env',
@@ -375,7 +376,6 @@ export default merge(
                             stage: 3,
                           },
                         ],
-                        postcssNormalize(),
                       ],
                     },
                   },

@@ -1,6 +1,6 @@
 {
   "name": "szero-scripts",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "author": "guokeqin",
   "description": "Configuration and scripts for build React App.",
   "type": "module",
@@ -67,7 +67,6 @@
     "postcss": "8.4.21",
     "postcss-flexbugs-fixes": "5.0.2",
     "postcss-loader": "7.1.0",
-    "postcss-normalize": "10.0.1",
     "postcss-preset-env": "8.3.0",
     "react-refresh": "0.14.0",
     "style-loader": "3.3.2",

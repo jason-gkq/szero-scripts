@@ -3,12 +3,11 @@
 import paths, { moduleFileExtensions } from '../paths.js';
 import { getClientEnvironment, getAlias } from '../env.js';
 
-// import fs from 'fs';
+import fs from 'fs';
 import path from 'path';
 // import slash from 'slash';
 import webpack from 'webpack';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-import postcssNormalize from 'postcss-normalize';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
@@ -17,7 +16,11 @@ import FriendlyErrorsWebpackPlugin from 'friendly-errors-webpack-plugin';
 import CopyPlugin from 'copy-webpack-plugin';
 import { merge } from 'webpack-merge';
 
-import { default as corejs3Pkg } from '@babel/runtime-corejs3/package.json' assert { type: 'json' };
+const corejs3Pkg = fs.readFileSync(
+  `${paths.appNodeModules}/@babel/runtime-corejs3/package.json`,
+  'utf-8'
+);
+const { version } = JSON.parse(corejs3Pkg);
 
 const env = getClientEnvironment();
 
@@ -53,7 +56,6 @@ export default merge(
         path.resolve(info.absoluteResourcePath).replace(/\\/g, '/'),
       // clean: true,
     },
-
     plugins: [
       new HtmlWebpackPlugin({
         template: paths.appHtml,
@@ -130,7 +132,7 @@ export default merge(
                     {
                       corejs: false,
                       helpers: true,
-                      version: corejs3Pkg.version,
+                      version: version,
                       regenerator: true,
                     },
                   ],
@@ -187,7 +189,6 @@ export default merge(
                             stage: 3,
                           },
                         ],
-                        postcssNormalize(),
                       ],
                     },
                   },
@@ -240,7 +241,6 @@ export default merge(
                             stage: 3,
                           },
                         ],
-                        postcssNormalize(),
                       ],
                     },
                   },
@@ -293,7 +293,6 @@ export default merge(
                             stage: 3,
                           },
                         ],
-                        postcssNormalize(),
                       ],
                     },
                   },
