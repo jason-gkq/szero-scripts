@@ -59,11 +59,36 @@ yarn build:prod
 
 **`env.com.js`为公共业务参数配置文件，其余为各个环境差异性配置**
 
-文件格式如下：
+4. 文件格式如下：
 
 ```js
-module.exports.defineConfig = () => ({
-  ENV: 'local',
+// 配置文件中导出defineConfig则配置信息回自动加载到全局变量中
+export const defineConfig = () => ({
+  ENV: 'prod',
+  appName: 'admin',
+  webpackConfig: {
+    publicUrlOrPath: '/admin/',
+    devServer: {
+      port: 8080,
+      host: 'localhost',
+    },
+    privateConfig:{
+      headScripts: [
+        {
+          src: 'https://cdn.bootcdn.net/ajax/libs/echarts/5.4.3/echarts.common.js',
+        },
+      ],
+      copyOptions: {
+        targets: [
+          {
+            src: 'bin/example.wasm',
+            dest: 'wasm-files'
+          }
+        ]
+      }
+    }
+    build: {},
+  },
 });
 ```
 
@@ -71,15 +96,9 @@ module.exports.defineConfig = () => ({
 
 - ENV 环境标识
 - appName 为路由前缀
-- appCode 项目唯一标识
+- webpackConfig webpack 配置项
 
-项目中使用方式为：
-
-```js
-const env = process.env.ENV;
-```
-
-4. 项目跟目录添加`jsconfing.json`，主要用于`vscode`识别短路径，`webpack`打包会根据`compilerOptions.paths`中的配置转换为`alias`
+5. 项目跟目录添加`jsconfing.json`，主要用于`vscode`识别短路径，`webpack`打包会根据`compilerOptions.paths`中的配置转换为`alias`
 
 [处理 alias 转跳问题](https://code.visualstudio.com/docs/languages/jsconfig)
 
