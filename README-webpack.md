@@ -1,5 +1,13 @@
 ### 开发环境 webpack 打包详解
 
+### 其他常用命令介绍
+
+```shell
+yarn upgrade --latest
+
+npm publish --tag=beta
+```
+
 ### 本包开发 dll 打包配置：
 
 ```json

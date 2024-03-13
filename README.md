@@ -1,8 +1,6 @@
 ### 简介
 
-本包只适用于`zero-react-pc`、`zero-main`两个项目使用
-
-如使用`react` + `redux` + `less`可做参考
+本脚本适合：`react` + `ts` + `less` 项目进行打包
 
 安装
 
@@ -45,10 +43,10 @@ yarn build:prod
 ```json
 {
   "scripts": {
-    "start": "zero-react-scripts start env=local",
-    "build:test": "zero-react-scripts build env=test",
-    "build:pre": "zero-react-scripts build env=pre",
-    "build:prod": "zero-react-scripts build env=prod"
+    "start": "szero-scripts start env=local",
+    "build:test": "szero-scripts build env=test",
+    "build:pre": "szero-scripts build env=pre",
+    "build:prod": "szero-scripts build env=prod"
   }
 }
 ```
@@ -100,29 +98,4 @@ const env = process.env.ENV;
   },
   "exclude": ["node_modules", "dist"]
 }
-```
-
-5. [废弃]依赖包，出去打包需要的一些依赖包，此次打包还进行了`dll`的优化，能在进行业务打包时候跳过这些包的编译，提高打包速度，但对应的文件会在项目启动时候优先加载，进行`dll`打包如下：
-
-- reactvendors
-  - react
-  - react-dom
-  - react-router-dom
-- reduxvendors
-  - react-redux
-  - react-router-redux
-  - redux
-  - redux-actions
-  - redux-batched-actions
-  - redux-persist
-  - redux-saga
-  - redux-thunk
-  - reselect
-
-### 其他常用命令介绍
-
-```shell
-yarn upgrade --latest
-
-npm publish --tag=beta
 ```
