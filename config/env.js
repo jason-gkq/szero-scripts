@@ -54,7 +54,7 @@ export function getClientEnvironment() {
   const stringified = {
     'process.env': Object.keys(raw).reduce((env, key) => {
       if (key == 'productConfig') {
-        const { webpackConfig, ...restValue } = raw[key];
+        const { webpackConfig, viteConfig, ...restValue } = raw[key];
         env[key] = JSON.stringify(restValue);
       } else {
         env[key] = JSON.stringify(raw[key]);

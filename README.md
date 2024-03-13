@@ -41,10 +41,10 @@ yarn build:prod
 ```json
 {
   "scripts": {
-    "start": "zero-react-scripts start env=local",
-    "build:test": "zero-react-scripts build env=test",
-    "build:pre": "zero-react-scripts build env=pre",
-    "build:prod": "zero-react-scripts build env=prod"
+    "start": "szero-scripts start env=local",
+    "build:test": "szero-scripts build env=test",
+    "build:pre": "szero-scripts build env=pre",
+    "build:prod": "szero-scripts build env=prod"
   }
 }
 ```
@@ -63,7 +63,7 @@ yarn build:prod
 
 ```js
 module.exports.defineConfig = () => ({
-  ENV: "local",
+  ENV: 'local',
 });
 ```
 
@@ -93,12 +93,4 @@ const env = process.env.ENV;
     }
   }
 }
-```
-
-### 其他常用命令介绍
-
-```shell
-yarn upgrade --latest
-
-npm publish --tag=beta
 ```
