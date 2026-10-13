@@ -14,11 +14,8 @@ import TerserPlugin from 'terser-webpack-plugin';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import InterpolateHtmlPlugin from '../../lib/InterpolateHtmlPlugin.js';
 import FriendlyErrorsWebpackPlugin from 'friendly-errors-webpack-plugin';
-// import AddAssetHtmlPlugin from 'add-asset-html-webpack-plugin'; // dll 解析
-// import WorkboxPlugin from 'workbox-webpack-plugin'; // production
 import CopyPlugin from 'copy-webpack-plugin';
 import { merge } from 'webpack-merge';
-import svgToMiniDataURI from 'mini-svg-data-uri';
 
 const corejs3Pkg = fs.readFileSync(
   `${paths.appNodeModules}/@babel/runtime-corejs3/package.json`,
@@ -421,38 +418,10 @@ export default merge(
               test: /\.svg$/i,
               issuer: /\.[jt]sx?$/,
               type: 'javascript/auto',
-              use: [
-                '@svgr/webpack',
-                {
-                  loader: 'url-loader',
-                  options: {
-                    name: 'static/media/[name].[contenthash:8].svg',
-                    generator: (content) =>
-                      svgToMiniDataURI(content.toString()),
-                    limit: 8 * 1024,
-                  },
-                },
-              ],
+              use: ['@svgr/webpack'],
             },
-            // {
-            //   test: /\.svg$/i,
-            //   type: "asset", // inline
-            //   parser: {
-            //     dataUrlCondition: {
-            //       maxSize: 8 * 1024, // 默认就是8k
-            //     },
-            //   },
-            //   generator: {
-            //     filename: "static/media/[name].[contenthash].svg",
-            //     dataUrl: (content) => {
-            //       // 大于8k的svg独立生成了文件，但是并未压缩 TODO
-            //       content = content.toString();
-            //       return svgToMiniDataURI(content);
-            //     },
-            //   },
-            // },
             {
-              test: /\.(png|jpg|jpeg|gif)$/,
+              test: /\.(png|jpg|jpeg|gif|svg)$/,
               type: 'asset/resource',
               generator: {
                 filename: 'static/media/[name].[contenthash][ext]',

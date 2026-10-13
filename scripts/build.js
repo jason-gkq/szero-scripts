@@ -18,13 +18,14 @@ compiler.run(function (err, stats) {
     if (err.details) {
       console.error(err.details);
     }
-    return;
+    process.exit(1);
   }
 
   const info = stats.toJson();
 
   if (stats.hasErrors()) {
     console.error(info.errors);
+    process.exit(1);
   }
 
   if (stats.hasWarnings()) {

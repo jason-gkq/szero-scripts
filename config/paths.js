@@ -87,6 +87,4 @@ export default {
   ownPath: resolveOwn('.'),
   ownNodeModules: resolveOwn('node_modules'),
   appTypeDeclarations: resolveApp('src/global.d.ts'),
-  dllsPath: resolveOwn('dll'),
-  dllOutputPath: resolveOwn('dll/*.dll.js'),
 };

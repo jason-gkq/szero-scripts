@@ -4,10 +4,15 @@ import fs from 'fs';
 import paths from './paths.js';
 
 // Make sure that including paths.js after env.js will read .env variables.
-const { defineConfig: comDefineConfig } = await import(
-  `file://${paths.env}/env.com.js`
-);
-const { defineConfig } = await import(`file://${paths.appEnvConfig}`);
+let comDefineConfig;
+let defineConfig;
+const envComFilePath = `${paths.env}/env.com.js`;
+if (fs.existsSync(envComFilePath)) {
+  ({ defineConfig: comDefineConfig } = await import(`file://${envComFilePath}`));
+}
+if (fs.existsSync(paths.appEnvConfig)) {
+  ({ defineConfig } = await import(`file://${paths.appEnvConfig}`));
+}
 
 export function getClientEnvironment() {
   const raw = Object.keys(process.env).reduce((env, key) => {

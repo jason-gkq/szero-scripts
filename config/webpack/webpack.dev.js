@@ -12,7 +12,6 @@ import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import FriendlyErrorsWebpackPlugin from 'friendly-errors-webpack-plugin';
-// import AddAssetHtmlPlugin from 'add-asset-html-webpack-plugin'; // dll 解析
 import CopyPlugin from 'copy-webpack-plugin';
 import { merge } from 'webpack-merge';
 
@@ -338,10 +337,10 @@ export default merge(
               test: /\.svg$/i,
               issuer: /\.[jt]sx?$/,
               type: 'javascript/auto',
-              use: ['@svgr/webpack', 'url-loader'],
+              use: ['@svgr/webpack'],
             },
             {
-              test: /\.(png|jpg|jpeg|gif)$/,
+              test: /\.(png|jpg|jpeg|gif|svg)$/,
               type: 'asset/resource',
             },
           ],

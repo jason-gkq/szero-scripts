@@ -20,7 +20,6 @@ const options = {
   static: paths.appBuild,
   compress: true,
   hot: true,
-  client: false,
   historyApiFallback: true, // 一定要加上，不然浏览器输入指定页面会发起GET请求，而不是加载页面
   // historyApiFallback: { // 多入口配置
   //   rewrites: [
