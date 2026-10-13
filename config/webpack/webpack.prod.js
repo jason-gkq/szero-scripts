@@ -13,7 +13,6 @@ import TerserPlugin from 'terser-webpack-plugin';
 
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import InterpolateHtmlPlugin from '../../lib/InterpolateHtmlPlugin.js';
-import FriendlyErrorsWebpackPlugin from 'friendly-errors-webpack-plugin';
 import CopyPlugin from 'copy-webpack-plugin';
 import { merge } from 'webpack-merge';
 
@@ -95,7 +94,6 @@ export default merge(
         contextRegExp: /moment$/,
       }),
       copyOptions && new CopyPlugin(copyOptions),
-      new FriendlyErrorsWebpackPlugin(),
       new ForkTsCheckerWebpackPlugin({
         typescript: {
           // configFile: paths.appTsConfig,

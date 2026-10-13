@@ -11,7 +11,6 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
-import FriendlyErrorsWebpackPlugin from 'friendly-errors-webpack-plugin';
 import CopyPlugin from 'copy-webpack-plugin';
 import { merge } from 'webpack-merge';
 
@@ -81,7 +80,6 @@ export default merge(
           memoryLimit: 4096,
         },
       }),
-      new FriendlyErrorsWebpackPlugin(),
       new webpack.HotModuleReplacementPlugin(),
       new ReactRefreshWebpackPlugin(),
     ].filter(Boolean),
