@@ -15,6 +15,9 @@ import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import InterpolateHtmlPlugin from '../../lib/InterpolateHtmlPlugin.js';
 import CopyPlugin from 'copy-webpack-plugin';
 import { merge } from 'webpack-merge';
+import postcssPresetEnv from 'postcss-preset-env';
+import postcssFlexbugsFixes from 'postcss-flexbugs-fixes';
+
 
 const corejs3Pkg = fs.readFileSync(
   `${paths.appNodeModules}/@babel/runtime-corejs3/package.json`,
@@ -262,9 +265,9 @@ export default merge(
                   options: {
                     postcssOptions: {
                       plugins: [
-                        'postcss-flexbugs-fixes',
+                        postcssFlexbugsFixes,
                         [
-                          'postcss-preset-env',
+                          postcssPresetEnv,
                           {
                             autoprefixer: {
                               flexbox: 'no-2009',
@@ -314,9 +317,9 @@ export default merge(
                   options: {
                     postcssOptions: {
                       plugins: [
-                        'postcss-flexbugs-fixes',
+                        postcssFlexbugsFixes,
                         [
-                          'postcss-preset-env',
+                          postcssPresetEnv,
                           {
                             autoprefixer: {
                               flexbox: 'no-2009',
@@ -366,9 +369,9 @@ export default merge(
                   options: {
                     postcssOptions: {
                       plugins: [
-                        'postcss-flexbugs-fixes',
+                        postcssFlexbugsFixes,
                         [
-                          'postcss-preset-env',
+                          postcssPresetEnv,
                           {
                             autoprefixer: {
                               flexbox: 'no-2009',

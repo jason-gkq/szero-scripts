@@ -1,6 +1,6 @@
 {
   "name": "szero-scripts",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "author": "guokeqin",
   "description": "Configuration and scripts for build React App.",
   "type": "module",
